@@ -35,7 +35,7 @@ class BudgetExhausted(Exception):
 
 @dataclass
 class IncidentBudget:
-    max_calls: int = 40
+    max_calls: int = 60
     tool_limits: dict = field(default_factory=lambda: {
         "rerun_sync": 3, "apply_mapping": 12, "undo": 12, "escalate": 12})
     max_repeats: int = 3

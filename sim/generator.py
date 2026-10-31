@@ -62,8 +62,9 @@ def add_product(world, rng, code, name, price, n_orders, day_from=0, day_to=None
     return chosen
 
 
-def add_to_orders(orders, code, name, price):
+def add_to_orders(world, orders, code, name, price):
     """Add a cup to these specific orders, to make products appear together."""
+    world["catalog"].setdefault(name, f"PROD-{len(world['catalog']) + 1:03d}")
     for o in orders:
         o["cups"].append({"code": code, "price": price, "true_name": name})
 

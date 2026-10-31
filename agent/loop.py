@@ -27,7 +27,9 @@ and being allowed by the gate does not oblige you to apply.
 6. Escalate each code you could not prove, with the evidence and what a human should check. Say \
 what you do not know; do not guess. A code left unmapped keeps its days held, which is the safe state.
 
-Attempts are capped. When a step is not making progress, escalate rather than retry.
+Limits: 60 tool calls per incident, and an identical call with an identical outcome may run only \
+twice; a third ends the run. Prefer evidence from propose_mappings and sample raw days rather than \
+reading all of them. When a step is not making progress, escalate rather than retry.
 Finish with a short plain-language summary for the on-call reader: what was wrong, what you changed, \
 what you verified and how, what you escalated and why, and what is still unverified."""
 
