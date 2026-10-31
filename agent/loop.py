@@ -23,6 +23,9 @@ where the evidence is thin or something does not add up.
 3. Fix: apply_mapping only for codes whose evidence you can defend. A policy gate has the last word, \
 and being allowed by the gate does not oblige you to apply. Elimination is a sound method when the \
 code it depends on is itself well proven: it is part of the manual procedure this replaces.
+If the log shows vendor errors, look for a pattern in the vendor_call numbers and test it with \
+probe_api_rate before set_call_spacing. A pattern you cannot prove, or spacing that does not help, \
+goes to a human.
 4. Rerun the sync, then run verify_recovery.
 5. Investigate any leftover mismatch. If a change turns out wrong, undo it.
 6. Escalate each code you could not prove, with the evidence and what a human should check. Say \
@@ -99,6 +102,13 @@ def close_incident(ws, transcript, stop_reason=None):
                            f"{verification['global_problems']}")
     covered = {c for e in ws.escalations() for c in e["codes"]}
     mapping = ws.mapping()
+    unexplained = [day for day in verification["held_days"]
+                   if all(c["code"] in mapping for o in ws.vendor.list_orders(day)
+                          for c in o["cups"])]
+    if unexplained and not any(e["category"] == "vendor_failure" for e in ws.escalations()):
+        _system_escalation(ws, "vendor_failure", [],
+                           f"No draft and no unknown code, so the vendor export is the likely "
+                           f"cause: {unexplained}")
     left = sorted({c["code"] for day in verification["held_days"]
                    for o in ws.vendor.list_orders(day) for c in o["cups"]
                    if c["code"] not in mapping} - covered)

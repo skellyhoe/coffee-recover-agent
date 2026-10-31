@@ -5,6 +5,8 @@ from dataclasses import dataclass, field
 
 MIN_CUPS = 3
 MIN_ORDERS = 2
+MAX_CALL_SPACING = 10
+MIN_PROBE_SUCCESSES = 3
 
 
 def check_mapping(proposal, mapping):
@@ -29,6 +31,34 @@ def check_mapping(proposal, mapping):
     return reasons
 
 
+def detect_period(statuses):
+    """Calls per success if successes are perfectly regular, else None. 1 means healthy."""
+    hits = [i for i, s in enumerate(statuses) if s == 200]
+    if len(hits) < MIN_PROBE_SUCCESSES:
+        return None
+    gaps = {b - a for a, b in zip(hits, hits[1:])}
+    return gaps.pop() if len(gaps) == 1 else None
+
+
+def check_spacing(seconds, probe):
+    """Reasons this spacing may not be set; empty means allowed. Needs a probe to justify it."""
+    if probe is None:
+        return ["no probe evidence: run probe_api_rate first"]
+    if probe["period"] is None:
+        return ["the latest probe shows no regular pattern, so this is not a simple rate limit"]
+    if probe["period"] == 1:
+        return ["the latest probe shows calls already succeeding"]
+    needed = probe["window_seconds"] - 1
+    reasons = []
+    if seconds < needed:
+        reasons.append(f"{seconds}s is below the {needed}s the probe shows is needed")
+    if seconds > MAX_CALL_SPACING:
+        reasons.append(f"{seconds}s is above the maximum of {MAX_CALL_SPACING}s")
+    if needed > MAX_CALL_SPACING:
+        reasons.append(f"the probe needs {needed}s, above the maximum of {MAX_CALL_SPACING}s")
+    return reasons
+
+
 class BudgetExhausted(Exception):
     """The incident used up its budget. The run must stop and escalate."""
 
@@ -37,7 +67,8 @@ class BudgetExhausted(Exception):
 class IncidentBudget:
     max_calls: int = 60
     tool_limits: dict = field(default_factory=lambda: {
-        "rerun_sync": 3, "apply_mapping": 12, "undo": 12, "escalate": 12})
+        "rerun_sync": 3, "apply_mapping": 12, "undo": 12, "escalate": 12,
+        "probe_api_rate": 3, "set_call_spacing": 3})
     max_repeats: int = 3
     calls: int = 0
     per_tool: dict = field(default_factory=dict)

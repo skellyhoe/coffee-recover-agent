@@ -19,7 +19,7 @@ def test_tool_surface_is_exactly_this():
     assert TOOL_NAMES == {
         "read_run_log", "list_unknown_codes", "get_held_day_orders", "get_excel_export",
         "get_ledger_state", "propose_mappings", "apply_mapping", "rerun_sync", "verify_recovery",
-        "escalate", "undo"}
+        "escalate", "undo", "probe_api_rate", "set_call_spacing"}
 
 
 def test_apply_mapping_rejects_free_text_product(tmp_path):

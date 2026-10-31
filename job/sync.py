@@ -5,6 +5,8 @@ guessing could put a wrong product on it. Re-runs skip days that already have a 
 """
 from collections import Counter
 
+from sim.vendor import VendorError
+
 
 def _build_lines(orders, mapping, catalog):
     qty = Counter()
@@ -21,6 +23,7 @@ def _build_lines(orders, mapping, catalog):
 def run_sync(ws):
     run_id = f"run-{sum(1 for e in ws.run_log() if e['event'] == 'run_start') + 1}"
     mapping, catalog = ws.mapping(), ws.ledger.get_catalog()
+    spacing = ws.settings()["call_spacing"]
     drafted = {d["date"] for d in ws.ledger.list_drafts()}
     summary = {"run_id": run_id, "created": [], "skipped": [], "held": [], "failed": []}
     ws.log({"event": "run_start", "run_id": run_id})
@@ -30,14 +33,22 @@ def run_sync(ws):
             summary["skipped"].append(day)
             ws.log({"event": "day_skipped", "run_id": run_id, "date": day})
             continue
-        orders = ws.vendor.list_orders(day)
+        ws.vendor.wait(spacing)
+        try:
+            orders = ws.vendor.export_orders(day)
+        except VendorError as e:
+            summary["failed"].append(day)
+            ws.log({"event": "day_failed", "run_id": run_id, "date": day,
+                    "reason": f"vendor_http_{e.status}", "vendor_call": e.call})
+            continue
+        call = ws.vendor.calls
         cups = [c for o in orders for c in o["cups"]]
 
         unknown = Counter(c["code"] for c in cups if c["code"] not in mapping)
         if unknown:
             summary["held"].append(day)
             ws.log({"event": "day_held", "run_id": run_id, "date": day, "reason": "unknown_code",
-                    "codes": dict(unknown)})
+                    "codes": dict(unknown), "vendor_call": call})
             continue
 
         uncatalogued = sorted({mapping[c["code"]] for c in cups} - set(catalog))
@@ -59,7 +70,8 @@ def run_sync(ws):
         ws.ledger.create_draft(day, lines, [o["id"] for o in orders],
                                sorted({c["code"] for c in cups}), run_id)
         summary["created"].append(day)
-        ws.log({"event": "day_created", "run_id": run_id, "date": day, "total": total})
+        ws.log({"event": "day_created", "run_id": run_id, "date": day, "total": total,
+                "vendor_call": call})
 
     ws.log({"event": "run_end", "run_id": run_id,
             **{k: len(summary[k]) for k in ("created", "skipped", "held", "failed")}})

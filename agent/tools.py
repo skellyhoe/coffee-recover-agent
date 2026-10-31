@@ -7,12 +7,14 @@ from collections import Counter
 
 from job.sync import run_sync
 from recovery.detect import classify, last_run_events
-from recovery.policy import check_mapping
+from recovery.policy import check_mapping, check_spacing, detect_period
 from recovery.propose import propose_mappings
 from recovery.verify import verify_recovery
+from sim.vendor import VendorError
 
 ESCALATION_CATEGORIES = ["weak_evidence", "conflicting_evidence", "product_not_in_catalog",
-                         "verification_failed", "budget_exhausted", "other"]
+                         "verification_failed", "budget_exhausted", "vendor_failure", "other"]
+MAX_PROBE_CALLS = 15
 
 
 def _tool(name, description, properties=None, required=None):
@@ -52,8 +54,17 @@ TOOLS = [
            "codes": {"type": "array", "items": {"type": "string"}},
            "summary": {"type": "string"}},
           ["category", "codes", "summary"]),
-    _tool("undo", "Reverse one applied change: removes the mapping and deletes the drafts built "
-                  "from it, so those days are held again.",
+    _tool("probe_api_rate", "Call the rate-limited vendor export a few times at the current spacing "
+                            "and report the status of each call. Each call takes 1 second; allow "
+                            f"at most {MAX_PROBE_CALLS} calls and 3 probes per incident. Reads only.",
+          {"calls": {"type": "integer", "description": f"1 to {MAX_PROBE_CALLS}"}}, ["calls"]),
+    _tool("set_call_spacing", "Wait this many seconds before each vendor export call in the sync. "
+                              "A policy gate requires evidence from the latest probe. Recorded as "
+                              "an undoable change.",
+          {"seconds": {"type": "integer"}, "reason": {"type": "string"}}, ["seconds", "reason"]),
+    _tool("undo", "Reverse one applied change. For a mapping: removes it and deletes the drafts "
+                  "built from it, so those days are held again. For call spacing: restores the "
+                  "previous value.",
           {"change_id": {"type": "string"}, "reason": {"type": "string"}},
           ["change_id", "reason"]),
 ]
@@ -76,7 +87,18 @@ def active_changes(ws):
     return [c for c in ws.changes() if c["type"] == "apply_mapping" and c["id"] not in undone]
 
 
+def active_spacing_changes(ws):
+    undone = {c["change_id"] for c in ws.changes() if c["type"] == "undo"}
+    return [c for c in ws.changes() if c["type"] == "set_call_spacing" and c["id"] not in undone]
+
+
 def undo_change(ws, change_id, reason, by):
+    spacing = next((c for c in active_spacing_changes(ws) if c["id"] == change_id), None)
+    if spacing:
+        ws.save_settings({**ws.settings(), "call_spacing": spacing["previous"]})
+        ws.add_change({"type": "undo", "id": f"chg-{len(ws.changes()) + 1}", "change_id": change_id,
+                       "reason": reason, "by": by})
+        return {"undone": True, "call_spacing": spacing["previous"]}
     change = next((c for c in active_changes(ws) if c["id"] == change_id), None)
     if change is None:
         return {"undone": False, "error": f"no active change {change_id}"}
@@ -176,6 +198,37 @@ class Toolbox:
                   "codes": codes, "summary": summary, "by": "agent"}
         self.ws.add_escalation(record)
         return {"escalated": True, "id": record["id"]}
+
+    def _probe_api_rate(self, calls):
+        if not 1 <= calls <= MAX_PROBE_CALLS:
+            return {"error": f"calls must be 1 to {MAX_PROBE_CALLS}"}
+        spacing = self.ws.settings()["call_spacing"]
+        statuses = []
+        for _ in range(calls):
+            self.ws.vendor.wait(spacing)
+            try:
+                self.ws.vendor.export_orders(self.ws.days[0])
+                statuses.append(200)
+            except VendorError as e:
+                statuses.append(e.status)
+        period = detect_period(statuses)
+        probe = {"spacing": spacing, "statuses": statuses, "period": period,
+                 "window_seconds": period * (1 + spacing) if period else None}
+        self.ws.add_probe(probe)
+        return probe
+
+    def _set_call_spacing(self, seconds, reason):
+        probes = self.ws.probes()
+        blockers = check_spacing(seconds, probes[-1] if probes else None)
+        if blockers:
+            return {"applied": False, "blocked_by_policy": blockers}
+        previous = self.ws.settings()["call_spacing"]
+        self.ws.save_settings({**self.ws.settings(), "call_spacing": seconds})
+        change_id = f"chg-{len(self.ws.changes()) + 1}"
+        self.ws.add_change({"type": "set_call_spacing", "id": change_id, "seconds": seconds,
+                            "previous": previous, "evidence": probes[-1], "reason": reason,
+                            "by": "agent"})
+        return {"applied": True, "change_id": change_id, "seconds": seconds}
 
     def _undo(self, change_id, reason):
         return undo_change(self.ws, change_id, reason, by="agent")

@@ -36,7 +36,13 @@ def inject_b(world, rng):
     add_to_orders(world, pair, "SIM-0055-f2b3", "Heron Milk Cap", 330)
 
 
-SCENARIOS = {"a": (inject_a,), "b": (inject_b,), "ab": (inject_a, inject_b)}
+def inject_c(world, rng):
+    """A rate limit disguised as HTTP 500: unspaced, exactly every 5th export call succeeds."""
+    world["vendor_fault"] = {"mode": "clock", "period": 5}
+
+
+SCENARIOS = {"a": (inject_a,), "b": (inject_b,), "ab": (inject_a, inject_b), "c": (inject_c,),
+             "abc": (inject_a, inject_b, inject_c)}
 
 
 def build_world(name, seed=7):

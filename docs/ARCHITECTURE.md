@@ -30,6 +30,8 @@ alerts. This agent is new, built for the hackathon, and has never run against a 
   `tests/test_no_confirm.py` checks the routes, the tool list and the whole source tree.
 - **No free-text product.** `apply_mapping` takes only a code. The product name always comes from a
   fresh `propose_mappings` run, so the LLM cannot invent or pick one.
+- **No guessed spacing.** `set_call_spacing` needs a probe showing a regular pattern, and the value
+  must cover what that probe shows, up to a fixed maximum. Probes are capped in size and number.
 - **No loops.** `agent/loop.py` charges every tool call to a per-incident budget. Running out, or
   repeating the same call with the same result too often, ends the run with an escalation.
 - **Nothing left silent.** When a run ends, any code neither fixed nor escalated is auto-escalated.

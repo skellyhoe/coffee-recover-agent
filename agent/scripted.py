@@ -34,36 +34,51 @@ class ScriptedModel:
 
     def __init__(self):
         self.step = 0
-        self.proposals = None
+        self.plan = self._plan()
+        self.started = False
 
     def _last_result(self, messages):
         content = messages[-1]["content"]
         return json.loads(content[-1]["content"]) if isinstance(content, list) else None
 
-    def respond(self, messages):
+    def _call(self, name, args=None):
         self.step += 1
-        ids = f"t{self.step}"
-        if self.step == 1:
-            return response([tool_block(ids, "read_run_log", {})])
-        if self.step == 2:
-            return response([tool_block(ids, "list_unknown_codes", {})])
-        if self.step == 3:
-            return response([tool_block(ids, "propose_mappings", {})])
-        if self.step == 4:
-            self.proposals = self._last_result(messages)["proposals"]
-            blocks = []
-            for i, p in enumerate(self.proposals):
-                if p["policy_blockers"]:
-                    blocks.append(tool_block(f"{ids}-{i}", "escalate", {
-                        "category": _category(p["policy_blockers"]), "codes": [p["code"]],
-                        "summary": "; ".join(p["policy_blockers"])}))
-                else:
-                    blocks.append(tool_block(f"{ids}-{i}", "apply_mapping", {
-                        "code": p["code"],
-                        "reason": f"{p['cups']} cups across {p['orders']} orders, no conflicts"}))
-            return response(blocks or [tool_block(ids, "get_ledger_state", {})])
-        if self.step == 5:
-            return response([tool_block(ids, "rerun_sync", {})])
-        if self.step == 6:
-            return response([tool_block(ids, "verify_recovery", {})])
-        return response([text_block("Scripted run finished. See the report.")], "end_turn")
+        return [tool_block(f"t{self.step}", name, args or {})]
+
+    def _plan(self):
+        log = yield self._call("read_run_log")
+        if "vendor_http_500" in log["classification"]:
+            probe = yield self._call("probe_api_rate", {"calls": 15})
+            if probe["period"]:
+                yield self._call("set_call_spacing", {
+                    "seconds": probe["window_seconds"] - 1,
+                    "reason": f"successes every {probe['period']} calls"})
+            yield self._call("rerun_sync")
+        yield self._call("list_unknown_codes")
+        result = yield self._call("propose_mappings")
+        blocks = []
+        for p in result["proposals"]:
+            self.step += 1
+            if p["policy_blockers"]:
+                blocks.append(tool_block(f"t{self.step}", "escalate", {
+                    "category": _category(p["policy_blockers"]), "codes": [p["code"]],
+                    "summary": "; ".join(p["policy_blockers"])}))
+            else:
+                blocks.append(tool_block(f"t{self.step}", "apply_mapping", {
+                    "code": p["code"],
+                    "reason": f"{p['cups']} cups across {p['orders']} orders, no conflicts"}))
+        if blocks:
+            yield blocks
+        yield self._call("rerun_sync")
+        yield self._call("verify_recovery")
+
+    def respond(self, messages):
+        try:
+            if self.started:
+                blocks = self.plan.send(self._last_result(messages))
+            else:
+                self.started = True
+                blocks = next(self.plan)
+        except StopIteration:
+            return response([text_block("Scripted run finished. See the report.")], "end_turn")
+        return response(blocks)

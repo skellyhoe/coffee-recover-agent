@@ -32,10 +32,11 @@ export ANTHROPIC_API_KEY=...
 The last command opens the report with working undo buttons at http://127.0.0.1:8765. Output goes to
 `runs/ab-llm/`, including `transcript.jsonl` and a static `report.html`.
 
-Scenarios: `a` is provable, `b` is not, `ab` is both at once. Add `--scripted` for a fixed stand-in
+Scenarios: `a` is provable, `b` is not, `c` is a rate limit disguised as HTTP 500, and `abc` is all
+three at once. `ab` is the combination behind the saved runs in [demo/](demo/README.md). Add `--scripted` for a fixed stand-in
 with no API call; its output is labelled as scripted.
 
-## What the combined scenario injects
+## What the combined scenarios inject
 
 | Code | Failure | Expected |
 |---|---|---|
@@ -46,5 +47,6 @@ with no API call; its output is labelled as scripted.
 | `SIM-0052` | Product not in the ledger catalog | Escalated |
 | `SIM-0053` | One code, two products | Escalated: conflict |
 | `SIM-0054`, `0055` | Always together at one price | Escalated: cannot be told apart |
+| Vendor export (`abc` only) | HTTP 500 unless calls are spaced; unspaced, every 5th succeeds | Probed, spacing set through the gate, rerun |
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for how the limits are enforced.

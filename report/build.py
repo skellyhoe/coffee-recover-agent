@@ -2,7 +2,7 @@
 import html
 import json
 
-from agent.tools import active_changes
+from agent.tools import active_changes, active_spacing_changes
 from recovery.verify import verify_recovery
 
 CSS = """
@@ -82,6 +82,30 @@ def _mappings_table(ws, live):
             '<th>Undo</th></tr>' + "".join(rows) + "</table></div>")
 
 
+def _spacing_section(ws, live):
+    active = {c["id"] for c in active_spacing_changes(ws)}
+    rows = []
+    for c in ws.changes():
+        if c["type"] != "set_call_spacing":
+            continue
+        if c["id"] not in active:
+            action = '<span class="warn">undone</span>'
+        elif live:
+            action = (f'<form method="post" action="/undo"><input type="hidden" name="change_id" '
+                      f'value="{e(c["id"])}"><button>Undo</button></form>')
+        else:
+            action = f'<code>{e(c["id"])}</code>'
+        statuses = " ".join(str(s) for s in c["evidence"]["statuses"])
+        rows.append(f'<tr><td class="n">{c["seconds"]}s</td><td class="n">{c["previous"]}s</td>'
+                    f'<td><code>{e(statuses)}</code></td><td>{e(c["reason"])}</td>'
+                    f'<td>{action}</td></tr>')
+    if not rows:
+        return ""
+    return ('<h2>Call spacing</h2><div class="wrap"><table><tr><th>Set to</th><th>Was</th>'
+            '<th>Probe statuses</th><th>Agent\'s reason</th><th>Undo</th></tr>'
+            + "".join(rows) + "</table></div>")
+
+
 def _escalations_table(ws):
     rows = [f'<tr><td>{e(x["category"])}</td><td><code>{e(", ".join(x["codes"]) or "-")}</code></td>'
             f'<td>{e(x["summary"])}</td><td>{e(x["by"])}</td></tr>' for x in ws.escalations()]
@@ -142,7 +166,7 @@ def render(ws, live=False):
     summary = summary_file.read_text() if summary_file.exists() else ""
     undo_hint = ("Undo removes the mapping and deletes the drafts built from it, so those days "
                  "return to held." if live else
-                 f'Undo buttons work in the live view: <code>python -m report.serve {e(ws.path)}'
+                 f'Undo buttons work in the live view: <code>python -m report.serve runs/{e(ws.path.name)}'
                  "</code>")
     scripted = ('<div class="banner"><b>Scripted run.</b> A fixed stand-in made these decisions, '
                 "not an LLM. It shows the tools and limits, not investigation.</div>"
@@ -155,12 +179,13 @@ def render(ws, live=False):
 <div class="banner">Fully simulated, with invented data. This agent is a hackathon build and has
 never run against a real system. No confirm capability exists anywhere in it.</div>{scripted}
 <div class="stats">
-{_stat(first["held"], "days held at first")}{_stat(len(v["held_days"]), "days held now")}
+{_stat(first["held"] + first.get("failed", 0), "days without a draft at first")}{_stat(len(v["held_days"]), "days held now")}
 {_stat(v["drafts"], "draft invoices")}{_stat(len(active_changes(ws)), "active mappings added")}
 {_stat(len(ws.escalations()), "escalations")}</div>
 <h2>Summary</h2><div class="summary">{e(summary)}</div>
 <h2>Verification</h2>{_verification(v)}
 <h2>Mappings applied, with evidence</h2><p class="muted">{undo_hint}</p>{_mappings_table(ws, live)}
+{_spacing_section(ws, live)}
 <h2>Escalated to a human</h2>{_escalations_table(ws)}
 <h2>Every agent action</h2>{_timeline(records)}
 </body></html>"""

@@ -43,11 +43,13 @@ def main():
 
     v = outcome["verification"]
     print(f"[simulated] driver: {model.label}")
-    print(f"first sync:  {len(first['created'])} drafts, {len(first['held'])} days held")
+    print(f"first sync:  {len(first['created'])} drafts, {len(first['held'])} days held, "
+          f"{len(first['failed'])} days failed")
     print(f"after agent: {v['drafts']} drafts, {len(v['held_days'])} days held")
     print(f"verifier ok: {v['ok']} ({v['verified_days']} days fully verified, "
           f"{len(v['partial_export_days'])} partial export)")
     print(f"mappings:    {[c['code'] for c in active_changes(ws)]}")
+    print(f"call spacing: {ws.settings()['call_spacing']}s")
     for e in ws.escalations():
         print(f"escalated:   [{e['category']}] {e['codes']} ({e['by']})")
     if outcome["stop_reason"]:

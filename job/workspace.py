@@ -34,6 +34,13 @@ class Workspace:
     def save_mapping(self, mapping):
         (self.path / "mapping.json").write_text(json.dumps(mapping, indent=1))
 
+    def settings(self):
+        p = self.path / "settings.json"
+        return json.loads(p.read_text()) if p.exists() else {"call_spacing": 0}
+
+    def save_settings(self, settings):
+        (self.path / "settings.json").write_text(json.dumps(settings, indent=1))
+
     def export(self):
         return read_export(self.path / "export.xlsx")
 
@@ -50,6 +57,12 @@ class Workspace:
 
     def run_log(self):
         return self._read("run_log.jsonl")
+
+    def add_probe(self, record):
+        self._append("probes.jsonl", record)
+
+    def probes(self):
+        return self._read("probes.jsonl")
 
     def add_change(self, record):
         self._append("changes.jsonl", record)
