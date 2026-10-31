@@ -17,6 +17,6 @@ scripted runs and tests caught other bugs. This log covers only what real LLM ru
 
 Other changes the runs prompted:
 
-- After the first real run on Opus was skipped for cost, all real runs used Sonnet 5.5 at medium effort
-  with prompt caching. Measured cost was about $0.05 to $0.11 a run.
+- To keep costs down, every real run used Sonnet 5.5 at medium effort with prompt caching, not Opus.
+  Estimated cost was about $0.05 to $0.11 a run.
 - The prompt has not changed since `8c7380f`, so every run from row 6 onward used the same prompt.

@@ -45,11 +45,11 @@ have 37 recoverable days and 11 things to escalate:
 
 ## The two failures, reported and not fixed
 
-**h4: the gate blocks a correct fix.** With a period of 7, a probe capped at 15 calls can show only 2
-successes, and the gate needs 3. So spacing can never pass, although 6 seconds is within the allowed
-maximum. Rules and LLM both stayed safe but recovered only 2 of 16 days. With gates off, the LLM set 7
-seconds and recovered all 16. Probes are capped at 15 calls and the gate reads only the latest, so this
-limit applies to any period above 7 too. I suspected this gap when writing the expected outcome, and
+**h4: the gate blocks a correct fix.** The gate needs 3 successes in one probe, and probes are capped at 15 calls. With a
+period of 7 that happens only if the first call lands exactly on a success, and here it showed 2. So
+spacing was refused, although 6 seconds is within the allowed maximum. Rules and LLM both stayed safe but recovered only 2 of 16 days. With gates off, the LLM set 7
+seconds and recovered all 16. Any period above 7 can never show 3 successes in 15 calls, so this gets
+worse for slower limits. I suspected this gap when writing the expected outcome, and
 wrote what should happen anyway.
 
 **h6: the agent itself creates a known-wrong draft.** Both rules and LLM rerun the sync and it creates
