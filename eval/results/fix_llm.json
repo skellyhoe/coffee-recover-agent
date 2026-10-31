@@ -1,0 +1,29 @@
+{
+ "h6": {
+  "fixed": 3,
+  "fixes_expected": 3,
+  "unfixed": [],
+  "recovered": 0,
+  "recoverable": 6,
+  "wrong_mappings": [],
+  "wrong_drafts_new": [],
+  "wrong_drafts_first_sync": [
+   "2026-02-13"
+  ],
+  "correct_escalations": [
+   "SIM-0764-c3d5",
+   "SIM-0765-d4c6",
+   "units_mismatch",
+   "vendor_failure"
+  ],
+  "missed_escalations": [],
+  "confirmed": 0,
+  "cap_hit": false,
+  "stop_reason": null,
+  "spacing": 0,
+  "vendor_calls": 41,
+  "cost": 0.0608,
+  "failures": [],
+  "passed": true
+ }
+}

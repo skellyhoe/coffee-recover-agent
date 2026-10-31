@@ -52,7 +52,7 @@ class ScriptedModel:
                 "category": "units_mismatch", "codes": [],
                 "summary": f"Vendor totals about 100x off from Excel: {log['units_mismatch_days']}"})
         if "vendor_http_500" in log["classification"]:
-            probe = yield self._call("probe_api_rate", {"calls": 15})
+            probe = yield self._call("probe_api_rate", {"calls": 35})
             if probe["period"]:
                 yield self._call("set_call_spacing", {
                     "seconds": probe["window_seconds"] - 1,

@@ -55,6 +55,9 @@ def test_detect_period():
     assert detect_period([500] * 15) is None
     assert detect_period([200, 500, 200, 500, 500, 200]) is None
     assert detect_period([500, 200, 500, 200]) is None  # two successes prove nothing
+    assert detect_period([500] * 6 + [200] + [500] * 6 + [200] + [500] * 6 + [200]) == 7
+    assert detect_period([500] * 20 + [200, 500, 500, 200, 500, 500, 200]) is None  # late burst
+    assert detect_period([200, 500, 500, 200, 500, 500, 200] + [500] * 20) is None  # early burst
 
 
 PROBE = {"period": 5, "window_seconds": 5, "statuses": []}
@@ -75,7 +78,7 @@ def test_spacing_needs_a_probe_first_and_probe_size_is_capped(tmp_path):
     box = Toolbox(ws)
     assert not box.run("set_call_spacing", {"seconds": 4, "reason": "guess"})["applied"]
     assert ws.settings()["call_spacing"] == 0
-    assert "error" in box.run("probe_api_rate", {"calls": 1000})
+    assert "error" in box.run("probe_api_rate", {"calls": 36})
     assert ws.vendor.calls == 0
 
 
@@ -141,3 +144,60 @@ def test_retrying_spacing_forever_hits_the_attempt_cap_and_escalates(tmp_path):
     categories = {e["category"] for e in ws.escalations()}
     assert {"budget_exhausted", "vendor_failure"} <= categories
     assert out["verification"]["held_days"]
+
+
+def _probe_then_set(tmp_path, fault, seconds=6):
+    world = base_world()
+    world["vendor_fault"] = fault
+    box = Toolbox(Workspace.create(tmp_path / "ws", world))
+    probe = box.run("probe_api_rate", {"calls": 35})
+    return probe, box.run("set_call_spacing", {"seconds": seconds, "reason": "test"})
+
+
+def test_every_seventh_call_can_now_be_proven_and_spacing_fixes_it(tmp_path):
+    probe, result = _probe_then_set(tmp_path, {"mode": "clock", "period": 7})
+    assert probe["period"] == 7 and probe["statuses"].count(200) == 5
+    assert result["applied"]
+
+
+def test_every_period_the_spacing_maximum_can_fix_is_provable():
+    # A spacing of up to 10s fixes a period of up to 11, which needs 3 successes in the capped probe.
+    for period in range(2, 12):
+        v = VendorAPI({"orders": [], "vendor_fault": {"mode": "clock", "period": period}})
+        assert detect_period(statuses(v, 35)) == period
+
+
+def test_non_periodic_failure_cannot_pass_the_gate(tmp_path):
+    # Successes on prime-numbered calls: plenty of them, but no period.
+    primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31]
+    probe, result = _probe_then_set(tmp_path, {"mode": "calls", "ok_calls": primes})
+    assert probe["period"] is None
+    assert not result["applied"] and "not evenly spaced" in result["blocked_by_policy"][0]
+
+
+def test_two_evenly_spaced_successes_are_not_proof(tmp_path):
+    probe, result = _probe_then_set(tmp_path, {"mode": "calls", "ok_calls": [7, 14]})
+    assert probe["period"] is None
+    assert not result["applied"] and "only 2 successes" in result["blocked_by_policy"][0]
+
+
+def test_a_burst_of_regular_successes_cannot_pass_the_gate(tmp_path):
+    probe, result = _probe_then_set(tmp_path, {"mode": "calls", "ok_calls": [20, 23, 26]})
+    assert probe["period"] is None and not result["applied"]
+
+
+def test_refusal_says_when_a_larger_probe_would_help():
+    refused = check_spacing(6, {"period": None, "window_seconds": None,
+                                "statuses": [500] * 3 + [200] + [500] * 6 + [200]})
+    assert "not proven either way" in refused[0]
+
+
+def test_probe_count_is_still_capped(tmp_path):
+    from recovery.policy import BudgetExhausted, IncidentBudget
+    import pytest
+
+    budget = IncidentBudget()
+    for _ in range(3):
+        budget.charge("probe_api_rate")
+    with pytest.raises(BudgetExhausted):
+        budget.charge("probe_api_rate")

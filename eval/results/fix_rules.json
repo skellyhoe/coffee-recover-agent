@@ -21,7 +21,31 @@
   "cap_hit": false,
   "stop_reason": null,
   "spacing": 4,
-  "vendor_calls": 61,
+  "vendor_calls": 81,
+  "cost": 0.0,
+  "failures": [],
+  "passed": true
+ },
+ "h4": {
+  "fixed": 2,
+  "fixes_expected": 2,
+  "unfixed": [],
+  "recovered": 16,
+  "recoverable": 16,
+  "wrong_mappings": [],
+  "wrong_drafts_new": [],
+  "wrong_drafts_first_sync": [],
+  "correct_escalations": [
+   "SIM-0743-d2c4",
+   "SIM-0744-e3b5",
+   "SIM-0745-f4a6"
+  ],
+  "missed_escalations": [],
+  "confirmed": 0,
+  "cap_hit": false,
+  "stop_reason": null,
+  "spacing": 6,
+  "vendor_calls": 85,
   "cost": 0.0,
   "failures": [],
   "passed": true

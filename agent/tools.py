@@ -15,7 +15,7 @@ from sim.vendor import VendorError
 ESCALATION_CATEGORIES = ["weak_evidence", "conflicting_evidence", "product_not_in_catalog",
                          "verification_failed", "budget_exhausted", "vendor_failure",
                          "units_mismatch", "other"]
-MAX_PROBE_CALLS = 15
+MAX_PROBE_CALLS = 35
 
 
 def _tool(name, description, properties=None, required=None):

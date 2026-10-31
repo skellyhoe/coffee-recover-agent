@@ -32,12 +32,21 @@ def check_mapping(proposal, mapping):
 
 
 def detect_period(statuses):
-    """Calls per success if successes are perfectly regular, else None. 1 means healthy."""
+    """Calls per success if successes are perfectly regular, else None. 1 means healthy.
+
+    Two successes prove nothing, because any two are evenly spaced. The failures before the first
+    success and after the last must also fit the period, so a burst of successes doesn't pass.
+    """
     hits = [i for i, s in enumerate(statuses) if s == 200]
     if len(hits) < MIN_PROBE_SUCCESSES:
         return None
     gaps = {b - a for a, b in zip(hits, hits[1:])}
-    return gaps.pop() if len(gaps) == 1 else None
+    if len(gaps) != 1:
+        return None
+    period = gaps.pop()
+    if hits[0] >= period or len(statuses) - 1 - hits[-1] >= period:
+        return None
+    return period
 
 
 def check_spacing(seconds, probe):
@@ -45,7 +54,12 @@ def check_spacing(seconds, probe):
     if probe is None:
         return ["no probe evidence: run probe_api_rate first"]
     if probe["period"] is None:
-        return ["the latest probe shows no regular pattern, so this is not a simple rate limit"]
+        successes = probe["statuses"].count(200)
+        if successes < MIN_PROBE_SUCCESSES:
+            return [f"the latest probe has only {successes} successes and {MIN_PROBE_SUCCESSES} are "
+                    "needed to prove a pattern, so this is not proven either way"]
+        return ["the latest probe's successes are not evenly spaced, so this is not a simple "
+                "rate limit"]
     if probe["period"] == 1:
         return ["the latest probe shows calls already succeeding"]
     needed = probe["window_seconds"] - 1

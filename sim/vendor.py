@@ -6,6 +6,7 @@ the order-details lookup used for diagnosis and verification, and is never limit
 A fault in world["vendor_fault"] makes export_orders answer HTTP 500 unless the call is allowed:
   mode "clock": allowed once per `period` seconds of simulated time, so spacing calls fixes it.
   mode "count": allowed on every `period`th call, whatever the spacing.
+  mode "calls": allowed only on the call numbers listed in `ok_calls`, for non-periodic failures.
 Each call takes 1 simulated second, so unspaced calls succeed on exactly every 5th.
 
 world["units_fault"] = {"days": [...], "factor": 100} makes the vendor silently send prices on those
@@ -45,6 +46,8 @@ class VendorAPI:
         return self.list_orders(day)
 
     def _allowed(self):
+        if self._fault["mode"] == "calls":
+            return self.calls in self._fault["ok_calls"]
         period = self._fault["period"]
         if self._fault["mode"] == "count":
             return self.calls % period == 0
