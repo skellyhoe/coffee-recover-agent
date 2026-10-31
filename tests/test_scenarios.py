@@ -66,3 +66,20 @@ def test_evidence_does_not_depend_on_the_order_mappings_were_applied(tmp_path):
     assert again["applied"]
     latest = active_changes(ws)[-1]["evidence"]
     assert latest["methods"] == {"elimination": 4} and latest["orders"] == 4
+
+
+def test_every_cup_gap_is_explained_by_the_export_or_a_shared_price(tmp_path):
+    from agent.tools import all_orders
+
+    ws, _, _ = run_scenario("ab", ScriptedModel(), tmp_path / "ab")
+    in_export = {r["order_id"] for r in ws.export()["rows"]}
+    orders = all_orders(ws)
+    evidence = {c["code"]: c["evidence"] for c in active_changes(ws)}
+    assert evidence["SIM-0041-7c2e"]["total_cups_seen"] == 30
+    for code, name in (("SIM-0041-7c2e", 28), ("SIM-0042-b19a", 12)):
+        after_cut = sum(c["code"] == code for o in orders if o["id"] not in in_export
+                        for c in o["cups"])
+        assert evidence[code]["cups"] == name
+        assert after_cut == evidence[code]["total_cups_seen"] - name == 2
+    report = (ws.path / "report.html").read_text()
+    assert "28 of 30" in report and "after the export was cut" in report

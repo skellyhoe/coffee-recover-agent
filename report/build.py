@@ -71,7 +71,8 @@ def _mappings_table(ws, live):
         methods = ", ".join(f"{k} {v}" for k, v in ev["methods"].items())
         rows.append(
             f'<tr><td><code>{e(c["code"])}</code></td><td>{e(c["product_name"])}</td>'
-            f'<td class="n">{ev["cups"]}</td><td class="n">{ev["orders"]}</td>'
+            f'<td class="n">{ev["cups"]} of {ev["total_cups_seen"]}</td>'
+            f'<td class="n">{ev["orders"]}</td>'
             f'<td class="n">{len(ev["days"])}</td><td>{e(methods)}</td>'
             f'<td><code>{e(", ".join(ev["sample_orders"][:3]))}</code></td>'
             f'<td>{e(c["reason"])}</td><td>{action}</td></tr>')
@@ -79,7 +80,10 @@ def _mappings_table(ws, live):
         return '<p class="muted">No mappings were applied.</p>'
     return ('<div class="wrap"><table><tr><th>Code</th><th>Product</th><th>Cups</th><th>Orders</th>'
             '<th>Days</th><th>Method (cups)</th><th>Sample orders</th><th>Agent\'s reason</th>'
-            '<th>Undo</th></tr>' + "".join(rows) + "</table></div>")
+            '<th>Undo</th></tr>' + "".join(rows) + "</table></div>"
+            '<p class="muted">"28 of 30" means 28 cups count as evidence: the rest are in orders the '
+            "Excel export cannot pair, because they came after the export was cut or share a price "
+            "with another new code.</p>")
 
 
 def _spacing_section(ws, live):
