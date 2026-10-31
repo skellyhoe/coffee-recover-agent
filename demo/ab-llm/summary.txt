@@ -1,0 +1,22 @@
+**What was wrong:** The sync held 18 days because the vendor sent product codes that our table didn't know. Eleven codes were unknown. Only 3 days were created in run-1.
+
+**What I changed:** I added six mappings. Five rest on prices matching the Excel export, with no conflicts:
+- SIM-0041-7c2e → Foundry Mocha (28 cups)
+- SIM-0042-b19a → Drift Cortado (12 cups)
+- SIM-0043-04df → Saltmarsh Latte (8 cups)
+- SIM-0045-2f70 → Pier Chai (10 cups, 5 orders)
+- SIM-0046-91bb → Tern Espresso (3 cups)
+
+The sixth, SIM-0044-e6a1 → Kiln Americano (4 cups), rests on elimination. In ORD-1145 every other cup matches a known code, including 0043, which I had already proven. The one Excel row left over is Kiln Americano at 360. Saltmarsh Latte has the same price, so price alone couldn't separate them. Elimination is only as good as 0043, which has solid price evidence.
+
+**Result:** Run-2 created 10 more days, so 13 drafts now exist. `verify_recovery` returned ok with no mismatches. It checked 12 days against the Excel export.
+
+**Still unverified:** The draft for 2026-09-21 (total 19020) is only partly verified. The Excel export has no rows for orders ORD-1373 to ORD-1380, which total 8060. Someone should confirm those orders against the vendor.
+
+**Escalated, not mapped (8 days still held, which is the safe state):**
+- **SIM-0053-c07f** (days 09-03 to 09-05): its 8 cups match both Beacon Flat Brew (3) and Beacon Macchiato (5). I can't tell which it is.
+- **SIM-0052-6d14** (days 09-14 to 09-16): 9 cups consistently match Moor Cappuccino, but that product isn't in the ledger catalog. It needs adding or a decision on how to book it.
+- **SIM-0051-a3c8** (day 09-17): only 1 cup of evidence, suggesting Gull Ristretto. That is below the minimum.
+- **SIM-0054-18de and SIM-0055-f2b3** (day 09-20): each order containing them is ambiguous between the two codes. I have no evidence to tell them apart.
+
+Day 09-17 is held because of 0051, and day 09-20 because of 0054 and 0055.

@@ -1,0 +1,46 @@
+{"event": "run_start", "run_id": "run-1"}
+{"event": "day_created", "run_id": "run-1", "date": "2026-09-01", "total": 14060}
+{"event": "day_created", "run_id": "run-1", "date": "2026-09-02", "total": 10460}
+{"event": "day_held", "run_id": "run-1", "date": "2026-09-03", "reason": "unknown_code", "codes": {"SIM-0053-c07f": 3}}
+{"event": "day_held", "run_id": "run-1", "date": "2026-09-04", "reason": "unknown_code", "codes": {"SIM-0053-c07f": 1}}
+{"event": "day_held", "run_id": "run-1", "date": "2026-09-05", "reason": "unknown_code", "codes": {"SIM-0053-c07f": 4}}
+{"event": "day_created", "run_id": "run-1", "date": "2026-09-06", "total": 14700}
+{"event": "day_held", "run_id": "run-1", "date": "2026-09-07", "reason": "unknown_code", "codes": {"SIM-0041-7c2e": 2}}
+{"event": "day_held", "run_id": "run-1", "date": "2026-09-08", "reason": "unknown_code", "codes": {"SIM-0041-7c2e": 1, "SIM-0043-04df": 1, "SIM-0044-e6a1": 1}}
+{"event": "day_held", "run_id": "run-1", "date": "2026-09-09", "reason": "unknown_code", "codes": {"SIM-0043-04df": 2, "SIM-0044-e6a1": 1, "SIM-0041-7c2e": 1}}
+{"event": "day_held", "run_id": "run-1", "date": "2026-09-10", "reason": "unknown_code", "codes": {"SIM-0041-7c2e": 5, "SIM-0042-b19a": 1}}
+{"event": "day_held", "run_id": "run-1", "date": "2026-09-11", "reason": "unknown_code", "codes": {"SIM-0042-b19a": 2, "SIM-0043-04df": 1}}
+{"event": "day_held", "run_id": "run-1", "date": "2026-09-12", "reason": "unknown_code", "codes": {"SIM-0041-7c2e": 5, "SIM-0043-04df": 1}}
+{"event": "day_held", "run_id": "run-1", "date": "2026-09-13", "reason": "unknown_code", "codes": {"SIM-0043-04df": 1, "SIM-0044-e6a1": 1, "SIM-0042-b19a": 1, "SIM-0041-7c2e": 3, "SIM-0045-2f70": 2}}
+{"event": "day_held", "run_id": "run-1", "date": "2026-09-14", "reason": "unknown_code", "codes": {"SIM-0041-7c2e": 1, "SIM-0045-2f70": 4, "SIM-0052-6d14": 2}}
+{"event": "day_held", "run_id": "run-1", "date": "2026-09-15", "reason": "unknown_code", "codes": {"SIM-0052-6d14": 5, "SIM-0043-04df": 2, "SIM-0041-7c2e": 1, "SIM-0042-b19a": 3}}
+{"event": "day_held", "run_id": "run-1", "date": "2026-09-16", "reason": "unknown_code", "codes": {"SIM-0052-6d14": 2, "SIM-0041-7c2e": 1, "SIM-0042-b19a": 1}}
+{"event": "day_held", "run_id": "run-1", "date": "2026-09-17", "reason": "unknown_code", "codes": {"SIM-0041-7c2e": 1, "SIM-0042-b19a": 1, "SIM-0045-2f70": 4, "SIM-0043-04df": 2, "SIM-0044-e6a1": 1, "SIM-0051-a3c8": 1}}
+{"event": "day_held", "run_id": "run-1", "date": "2026-09-18", "reason": "unknown_code", "codes": {"SIM-0041-7c2e": 3, "SIM-0043-04df": 1, "SIM-0042-b19a": 1}}
+{"event": "day_held", "run_id": "run-1", "date": "2026-09-19", "reason": "unknown_code", "codes": {"SIM-0046-91bb": 1, "SIM-0041-7c2e": 1, "SIM-0042-b19a": 1}}
+{"event": "day_held", "run_id": "run-1", "date": "2026-09-20", "reason": "unknown_code", "codes": {"SIM-0041-7c2e": 1, "SIM-0054-18de": 3, "SIM-0055-f2b3": 3, "SIM-0042-b19a": 1, "SIM-0046-91bb": 2}}
+{"event": "day_held", "run_id": "run-1", "date": "2026-09-21", "reason": "unknown_code", "codes": {"SIM-0041-7c2e": 4, "SIM-0043-04df": 1, "SIM-0042-b19a": 2}}
+{"event": "run_end", "run_id": "run-1", "created": 3, "skipped": 0, "held": 18, "failed": 0}
+{"event": "run_start", "run_id": "run-2"}
+{"event": "day_skipped", "run_id": "run-2", "date": "2026-09-01"}
+{"event": "day_skipped", "run_id": "run-2", "date": "2026-09-02"}
+{"event": "day_held", "run_id": "run-2", "date": "2026-09-03", "reason": "unknown_code", "codes": {"SIM-0053-c07f": 3}}
+{"event": "day_held", "run_id": "run-2", "date": "2026-09-04", "reason": "unknown_code", "codes": {"SIM-0053-c07f": 1}}
+{"event": "day_held", "run_id": "run-2", "date": "2026-09-05", "reason": "unknown_code", "codes": {"SIM-0053-c07f": 4}}
+{"event": "day_skipped", "run_id": "run-2", "date": "2026-09-06"}
+{"event": "day_created", "run_id": "run-2", "date": "2026-09-07", "total": 10480}
+{"event": "day_held", "run_id": "run-2", "date": "2026-09-08", "reason": "unknown_code", "codes": {"SIM-0044-e6a1": 1}}
+{"event": "day_held", "run_id": "run-2", "date": "2026-09-09", "reason": "unknown_code", "codes": {"SIM-0044-e6a1": 1}}
+{"event": "day_created", "run_id": "run-2", "date": "2026-09-10", "total": 16880}
+{"event": "day_created", "run_id": "run-2", "date": "2026-09-11", "total": 10360}
+{"event": "day_created", "run_id": "run-2", "date": "2026-09-12", "total": 16230}
+{"event": "day_held", "run_id": "run-2", "date": "2026-09-13", "reason": "unknown_code", "codes": {"SIM-0044-e6a1": 1}}
+{"event": "day_held", "run_id": "run-2", "date": "2026-09-14", "reason": "unknown_code", "codes": {"SIM-0052-6d14": 2}}
+{"event": "day_held", "run_id": "run-2", "date": "2026-09-15", "reason": "unknown_code", "codes": {"SIM-0052-6d14": 5}}
+{"event": "day_held", "run_id": "run-2", "date": "2026-09-16", "reason": "unknown_code", "codes": {"SIM-0052-6d14": 2}}
+{"event": "day_held", "run_id": "run-2", "date": "2026-09-17", "reason": "unknown_code", "codes": {"SIM-0044-e6a1": 1, "SIM-0051-a3c8": 1}}
+{"event": "day_created", "run_id": "run-2", "date": "2026-09-18", "total": 14380}
+{"event": "day_created", "run_id": "run-2", "date": "2026-09-19", "total": 9010}
+{"event": "day_held", "run_id": "run-2", "date": "2026-09-20", "reason": "unknown_code", "codes": {"SIM-0054-18de": 3, "SIM-0055-f2b3": 3}}
+{"event": "day_created", "run_id": "run-2", "date": "2026-09-21", "total": 19020}
+{"event": "run_end", "run_id": "run-2", "created": 7, "skipped": 3, "held": 11, "failed": 0}
