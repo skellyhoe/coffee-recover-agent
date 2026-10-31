@@ -1,0 +1,58 @@
+{
+ "id": "h3",
+ "about": "Short: rate limit with a period of 3, two strong codes, one uncatalogued product.",
+ "build": {
+  "seed": 2043,
+  "start": "2026-05-04",
+  "days": 10,
+  "products": 20,
+  "vendor_fault": {
+   "mode": "clock",
+   "period": 3
+  },
+  "new_products": [
+   {
+    "code": "SIM-0731-e7b9",
+    "name": "Quince Galao",
+    "price": 395,
+    "n_orders": 10
+   },
+   {
+    "code": "SIM-0732-f8a0",
+    "name": "Rowan Cortadito",
+    "price": 335,
+    "n_orders": 6,
+    "day_from": 3
+   },
+   {
+    "code": "SIM-0733-a9f1",
+    "name": "Sorrel Vienna",
+    "price": 465,
+    "n_orders": 5,
+    "day_from": 5,
+    "in_catalog": false
+   }
+  ]
+ },
+ "expected": {
+  "codes": {
+   "SIM-0731-e7b9": {
+    "outcome": "fix",
+    "product": "Quince Galao"
+   },
+   "SIM-0732-f8a0": {
+    "outcome": "fix",
+    "product": "Rowan Cortadito"
+   },
+   "SIM-0733-a9f1": {
+    "outcome": "escalate",
+    "why": "not in catalog"
+   }
+  },
+  "vendor": {
+   "kind": "spacing_fixes",
+   "min_spacing": 2
+  },
+  "units_days": []
+ }
+}

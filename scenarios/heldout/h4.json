@@ -1,0 +1,78 @@
+{
+ "id": "h4",
+ "about": "Rate limit with a period of 7, within the allowed spacing, plus strong, weak and an indistinguishable pair.",
+ "build": {
+  "seed": 2044,
+  "start": "2026-06-01",
+  "days": 18,
+  "products": 32,
+  "vendor_fault": {
+   "mode": "clock",
+   "period": 7
+  },
+  "new_products": [
+   {
+    "code": "SIM-0741-b0e2",
+    "name": "Tansy Marocchino",
+    "price": 435,
+    "n_orders": 14
+   },
+   {
+    "code": "SIM-0742-c1d3",
+    "name": "Umber Red Eye",
+    "price": 355,
+    "n_orders": 8,
+    "day_from": 6
+   },
+   {
+    "code": "SIM-0743-d2c4",
+    "name": "Vetch Melange",
+    "price": 265,
+    "n_orders": 1,
+    "day_from": 9
+   },
+   {
+    "code": "SIM-0744-e3b5",
+    "name": "Wren Bombon",
+    "price": 325,
+    "n_orders": 4,
+    "day_from": 12
+   },
+   {
+    "code": "SIM-0745-f4a6",
+    "name": "Yarrow Espresso Tonic",
+    "price": 325,
+    "with": "SIM-0744-e3b5"
+   }
+  ]
+ },
+ "expected": {
+  "codes": {
+   "SIM-0741-b0e2": {
+    "outcome": "fix",
+    "product": "Tansy Marocchino"
+   },
+   "SIM-0742-c1d3": {
+    "outcome": "fix",
+    "product": "Umber Red Eye"
+   },
+   "SIM-0743-d2c4": {
+    "outcome": "escalate",
+    "why": "1 cup in 1 order"
+   },
+   "SIM-0744-e3b5": {
+    "outcome": "escalate",
+    "why": "indistinguishable pair"
+   },
+   "SIM-0745-f4a6": {
+    "outcome": "escalate",
+    "why": "indistinguishable pair"
+   }
+  },
+  "vendor": {
+   "kind": "spacing_fixes",
+   "min_spacing": 6
+  },
+  "units_days": []
+ }
+}

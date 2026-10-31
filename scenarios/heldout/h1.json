@@ -1,0 +1,61 @@
+{
+ "id": "h1",
+ "about": "Small: strong codes of different sizes and one weak code. No other fault.",
+ "build": {
+  "seed": 2041,
+  "start": "2026-03-02",
+  "days": 14,
+  "products": 24,
+  "new_products": [
+   {
+    "code": "SIM-0701-a1f3",
+    "name": "Alder Spritz",
+    "price": 415,
+    "n_orders": 20
+   },
+   {
+    "code": "SIM-0702-b2e4",
+    "name": "Bracken Mocha",
+    "price": 385,
+    "n_orders": 9,
+    "day_from": 3
+   },
+   {
+    "code": "SIM-0703-c3d5",
+    "name": "Cobble Latte",
+    "price": 445,
+    "n_orders": 3,
+    "day_from": 8
+   },
+   {
+    "code": "SIM-0704-d4c6",
+    "name": "Dunlin Tonic",
+    "price": 295,
+    "n_orders": 1,
+    "day_from": 5
+   }
+  ]
+ },
+ "expected": {
+  "codes": {
+   "SIM-0701-a1f3": {
+    "outcome": "fix",
+    "product": "Alder Spritz"
+   },
+   "SIM-0702-b2e4": {
+    "outcome": "fix",
+    "product": "Bracken Mocha"
+   },
+   "SIM-0703-c3d5": {
+    "outcome": "fix",
+    "product": "Cobble Latte"
+   },
+   "SIM-0704-d4c6": {
+    "outcome": "escalate",
+    "why": "1 cup in 1 order"
+   }
+  },
+  "vendor": null,
+  "units_days": []
+ }
+}

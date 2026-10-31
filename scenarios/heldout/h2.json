@@ -1,0 +1,157 @@
+{
+ "id": "h2",
+ "about": "Large: many strong codes, an elimination chain, two uncatalogued products, an indistinguishable pair, midday export.",
+ "build": {
+  "seed": 2042,
+  "start": "2026-04-06",
+  "days": 28,
+  "products": 40,
+  "cutoff_time": "13:00",
+  "new_products": [
+   {
+    "code": "SIM-0711-e5b7",
+    "name": "Elder Cold Press",
+    "price": 405,
+    "n_orders": 25
+   },
+   {
+    "code": "SIM-0712-f6a8",
+    "name": "Fescue Mocha",
+    "price": 425,
+    "n_orders": 18,
+    "day_from": 4
+   },
+   {
+    "code": "SIM-0713-a7f9",
+    "name": "Garnet Long Black",
+    "price": 345,
+    "n_orders": 12,
+    "day_from": 9
+   },
+   {
+    "code": "SIM-0714-b8e0",
+    "name": "Hazel Breve",
+    "price": 455,
+    "n_orders": 10,
+    "day_from": 2
+   },
+   {
+    "code": "SIM-0715-c9d1",
+    "name": "Ibis Ristretto",
+    "price": 275,
+    "n_orders": 7,
+    "day_from": 14
+   },
+   {
+    "code": "SIM-0716-d0c2",
+    "name": "Juniper Piccolo",
+    "price": 315,
+    "n_orders": 5,
+    "day_from": 20
+   },
+   {
+    "code": "SIM-0717-e1b3",
+    "name": "Knoll Cubano",
+    "price": 365,
+    "n_orders": 4,
+    "day_from": 6
+   },
+   {
+    "code": "SIM-0718-f2a4",
+    "name": "Linnet Gibraltar",
+    "price": 365,
+    "with": "SIM-0717-e1b3"
+   },
+   {
+    "code": "SIM-0717-e1b3",
+    "name": "Knoll Cubano",
+    "price": 365,
+    "n_orders": 6,
+    "day_from": 6
+   },
+   {
+    "code": "SIM-0719-a3f5",
+    "name": "Marram Affogato",
+    "price": 475,
+    "n_orders": 8,
+    "day_from": 10,
+    "in_catalog": false
+   },
+   {
+    "code": "SIM-0720-b4e6",
+    "name": "Nettle Lungo",
+    "price": 285,
+    "n_orders": 4,
+    "day_from": 17,
+    "in_catalog": false
+   },
+   {
+    "code": "SIM-0721-c5d7",
+    "name": "Osprey Doppio",
+    "price": 305,
+    "n_orders": 3,
+    "day_from": 22
+   },
+   {
+    "code": "SIM-0722-d6c8",
+    "name": "Plover Mazagran",
+    "price": 305,
+    "with": "SIM-0721-c5d7"
+   }
+  ]
+ },
+ "expected": {
+  "codes": {
+   "SIM-0711-e5b7": {
+    "outcome": "fix",
+    "product": "Elder Cold Press"
+   },
+   "SIM-0712-f6a8": {
+    "outcome": "fix",
+    "product": "Fescue Mocha"
+   },
+   "SIM-0713-a7f9": {
+    "outcome": "fix",
+    "product": "Garnet Long Black"
+   },
+   "SIM-0714-b8e0": {
+    "outcome": "fix",
+    "product": "Hazel Breve"
+   },
+   "SIM-0715-c9d1": {
+    "outcome": "fix",
+    "product": "Ibis Ristretto"
+   },
+   "SIM-0716-d0c2": {
+    "outcome": "fix",
+    "product": "Juniper Piccolo"
+   },
+   "SIM-0717-e1b3": {
+    "outcome": "fix",
+    "product": "Knoll Cubano"
+   },
+   "SIM-0718-f2a4": {
+    "outcome": "fix",
+    "product": "Linnet Gibraltar"
+   },
+   "SIM-0719-a3f5": {
+    "outcome": "escalate",
+    "why": "not in catalog"
+   },
+   "SIM-0720-b4e6": {
+    "outcome": "escalate",
+    "why": "not in catalog"
+   },
+   "SIM-0721-c5d7": {
+    "outcome": "escalate",
+    "why": "indistinguishable pair"
+   },
+   "SIM-0722-d6c8": {
+    "outcome": "escalate",
+    "why": "indistinguishable pair"
+   }
+  },
+  "vendor": null,
+  "units_days": []
+ }
+}

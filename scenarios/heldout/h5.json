@@ -1,0 +1,92 @@
+{
+ "id": "h5",
+ "about": "Silent units on 3 days. Two strong codes clear of them, one code whose evidence crosses them, one weak, one uncatalogued.",
+ "build": {
+  "seed": 2045,
+  "start": "2026-01-12",
+  "days": 21,
+  "products": 36,
+  "units_day_indexes": [
+   6,
+   7,
+   8
+  ],
+  "new_products": [
+   {
+    "code": "SIM-0751-a5f7",
+    "name": "Zinnia Shakerato",
+    "price": 445,
+    "n_orders": 12,
+    "day_from": 9
+   },
+   {
+    "code": "SIM-0752-b6e8",
+    "name": "Aster Dalgona",
+    "price": 375,
+    "n_orders": 7,
+    "day_from": 10
+   },
+   {
+    "code": "SIM-0753-c7d9",
+    "name": "Burdock Cafe Noir",
+    "price": 355,
+    "n_orders": 3,
+    "day_from": 6,
+    "day_to": 9
+   },
+   {
+    "code": "SIM-0753-c7d9",
+    "name": "Burdock Cafe Noir",
+    "price": 355,
+    "n_orders": 5,
+    "day_from": 9,
+    "day_to": 13
+   },
+   {
+    "code": "SIM-0754-d8c0",
+    "name": "Clover Einspanner",
+    "price": 255,
+    "n_orders": 1,
+    "day_from": 12
+   },
+   {
+    "code": "SIM-0755-e9b1",
+    "name": "Dock Freddo",
+    "price": 485,
+    "n_orders": 6,
+    "day_from": 15,
+    "in_catalog": false
+   }
+  ]
+ },
+ "expected": {
+  "codes": {
+   "SIM-0751-a5f7": {
+    "outcome": "fix",
+    "product": "Zinnia Shakerato"
+   },
+   "SIM-0752-b6e8": {
+    "outcome": "fix",
+    "product": "Aster Dalgona"
+   },
+   "SIM-0753-c7d9": {
+    "outcome": "escalate",
+    "why": "evidence crosses the wrong-units days, so its pairings disagree on price"
+   },
+   "SIM-0754-d8c0": {
+    "outcome": "escalate",
+    "why": "1 cup in 1 order"
+   },
+   "SIM-0755-e9b1": {
+    "outcome": "escalate",
+    "why": "not in catalog"
+   }
+  },
+  "vendor": null,
+  "units_days": [
+   "2026-01-18",
+   "2026-01-19",
+   "2026-01-20"
+  ]
+ }
+}

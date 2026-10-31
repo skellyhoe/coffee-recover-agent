@@ -1,0 +1,101 @@
+{
+ "id": "h6",
+ "about": "Everything awkward: a limit spacing cannot help, units on 2 days, codes exactly at and just below the evidence minimum, one code with two products.",
+ "build": {
+  "seed": 2046,
+  "start": "2026-02-09",
+  "days": 16,
+  "products": 28,
+  "units_day_indexes": [
+   3,
+   4
+  ],
+  "vendor_fault": {
+   "mode": "count",
+   "period": 5
+  },
+  "new_products": [
+   {
+    "code": "SIM-0761-f0a2",
+    "name": "Elm Ristrettino",
+    "price": 425,
+    "n_orders": 9,
+    "day_from": 6
+   },
+   {
+    "code": "SIM-0762-a1f3",
+    "name": "Fern Bicerin",
+    "price": 345,
+    "n_orders": 6,
+    "day_from": 8
+   },
+   {
+    "code": "SIM-0763-b2e4",
+    "name": "Gentian Nitro",
+    "price": 395,
+    "n_orders": 1,
+    "day_from": 7,
+    "qty": 2
+   },
+   {
+    "code": "SIM-0763-b2e4",
+    "name": "Gentian Nitro",
+    "price": 395,
+    "n_orders": 1,
+    "day_from": 7
+   },
+   {
+    "code": "SIM-0764-c3d5",
+    "name": "Holly Yuanyang",
+    "price": 285,
+    "n_orders": 2,
+    "day_from": 9
+   },
+   {
+    "code": "SIM-0765-d4c6",
+    "name": "Iris Mokka",
+    "price": 365,
+    "n_orders": 5,
+    "day_from": 6
+   },
+   {
+    "code": "SIM-0765-d4c6",
+    "name": "Jasmine Mokka",
+    "price": 365,
+    "n_orders": 3,
+    "day_from": 6
+   }
+  ]
+ },
+ "expected": {
+  "codes": {
+   "SIM-0761-f0a2": {
+    "outcome": "fix",
+    "product": "Elm Ristrettino"
+   },
+   "SIM-0762-a1f3": {
+    "outcome": "fix",
+    "product": "Fern Bicerin"
+   },
+   "SIM-0763-b2e4": {
+    "outcome": "fix",
+    "product": "Gentian Nitro"
+   },
+   "SIM-0764-c3d5": {
+    "outcome": "escalate",
+    "why": "2 cups, just below the minimum of 3"
+   },
+   "SIM-0765-d4c6": {
+    "outcome": "escalate",
+    "why": "one code, two products"
+   }
+  },
+  "vendor": {
+   "kind": "unfixable"
+  },
+  "units_days": [
+   "2026-02-12",
+   "2026-02-13"
+  ]
+ }
+}
