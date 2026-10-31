@@ -65,8 +65,10 @@ def all_orders(ws):
 
 
 def current_proposals(ws):
-    return propose_mappings(all_orders(ws), ws.export()["rows"], ws.mapping(),
-                            ws.ledger.get_catalog())
+    """Evidence ignores the agent's own mappings, so it cannot depend on the order they went in."""
+    applied = {c["code"] for c in active_changes(ws)}
+    base = {code: name for code, name in ws.mapping().items() if code not in applied}
+    return propose_mappings(all_orders(ws), ws.export()["rows"], base, ws.ledger.get_catalog())
 
 
 def active_changes(ws):

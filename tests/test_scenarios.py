@@ -1,5 +1,5 @@
 from agent.scripted import ScriptedModel
-from agent.tools import active_changes, undo_change
+from agent.tools import Toolbox, active_changes, undo_change
 from report.build import render
 from scenarios.run import run_scenario
 
@@ -54,3 +54,15 @@ def test_report_shows_evidence_escalations_and_undo(tmp_path):
     change = active_changes(ws)[0]
     undo_change(ws, change["id"], "test", by="human")
     assert "undone by human" in render(ws, live=True)
+
+
+def test_evidence_does_not_depend_on_the_order_mappings_were_applied(tmp_path):
+    ws, _, _ = run_scenario("a", ScriptedModel(), tmp_path / "a")
+    kiln = next(c for c in active_changes(ws) if c["code"] == "SIM-0044-e6a1")
+    assert kiln["evidence"]["methods"] == {"elimination": 4}
+    box = Toolbox(ws)
+    box.run("undo", {"change_id": kiln["id"], "reason": "test"})
+    again = box.run("apply_mapping", {"code": "SIM-0044-e6a1", "reason": "test"})
+    assert again["applied"]
+    latest = active_changes(ws)[-1]["evidence"]
+    assert latest["methods"] == {"elimination": 4} and latest["orders"] == 4

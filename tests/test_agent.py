@@ -188,5 +188,5 @@ def test_real_sdk_request_shape_against_local_stub(tmp_path, monkeypatch):
         server.shutdown()
     assert out["summary"] == "done"
     assert {t["name"] for t in seen["body"]["tools"]} == TOOL_NAMES
-    assert seen["body"]["model"] == "claude-opus-5-5"
+    assert seen["body"]["model"] == "claude-sonnet-5-5"
     assert all(t["input_schema"]["additionalProperties"] is False for t in seen["body"]["tools"])

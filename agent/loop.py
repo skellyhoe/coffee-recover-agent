@@ -6,7 +6,7 @@ from agent.tools import TOOLS, Toolbox
 from recovery.policy import BudgetExhausted, IncidentBudget
 from recovery.verify import verify_recovery
 
-MODEL = os.environ.get("RECOVERY_MODEL", "claude-opus-5-5")
+MODEL = os.environ.get("RECOVERY_MODEL", "claude-sonnet-5-5")
 MAX_TURNS = 30
 
 SYSTEM = """You are a recovery agent for a simulated daily sync. The sync reads coffee machine orders \
@@ -21,11 +21,15 @@ Work through the incident:
 2. Diagnose: list the unknown codes, run propose_mappings, and look at raw orders and Excel rows \
 where the evidence is thin or something does not add up.
 3. Fix: apply_mapping only for codes whose evidence you can defend. A policy gate has the last word, \
-and being allowed by the gate does not oblige you to apply.
+and being allowed by the gate does not oblige you to apply. Elimination is a sound method when the \
+code it depends on is itself well proven: it is part of the manual procedure this replaces.
 4. Rerun the sync, then run verify_recovery.
 5. Investigate any leftover mismatch. If a change turns out wrong, undo it.
 6. Escalate each code you could not prove, with the evidence and what a human should check. Say \
 what you do not know; do not guess. A code left unmapped keeps its days held, which is the safe state.
+
+Amounts are integers in minor units with no currency; report them that way. When you state counts of \
+cups or orders, take them from propose_mappings, not from the days you sampled.
 
 Limits: 60 tool calls per incident, and an identical call with an identical outcome may run only \
 twice; a third ends the run. Prefer evidence from propose_mappings and sample raw days rather than \
@@ -41,7 +45,7 @@ class ModelUnavailable(Exception):
 class AnthropicModel:
     """Real LLM. Credentials are resolved by the SDK from the environment."""
 
-    def __init__(self, model=MODEL, effort="high"):
+    def __init__(self, model=MODEL, effort=os.environ.get("RECOVERY_EFFORT", "medium")):
         import anthropic
 
         self._errors = anthropic.APIError
@@ -55,6 +59,7 @@ class AnthropicModel:
             return self._client.beta.messages.create(
                 model=self.model,
                 max_tokens=16000,
+                cache_control={"type": "ephemeral"},
                 system=SYSTEM,
                 tools=TOOLS,
                 messages=messages,
@@ -114,6 +119,7 @@ def run_agent(ws, model, budget=None, max_turns=MAX_TURNS):
     messages = [{"role": "user", "content": opening}]
     transcript.write({"type": "alert", "text": opening})
     stop_reason, summary = None, ""
+    usage = {"input": 0, "cache_write": 0, "cache_read": 0, "output": 0}
 
     for turn in range(max_turns):
         try:
@@ -121,6 +127,12 @@ def run_agent(ws, model, budget=None, max_turns=MAX_TURNS):
         except ModelUnavailable as e:
             stop_reason = f"model unavailable: {e}"
             break
+
+        if used := getattr(response, "usage", None):
+            usage["input"] += used.input_tokens
+            usage["cache_write"] += used.cache_creation_input_tokens or 0
+            usage["cache_read"] += used.cache_read_input_tokens or 0
+            usage["output"] += used.output_tokens
 
         for block in response.content:
             if block.type == "thinking" and block.thinking:
@@ -162,6 +174,7 @@ def run_agent(ws, model, budget=None, max_turns=MAX_TURNS):
     else:
         stop_reason = f"used all {max_turns} turns"
 
+    transcript.write({"type": "usage", **usage})
     verification = close_incident(ws, transcript, stop_reason)
     return {"stop_reason": stop_reason, "summary": summary, "verification": verification,
-            "calls": budget.calls}
+            "calls": budget.calls, "usage": usage}

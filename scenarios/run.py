@@ -53,6 +53,7 @@ def main():
     if outcome["stop_reason"]:
         print(f"stopped:     {outcome['stop_reason']}")
     print(f"tool calls:  {outcome['calls']}")
+    print(f"tokens:      {outcome['usage']}")
     print(f"\n{outcome['summary']}\n")
     print(f"report:      {out / 'report.html'}")
     print(f"with undo:   python -m report.serve {out}")
