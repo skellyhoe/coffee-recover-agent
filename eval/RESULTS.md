@@ -10,8 +10,8 @@ All data is simulated. Regenerate the rules-only results with `make eval`. Saved
 
 ## Which results are from the final code
 
-The final code is `6baa57e`. Agent, gate, sync, sim and report code are unchanged since `063555d`, so
-results from that commit onward count as final. The prompt is unchanged since `8c7380f`.
+The final code is `a12c0b1`. Agent, gate, sync, sim and report code are unchanged since `ce66dd7`, so
+results from that commit onward count as final. The prompt is unchanged since `4ede07d`.
 
 | Result | Code |
 |---|---|
@@ -51,8 +51,8 @@ during development, so it isn't held-out data, and five runs are a small sample.
 
 | Problem | How it was found | Before | After | Commit |
 |---|---|---|---|---|
-| **h4:** the gate blocked a correct fix for a slow rate limit | Found by held-out set, then fixed | Rules and LLM: 2 of 16 days, fail | Rules: 16 of 16. LLM: 16 of 16. Both pass | `063555d` |
-| **h6:** the agent's rerun created a known-wrong 100x draft | Found by held-out set, then fixed | Rules and LLM: 1 wrong draft created, fail | Rules and LLM: no wrong draft created. Both pass | `3105595` |
+| **h4:** the gate blocked a correct fix for a slow rate limit | Found by held-out set, then fixed | Rules and LLM: 2 of 16 days, fail | Rules: 16 of 16. LLM: 16 of 16. Both pass | `ce66dd7` |
+| **h6:** the agent's rerun created a known-wrong 100x draft | Found by held-out set, then fixed | Rules and LLM: 1 wrong draft created, fail | Rules and LLM: no wrong draft created. Both pass | `7cb0189` |
 
 | Scenario | Recoverable days | Rules before | Rules after | LLM before | LLM after |
 |---|---|---|---|---|---|
@@ -90,7 +90,7 @@ and fixed it. That is one run, so it suggests the clearer message helped but doe
 
 ## Original round, before the fixes
 
-Six held-out scenarios. Specs and expected outcomes were committed in `bfaef7f` before any system ran
+Six held-out scenarios. Specs and expected outcomes were committed in `aa81a24` before any system ran
 on them, and nothing was changed during that round.
 
 Real LLM: `claude-sonnet-5-5`, medium effort, one run per scenario, 2026-10-31. Costs are estimates

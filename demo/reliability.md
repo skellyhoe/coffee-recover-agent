@@ -2,7 +2,7 @@
 
 Two five-run tests. The final one is on the final code. The first is on earlier code.
 
-## Final code (`6baa57e`)
+## Final code (`a12c0b1`)
 
 `claude-sonnet-5-5` at medium effort on 2026-10-31. Costs are estimates from list prices and assume
 cache writes cost 1.25x the input rate.
@@ -28,7 +28,7 @@ during development, and each run is a small sample.
 
 ## Earlier code
 
-`claude-sonnet-5-5` at medium effort on 2026-10-31, using the prompt from commit `8c7380f`.
+`claude-sonnet-5-5` at medium effort on 2026-10-31, using the prompt from commit `4ede07d`.
 Costs are estimates from list prices and assume cache writes cost 1.25x the input rate.
 
 | Run | Codes fixed | Codes escalated | Days recovered | Gate refusals | Forbidden attempts | Drafts confirmed | Cost |
@@ -63,4 +63,4 @@ which is misleading: the true reason is too few successes. Four runs went on to 
 run 1 took the message at face value.
 
 **Since these runs:** the probe cap went from 15 to 35 calls and the refusal message was replaced
-(`063555d`). These five runs describe the earlier code; the final-code test above replaces them.
+(`ce66dd7`). These five runs describe the earlier code; the final-code test above replaces them.
