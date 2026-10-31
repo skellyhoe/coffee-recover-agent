@@ -87,7 +87,8 @@ Limits are enforced in code, not in the prompt.
 | No invoice can be confirmed: no route, method, tool or identifier exists for it | `tests/test_no_confirm.py` |
 | The LLM can't name a product: `apply_mapping` takes a code, and the product comes from the evidence | `test_apply_mapping_rejects_free_text_product` |
 | Weak, conflicting or uncatalogued evidence is refused, whatever the LLM says | `test_gate_blocks_weak_evidence`, `test_gate_refuses_weak_mapping_even_if_the_model_insists` |
-| Call spacing needs a probe that proves a pattern | `test_spacing_gate`, `test_spacing_needs_a_probe_first_and_probe_size_is_capped` |
+| Call spacing needs a capped probe that proves a pattern; non-periodic failures, two lone successes and bursts can't pass | `test_spacing_gate`, `test_spacing_needs_a_probe_first_and_probe_size_is_capped`, `test_non_periodic_failure_cannot_pass_the_gate`, `test_two_evenly_spaced_successes_are_not_proof`, `test_a_burst_of_regular_successes_cannot_pass_the_gate` |
+| A rerun can't create a draft on a day flagged as a units mismatch | `test_rerun_refuses_a_units_mismatch_day` |
 | It can't retry forever: attempt, total-call and repeat caps end the run with an escalation | `test_retry_forever_escalates_instead_of_looping`, `test_total_budget_stops_a_model_that_never_repeats`, `test_retrying_spacing_forever_hits_the_attempt_cap_and_escalates` |
 | Nothing ends silently, even if the LLM gives up, ignores a problem or is down | `test_model_that_gives_up_silently_still_produces_an_escalation`, `test_model_that_ignores_it_still_produces_the_escalation`, `test_llm_outage_changes_nothing_and_escalates` |
 | Everything is undoable | `test_undo_restores_mapping_and_drafts`, `test_spacing_change_is_undoable_and_leaves_drafts` |
@@ -96,23 +97,29 @@ Limits are enforced in code, not in the prompt.
 
 ## Evaluation
 
-`make eval` runs all tests, the scripted scenarios and rules-only on six held-out scenarios, with no
-key needed, and exits non-zero on any regression. See [eval/RESULTS.md](eval/RESULTS.md), including
+`make eval` runs all tests, the scripted scenarios and rules-only on eight evaluation scenarios, with
+no key needed, and exits non-zero on any regression. They all pass now, but two of them first found
+real problems that were then fixed, so these are regression tests, not clean held-out data. See [eval/RESULTS.md](eval/RESULTS.md), including
 what the LLM does and doesn't add over rules-only, and [docs/ITERATION.md](docs/ITERATION.md).
 
 ## Known limitations
 
-- **Two held-out scenarios fail, on purpose left unfixed.** The gate blocks a correct fix when a rate
-  limit's period is above what a capped probe can prove, and the agent's rerun can create a draft with
-  wrong units. See [eval/RESULTS.md](eval/RESULTS.md).
+- **The LLM adds explanation, not better outcomes.** In evaluation it never beat rules-only on an
+  outcome. See [eval/RESULTS.md](eval/RESULTS.md).
 
-- **Units drafts already exist when detected.** The sync creates the 100x drafts before the mismatch
-  is found. The agent escalates them but can't correct or remove them, so they rely on human review.
+- **Units drafts from the first sync still exist when detected.** That sync creates 100x drafts before
+  any check runs. The agent escalates them but can't correct or remove them, so they rely on human
+  review. Reruns do refuse those days, so the agent can't add any more.
 - **The rate limit is simplified.** Only the sync's export call is limited. The order lookups used
   for diagnosis and verification never are, which a real outage might not allow.
+- **The rate-limit proof has limits.** Spacing above 10 seconds is refused, so a slower limit is
+  escalated. Three evenly spaced successes by chance from an irregular failure would pass the gate,
+  though the rerun would then show failures and escalate.
+- **A refused units day still uses a vendor call,** which matters when few calls succeed. On h6,
+  rules-only went from 2 days recovered to 0 after that fix.
 - **Simulated data only.** Products, codes, orders, the vendor API and the ledger are all invented.
   The agent has never run against a real system.
 - **LLM decisions vary between runs.** The gate limits what it may do, not what it chooses within
   those limits. In five real A+B+C runs, three reached the full 13 days recovered, one reached 10 and
-  one reached 2. None confirmed a draft or mapped an unprovable code. See
-  [demo/reliability.md](demo/reliability.md).
+  one reached 2. None confirmed a draft or mapped an unprovable code. That test predates the latest
+  fixes and was not repeated. See [demo/reliability.md](demo/reliability.md).
