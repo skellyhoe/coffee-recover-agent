@@ -1,0 +1,958 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>Incident Report</title>
+<style>
+:root { --bg:#fbfaf8; --fg:#23201c; --muted:#6d665d; --line:#e2ddd5; --card:#fff;
+  --good:#1d6b45; --warn:#9a5b00; --bad:#a32a2a; }
+@media (prefers-color-scheme: dark) { :root { --bg:#1b1917; --fg:#ece7df; --muted:#a59d92;
+  --line:#37332e; --card:#242120; --good:#6fc79b; --warn:#e0a84e; --bad:#ec8a8a; } }
+* { box-sizing:border-box; }
+body { background:var(--bg); color:var(--fg); margin:0 auto; max-width:1000px; padding:32px 16px;
+  font:15px/1.5 -apple-system, "Segoe UI", Roboto, sans-serif; }
+h1 { font-size:24px; margin:0 0 4px; } h2 { font-size:17px; margin:32px 0 8px; }
+.muted { color:var(--muted); } .banner { border:1px solid var(--line); border-left:4px solid
+  var(--warn); padding:8px 12px; margin:12px 0 20px; background:var(--card); }
+.stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:10px; }
+.stat { background:var(--card); border:1px solid var(--line); padding:10px 12px; }
+.stat b { display:block; font-size:22px; font-variant-numeric:tabular-nums; }
+.wrap { overflow-x:auto; } table { border-collapse:collapse; width:100%; background:var(--card); }
+th,td { text-align:left; padding:7px 10px; border:1px solid var(--line); vertical-align:top; }
+th { font-size:13px; color:var(--muted); font-weight:600; }
+td.n { text-align:right; font-variant-numeric:tabular-nums; }
+code { font:12.5px ui-monospace, Menlo, monospace; }
+.good { color:var(--good); } .warn { color:var(--warn); } .bad { color:var(--bad); }
+details { background:var(--card); border:1px solid var(--line); padding:6px 10px; margin:4px 0; }
+pre { white-space:pre-wrap; overflow-wrap:anywhere; font:12px ui-monospace, Menlo, monospace;
+  max-height:300px; overflow:auto; margin:6px 0; }
+button { font:inherit; padding:3px 12px; cursor:pointer; }
+.summary { background:var(--card); border:1px solid var(--line); padding:10px 14px;
+  white-space:pre-wrap; }
+</style></head><body>
+<h1>Incident report: days held back by unknown codes</h1>
+<p class="muted">Driver: llm:claude-sonnet-5-5</p>
+<div class="banner">Fully simulated, with invented data. This agent is a hackathon build and has
+never run against a real system. No confirm capability exists anywhere in it.</div>
+<div class="stats">
+<div class="stat"><b>21</b><span class="muted">days without a draft at first</span></div><div class="stat"><b>8</b><span class="muted">days held now</span></div>
+<div class="stat"><b>13</b><span class="muted">draft invoices</span></div><div class="stat"><b>6</b><span class="muted">active mappings added</span></div>
+<div class="stat"><b>4</b><span class="muted">escalations</span></div></div>
+<h2>Summary</h2><div class="summary">**Summary for on-call**
+
+**What was wrong**
+- **Vendor 500s (17 days):** The vendor API appears to allow one successful call per 5 seconds. Only every 5th call succeeded: 5, 10, 15 and 20 in the run, and every 5th call in all three probes.
+- **Unknown codes (4 days held):** Several vendor codes were missing from our mapping table.
+
+**What I changed**
+- **Call spacing:** I set it to 5 seconds. The policy gate refused the first time because the probes had shown too few successes. The third probe showed 3 successes, 5 calls apart, and the gate accepted it. Change `chg-5`.
+- **Mappings:** I applied six, each a price match against the Excel export with a single product name and no conflicts.
+  - SIM-0041 → Foundry Mocha
+  - SIM-0042 → Drift Cortado
+  - SIM-0043 → Saltmarsh Latte
+  - SIM-0046 → Tern Espresso
+  - SIM-0045 → Pier Chai
+  - SIM-0044 → Kiln Americano, by elimination. I relied on the other codes on those days having been proven by price.
+- **Reruns:** After the reruns there are 13 drafts and 8 held days.
+
+**What I verified**
+- `verify_recovery` returned ok, with no mismatched days and no units mismatches.
+- 12 of the 13 drafts are verified against vendor and Excel.
+
+**Still unverified**
+- **2026-09-21:** The draft exists, but the Excel export is partial. Draft total is 19020 and Excel total is 10960. Eight orders, ORD-1373 to ORD-1380 and totalling 8060, are unverified. Escalated.
+- **Call spacing:** It is proven only by the probes and the reruns that followed.
+
+**Escalated (days stay held, which is the safe state)**
+- **SIM-0052 (9 cups):** The Excel name is &quot;Moor Cappuccino&quot;, which is not in the ledger catalog. This holds 09-14, 09-15 and 09-16.
+- **SIM-0053 (8 cups):** The Excel names conflict, 3 as Beacon Flat Brew and 5 as Beacon Macchiato. This holds 09-03, 09-04 and 09-05.
+- **SIM-0054 and SIM-0055 (3 cups each):** They are ambiguous on orders ORD-1345, ORD-1347 and ORD-1359, and have no Excel evidence. This holds 09-20.
+- **SIM-0051 (1 cup):** It is below the minimum evidence, with only 1 order. This holds 09-17.</div>
+<h2>Verification</h2><p><span class="good">No mismatches</span>: 12 days match Excel product by product. Line items sum to paid, no duplicates, every invoice is still a draft.</p><p class="warn">2026-09-21: not fully verified. The Excel export was taken midway through this day, so 8 orders worth 8060 are not in it. The covered part reconciles; a fresh export is needed to check the rest.</p><p>Still held, safely, with no draft: 2026-09-03, 2026-09-04, 2026-09-05, 2026-09-14, 2026-09-15, 2026-09-16, 2026-09-17, 2026-09-20</p>
+<h2>Mappings applied, with evidence</h2><p class="muted">Undo buttons work in the live view: <code>python -m report.serve runs/final-rel-5</code></p><div class="wrap"><table><tr><th>Code</th><th>Product</th><th>Cups</th><th>Orders</th><th>Days</th><th>Method (cups)</th><th>Sample orders</th><th>Agent's reason</th><th>Undo</th></tr><tr><td><code>SIM-0041-7c2e</code></td><td>Foundry Mocha</td><td class="n">28 of 30</td><td class="n">28</td><td class="n">14</td><td>price 28</td><td><code>ORD-1121, ORD-1123, ORD-1138</code></td><td>28 price matches, single name, no conflicts</td><td><code>chg-1</code></td></tr><tr><td><code>SIM-0042-b19a</code></td><td>Drift Cortado</td><td class="n">12 of 14</td><td class="n">12</td><td class="n">9</td><td>price 12</td><td><code>ORD-1181, ORD-1189, ORD-1194</code></td><td>12 price matches, single name</td><td><code>chg-2</code></td></tr><tr><td><code>SIM-0043-04df</code></td><td>Saltmarsh Latte</td><td class="n">8 of 12</td><td class="n">8</td><td class="n">7</td><td>price 8</td><td><code>ORD-1154, ORD-1193, ORD-1219</code></td><td>8 price matches, single name</td><td><code>chg-3</code></td></tr><tr><td><code>SIM-0046-91bb</code></td><td>Tern Espresso</td><td class="n">3 of 3</td><td class="n">3</td><td class="n">2</td><td>price 3</td><td><code>ORD-1327, ORD-1356, ORD-1359</code></td><td>3 price matches, single name</td><td><code>chg-4</code></td></tr><tr><td><code>SIM-0045-2f70</code></td><td>Pier Chai</td><td class="n">10 of 10</td><td class="n">5</td><td class="n">3</td><td>price 10</td><td><code>ORD-1233, ORD-1243, ORD-1251</code></td><td>10 cups/5 orders price matches, single name</td><td><code>chg-6</code></td></tr><tr><td><code>SIM-0044-e6a1</code></td><td>Kiln Americano</td><td class="n">4 of 4</td><td class="n">4</td><td class="n">4</td><td>elimination 4</td><td><code>ORD-1145, ORD-1158, ORD-1227</code></td><td>Elimination, 4 cups; other codes on those days are proven by price</td><td><code>chg-7</code></td></tr></table></div><p class="muted">"28 of 30" means 28 cups count as evidence: the rest are in orders the Excel export cannot pair, because they came after the export was cut or share a price with another new code.</p>
+<h2>Call spacing</h2><div class="wrap"><table><tr><th>Set to</th><th>Was</th><th>Probe statuses</th><th>Agent's reason</th><th>Undo</th></tr><tr><td class="n">5s</td><td class="n">0s</td><td><code>500 500 500 200 500 500 500 500 200 500 500 500 500 200 500 500</code></td><td>Probe showed 200 exactly every 5th call over 3 successes; window 5s</td><td><code>chg-5</code></td></tr></table></div>
+<h2>Escalated to a human</h2><div class="wrap"><table><tr><th>Category</th><th>Codes</th><th>What the human needs to know</th><th>Raised by</th></tr><tr><td>product_not_in_catalog</td><td><code>SIM-0052-6d14</code></td><td>9 cups/9 orders price-match Excel name &quot;Moor Cappuccino&quot;, but that product is not in the ledger catalog. Held days 09-14, 09-15, 09-16. Human should add the product or choose the right one.</td><td>agent</td></tr><tr><td>conflicting_evidence</td><td><code>SIM-0053-c07f</code></td><td>8 cups: Excel names split between Beacon Flat Brew (3) and Beacon Macchiato (5) for the same code. Possibly similar prices. Held days 09-03, 09-04, 09-05. Human should check vendor product list.</td><td>agent</td></tr><tr><td>weak_evidence</td><td><code>SIM-0054-18de, SIM-0055-f2b3, SIM-0051-a3c8</code></td><td>0054 and 0055 (3 cups each, day 09-20): orders ORD-1345, 1347, 1359 are ambiguous between the two; no Excel evidence for either, so I cannot tell them apart. 0051 (Gull Ristretto, day 09-17): one cup, one order, below the minimum evidence. Days 09-17 and 09-20 stay held. Human should confirm product names.</td><td>agent</td></tr><tr><td>other</td><td><code>-</code></td><td>Day 2026-09-21: the draft exists, but the Excel export is partial. Excel total 10960 and draft total 19020. 8 orders (ORD-1373 to ORD-1380, amount 8060) are unverified. Please review them by hand.</td><td>agent</td></tr></table></div>
+<h2>Every agent action</h2><details><summary><code>read_run_log</code> <span class="muted">{}</span></summary><pre>{
+ &quot;classification&quot;: {
+  &quot;vendor_http_500&quot;: 17,
+  &quot;unknown_code&quot;: 4
+ },
+ &quot;units_mismatch_days&quot;: [],
+ &quot;events&quot;: [
+  {
+   &quot;event&quot;: &quot;run_start&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;
+  },
+  {
+   &quot;event&quot;: &quot;day_failed&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-01&quot;,
+   &quot;reason&quot;: &quot;vendor_http_500&quot;,
+   &quot;vendor_call&quot;: 1
+  },
+  {
+   &quot;event&quot;: &quot;day_failed&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-02&quot;,
+   &quot;reason&quot;: &quot;vendor_http_500&quot;,
+   &quot;vendor_call&quot;: 2
+  },
+  {
+   &quot;event&quot;: &quot;day_failed&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-03&quot;,
+   &quot;reason&quot;: &quot;vendor_http_500&quot;,
+   &quot;vendor_call&quot;: 3
+  },
+  {
+   &quot;event&quot;: &quot;day_failed&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-04&quot;,
+   &quot;reason&quot;: &quot;vendor_http_500&quot;,
+   &quot;vendor_call&quot;: 4
+  },
+  {
+   &quot;event&quot;: &quot;day_held&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;reason&quot;: &quot;unknown_code&quot;,
+   &quot;codes&quot;: {
+    &quot;SIM-0053-c07f&quot;: 4
+   },
+   &quot;vendor_call&quot;: 5
+  },
+  {
+   &quot;event&quot;: &quot;day_failed&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-06&quot;,
+   &quot;reason&quot;: &quot;vendor_http_500&quot;,
+   &quot;vendor_call&quot;: 6
+  },
+  {
+   &quot;event&quot;: &quot;day_failed&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-07&quot;,
+   &quot;reason&quot;: &quot;vendor_http_500&quot;,
+   &quot;vendor_call&quot;: 7
+  },
+  {
+   &quot;event&quot;: &quot;day_failed&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-08&quot;,
+   &quot;reason&quot;: &quot;vendor_http_500&quot;,
+   &quot;vendor_call&quot;: 8
+  },
+  {
+   &quot;event&quot;: &quot;day_failed&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-09&quot;,
+   &quot;reason&quot;: &quot;vendor_http_500&quot;,
+   &quot;vendor_call&quot;: 9
+  },
+  {
+   &quot;event&quot;: &quot;day_held&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-10&quot;,
+   &quot;reason&quot;: &quot;unknown_code&quot;,
+   &quot;codes&quot;: {
+    &quot;SIM-0041-7c2e&quot;: 5,
+    &quot;SIM-0042-b19a&quot;: 1
+   },
+   &quot;vendor_call&quot;: 10
+  },
+  {
+   &quot;event&quot;: &quot;day_failed&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-11&quot;,
+   &quot;reason&quot;: &quot;vendor_http_500&quot;,
+   &quot;vendor_call&quot;: 11
+  },
+  {
+   &quot;event&quot;: &quot;day_failed&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-12&quot;,
+   &quot;reason&quot;: &quot;vendor_http_500&quot;,
+   &quot;vendor_call&quot;: 12
+  },
+  {
+   &quot;event&quot;: &quot;day_failed&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-13&quot;,
+   &quot;reason&quot;: &quot;vendor_http_500&quot;,
+   &quot;vendor_call&quot;: 13
+  },
+  {
+   &quot;event&quot;: &quot;day_failed&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-14&quot;,
+   &quot;reason&quot;: &quot;vendor_http_500&quot;,
+   &quot;vendor_call&quot;: 14
+  },
+  {
+   &quot;event&quot;: &quot;day_held&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-15&quot;,
+   &quot;reason&quot;: &quot;unknown_code&quot;,
+   &quot;codes&quot;: {
+    &quot;SIM-0052-6d14&quot;: 5,
+    &quot;SIM-0043-04df&quot;: 2,
+    &quot;SIM-0041-7c2e&quot;: 1,
+    &quot;SIM-0042-b19a&quot;: 3
+   },
+   &quot;vendor_call&quot;: 15
+  },
+  {
+   &quot;event&quot;: &quot;day_failed&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-16&quot;,
+   &quot;reason&quot;: &quot;vendor_http_500&quot;,
+   &quot;vendor_call&quot;: 16
+  },
+  {
+   &quot;event&quot;: &quot;day_failed&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-17&quot;,
+   &quot;reason&quot;: &quot;vendor_http_500&quot;,
+   &quot;vendor_call&quot;: 17
+  },
+  {
+   &quot;event&quot;: &quot;day_failed&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-18&quot;,
+   &quot;reason&quot;: &quot;vendor_http_500&quot;,
+   &quot;vendor_call&quot;: 18
+  },
+  {
+   &quot;event&quot;: &quot;day_failed&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-19&quot;,
+   &quot;reason&quot;: &quot;vendor_http_500&quot;,
+   &quot;vendor_call&quot;: 19
+  },
+  {
+   &quot;event&quot;: &quot;day_held&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-20&quot;,
+   &quot;reason&quot;: &quot;unknown_code&quot;,
+   &quot;codes&quot;: {
+    &quot;SIM-0041-7c2e&quot;: 1,
+    &quot;SIM-0054-18de&quot;: 3,
+    &quot;SIM-0055-f2b3&quot;: 3,
+    &quot;SIM-0042-b19a&quot;: 1,
+    &quot;SIM-0046-91bb&quot;: 2
+   },
+   &quot;vendor_call&quot;: 20
+  },
+  {
+   &quot;event&quot;: &quot;day_failed&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-21&quot;,
+   &quot;reason&quot;: &quot;vendor_http_500&quot;,
+   &quot;vendor_call&quot;: 21
+  },
+  {
+   &quot;event&quot;: &quot;run_end&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;created&quot;: 0,
+   &quot;skipped&quot;: 0,
+   &quot;held&quot;: 4,
+   &quot;failed&quot;: 17,
+   &quot;refused&quot;: 0
+  }
+ ]
+}</pre></details><details><summary><code>list_unknown_codes</code> <span class="muted">{}</span></summary><pre>[
+ {
+  &quot;code&quot;: &quot;SIM-0041-7c2e&quot;,
+  &quot;cups&quot;: 7,
+  &quot;days&quot;: [
+   &quot;2026-09-10&quot;,
+   &quot;2026-09-15&quot;,
+   &quot;2026-09-20&quot;
+  ]
+ },
+ {
+  &quot;code&quot;: &quot;SIM-0042-b19a&quot;,
+  &quot;cups&quot;: 5,
+  &quot;days&quot;: [
+   &quot;2026-09-10&quot;,
+   &quot;2026-09-15&quot;,
+   &quot;2026-09-20&quot;
+  ]
+ },
+ {
+  &quot;code&quot;: &quot;SIM-0043-04df&quot;,
+  &quot;cups&quot;: 2,
+  &quot;days&quot;: [
+   &quot;2026-09-15&quot;
+  ]
+ },
+ {
+  &quot;code&quot;: &quot;SIM-0046-91bb&quot;,
+  &quot;cups&quot;: 2,
+  &quot;days&quot;: [
+   &quot;2026-09-20&quot;
+  ]
+ },
+ {
+  &quot;code&quot;: &quot;SIM-0052-6d14&quot;,
+  &quot;cups&quot;: 5,
+  &quot;days&quot;: [
+   &quot;2026-09-15&quot;
+  ]
+ },
+ {
+  &quot;code&quot;: &quot;SIM-0053-c07f&quot;,
+  &quot;cups&quot;: 4,
+  &quot;days&quot;: [
+   &quot;2026-09-05&quot;
+  ]
+ },
+ {
+  &quot;code&quot;: &quot;SIM-0054-18de&quot;,
+  &quot;cups&quot;: 3,
+  &quot;days&quot;: [
+   &quot;2026-09-20&quot;
+  ]
+ },
+ {
+  &quot;code&quot;: &quot;SIM-0055-f2b3&quot;,
+  &quot;cups&quot;: 3,
+  &quot;days&quot;: [
+   &quot;2026-09-20&quot;
+  ]
+ }
+]</pre></details><details><summary><code>propose_mappings</code> <span class="muted">{}</span></summary><pre>{
+ &quot;proposals&quot;: [
+  {
+   &quot;code&quot;: &quot;SIM-0041-7c2e&quot;,
+   &quot;product_name&quot;: &quot;Foundry Mocha&quot;,
+   &quot;candidate_names&quot;: {
+    &quot;Foundry Mocha&quot;: 28
+   },
+   &quot;in_catalog&quot;: true,
+   &quot;cups&quot;: 28,
+   &quot;orders&quot;: 28,
+   &quot;days&quot;: [
+    &quot;2026-09-07&quot;,
+    &quot;2026-09-08&quot;,
+    &quot;2026-09-09&quot;,
+    &quot;2026-09-10&quot;,
+    &quot;2026-09-12&quot;,
+    &quot;2026-09-13&quot;,
+    &quot;2026-09-14&quot;,
+    &quot;2026-09-15&quot;,
+    &quot;2026-09-16&quot;,
+    &quot;2026-09-17&quot;,
+    &quot;2026-09-18&quot;,
+    &quot;2026-09-19&quot;,
+    &quot;2026-09-20&quot;,
+    &quot;2026-09-21&quot;
+   ],
+   &quot;methods&quot;: {
+    &quot;price&quot;: 28
+   },
+   &quot;price_mismatches&quot;: 0,
+   &quot;sample_orders&quot;: [
+    &quot;ORD-1121&quot;,
+    &quot;ORD-1123&quot;,
+    &quot;ORD-1138&quot;,
+    &quot;ORD-1159&quot;,
+    &quot;ORD-1165&quot;
+   ],
+   &quot;conflicts&quot;: [],
+   &quot;total_cups_seen&quot;: 30,
+   &quot;total_orders_seen&quot;: 30,
+   &quot;policy_blockers&quot;: []
+  },
+  {
+   &quot;code&quot;: &quot;SIM-0042-b19a&quot;,
+   &quot;product_name&quot;: &quot;Drift Cortado&quot;,
+   &quot;candidate_names&quot;: {
+    &quot;Drift Cortado&quot;: 12
+   },
+   &quot;in_catalog&quot;: true,
+   &quot;cups&quot;: 12,
+   &quot;orders&quot;: 12,
+   &quot;days&quot;: [
+    &quot;2026-09-10&quot;,
+    &quot;2026-09-11&quot;,
+    &quot;2026-09-13&quot;,
+    &quot;2026-09-15&quot;,
+    &quot;2026-09-16&quot;,
+    &quot;2026-09-17&quot;,
+    &quot;2026-09-18&quot;,
+    &quot;2026-09-19&quot;,
+    &quot;2026-09-20&quot;
+   ],
+   &quot;methods&quot;: {
+    &quot;price&quot;: 12
+   },
+   &quot;price_mismatches&quot;: 0,
+   &quot;sample_orders&quot;: [
+    &quot;ORD-1181&quot;,
+    &quot;ORD-1189&quot;,
+    &quot;ORD-1194&quot;,
+    &quot;ORD-1231&quot;,
+    &quot;ORD-1262&quot;
+   ],
+   &quot;conflicts&quot;: [],
+   &quot;total_cups_seen&quot;: 14,
+   &quot;total_orders_seen&quot;: 14,
+   &quot;policy_blockers&quot;: []
+  },
+  {
+   &quot;code&quot;: &quot;SIM-0043-04df&quot;,
+   &quot;product_name&quot;: &quot;Saltmarsh Latte&quot;,
+   &quot;candidate_names&quot;: {
+    &quot;Saltmarsh Latte&quot;: 8
+   },
+   &quot;in_catalog&quot;: true,
+   &quot;cups&quot;: 8,
+   &quot;orders&quot;: 8,
+   &quot;days&quot;: [
+    &quot;2026-09-09&quot;,
+    &quot;2026-09-11&quot;,
+    &quot;2026-09-12&quot;,
+    &quot;2026-09-15&quot;,
+    &quot;2026-09-17&quot;,
+    &quot;2026-09-18&quot;,
+    &quot;2026-09-21&quot;
+   ],
+   &quot;methods&quot;: {
+    &quot;price&quot;: 8
+   },
+   &quot;price_mismatches&quot;: 0,
+   &quot;sample_orders&quot;: [
+    &quot;ORD-1154&quot;,
+    &quot;ORD-1193&quot;,
+    &quot;ORD-1219&quot;,
+    &quot;ORD-1261&quot;,
+    &quot;ORD-1266&quot;
+   ],
+   &quot;conflicts&quot;: [],
+   &quot;total_cups_seen&quot;: 12,
+   &quot;total_orders_seen&quot;: 12,
+   &quot;policy_blockers&quot;: []
+  },
+  {
+   &quot;code&quot;: &quot;SIM-0044-e6a1&quot;,
+   &quot;product_name&quot;: &quot;Kiln Americano&quot;,
+   &quot;candidate_names&quot;: {
+    &quot;Kiln Americano&quot;: 4
+   },
+   &quot;in_catalog&quot;: true,
+   &quot;cups&quot;: 4,
+   &quot;orders&quot;: 4,
+   &quot;days&quot;: [
+    &quot;2026-09-08&quot;,
+    &quot;2026-09-09&quot;,
+    &quot;2026-09-13&quot;,
+    &quot;2026-09-17&quot;
+   ],
+   &quot;methods&quot;: {
+    &quot;elimination&quot;: 4
+   },
+   &quot;price_mismatches&quot;: 0,
+   &quot;sample_orders&quot;: [
+    &quot;ORD-1145&quot;,
+    &quot;ORD-1158&quot;,
+    &quot;ORD-1227&quot;,
+    &quot;ORD-1300&quot;
+   ],
+   &quot;conflicts&quot;: [],
+   &quot;total_cups_seen&quot;: 4,
+   &quot;total_orders_seen&quot;: 4,
+   &quot;policy_blockers&quot;: []
+  },
+  {
+   &quot;code&quot;: &quot;SIM-0045-2f70&quot;,
+   &quot;product_name&quot;: &quot;Pier Chai&quot;,
+   &quot;candidate_names&quot;: {
+    &quot;Pier Chai&quot;: 10
+   },
+   &quot;in_catalog&quot;: true,
+   &quot;cups&quot;: 10,
+   &quot;orders&quot;: 5,
+   &quot;days&quot;: [
+    &quot;2026-09-13&quot;,
+    &quot;2026-09-14&quot;,
+    &quot;2026-09-17&quot;
+   ],
+   &quot;methods&quot;: {
+    &quot;price&quot;: 10
+   },
+   &quot;price_mismatches&quot;: 0,
+   &quot;sample_orders&quot;: [
+    &quot;ORD-1233&quot;,
+    &quot;ORD-1243&quot;,
+    &quot;ORD-1251&quot;,
+    &quot;ORD-1299&quot;,
+    &quot;ORD-1302&quot;
+   ],
+   &quot;conflicts&quot;: [],
+   &quot;total_cups_seen&quot;: 10,
+   &quot;total_orders_seen&quot;: 5,
+   &quot;policy_blockers&quot;: []
+  },
+  {
+   &quot;code&quot;: &quot;SIM-0046-91bb&quot;,
+   &quot;product_name&quot;: &quot;Tern Espresso&quot;,
+   &quot;candidate_names&quot;: {
+    &quot;Tern Espresso&quot;: 3
+   },
+   &quot;in_catalog&quot;: true,
+   &quot;cups&quot;: 3,
+   &quot;orders&quot;: 3,
+   &quot;days&quot;: [
+    &quot;2026-09-19&quot;,
+    &quot;2026-09-20&quot;
+   ],
+   &quot;methods&quot;: {
+    &quot;price&quot;: 3
+   },
+   &quot;price_mismatches&quot;: 0,
+   &quot;sample_orders&quot;: [
+    &quot;ORD-1327&quot;,
+    &quot;ORD-1356&quot;,
+    &quot;ORD-1359&quot;
+   ],
+   &quot;conflicts&quot;: [],
+   &quot;total_cups_seen&quot;: 3,
+   &quot;total_orders_seen&quot;: 3,
+   &quot;policy_blockers&quot;: []
+  },
+  {
+   &quot;code&quot;: &quot;SIM-0051-a3c8&quot;,
+   &quot;product_name&quot;: &quot;Gull Ristretto&quot;,
+   &quot;candidate_names&quot;: {
+    &quot;Gull Ristretto&quot;: 1
+   },
+   &quot;in_catalog&quot;: true,
+   &quot;cups&quot;: 1,
+   &quot;orders&quot;: 1,
+   &quot;days&quot;: [
+    &quot;2026-09-17&quot;
+   ],
+   &quot;methods&quot;: {
+    &quot;price&quot;: 1
+   },
+   &quot;price_mismatches&quot;: 0,
+   &quot;sample_orders&quot;: [
+    &quot;ORD-1302&quot;
+   ],
+   &quot;conflicts&quot;: [],
+   &quot;total_cups_seen&quot;: 1,
+   &quot;total_orders_seen&quot;: 1,
+   &quot;policy_blockers&quot;: [
+    &quot;only 1 cups of evidence (minimum 3)&quot;,
+    &quot;only 1 orders of evidence (minimum 2)&quot;
+   ]
+  },
+  {
+   &quot;code&quot;: &quot;SIM-0052-6d14&quot;,
+   &quot;product_name&quot;: &quot;Moor Cappuccino&quot;,
+   &quot;candidate_names&quot;: {
+    &quot;Moor Cappuccino&quot;: 9
+   },
+   &quot;in_catalog&quot;: false,
+   &quot;cups&quot;: 9,
+   &quot;orders&quot;: 9,
+   &quot;days&quot;: [
+    &quot;2026-09-14&quot;,
+    &quot;2026-09-15&quot;,
+    &quot;2026-09-16&quot;
+   ],
+   &quot;methods&quot;: {
+    &quot;price&quot;: 9
+   },
+   &quot;price_mismatches&quot;: 0,
+   &quot;sample_orders&quot;: [
+    &quot;ORD-1250&quot;,
+    &quot;ORD-1253&quot;,
+    &quot;ORD-1259&quot;,
+    &quot;ORD-1263&quot;,
+    &quot;ORD-1269&quot;
+   ],
+   &quot;conflicts&quot;: [],
+   &quot;total_cups_seen&quot;: 9,
+   &quot;total_orders_seen&quot;: 9,
+   &quot;policy_blockers&quot;: [
+    &quot;&#x27;Moor Cappuccino&#x27; does not exist in the ledger catalog&quot;
+   ]
+  },
+  {
+   &quot;code&quot;: &quot;SIM-0053-c07f&quot;,
+   &quot;product_name&quot;: null,
+   &quot;candidate_names&quot;: {
+    &quot;Beacon Flat Brew&quot;: 3,
+    &quot;Beacon Macchiato&quot;: 5
+   },
+   &quot;in_catalog&quot;: false,
+   &quot;cups&quot;: 8,
+   &quot;orders&quot;: 8,
+   &quot;days&quot;: [
+    &quot;2026-09-03&quot;,
+    &quot;2026-09-04&quot;,
+    &quot;2026-09-05&quot;
+   ],
+   &quot;methods&quot;: {
+    &quot;price&quot;: 8
+   },
+   &quot;price_mismatches&quot;: 0,
+   &quot;sample_orders&quot;: [
+    &quot;ORD-1041&quot;,
+    &quot;ORD-1043&quot;,
+    &quot;ORD-1045&quot;,
+    &quot;ORD-1062&quot;,
+    &quot;ORD-1076&quot;
+   ],
+   &quot;conflicts&quot;: [
+    &quot;pairs with several names across orders: {&#x27;Beacon Flat Brew&#x27;: 3, &#x27;Beacon Macchiato&#x27;: 5}&quot;
+   ],
+   &quot;total_cups_seen&quot;: 8,
+   &quot;total_orders_seen&quot;: 8,
+   &quot;policy_blockers&quot;: [
+    &quot;no single candidate product from the evidence&quot;,
+    &quot;conflicts: [\&quot;pairs with several names across orders: {&#x27;Beacon Flat Brew&#x27;: 3, &#x27;Beacon Macchiato&#x27;: 5}\&quot;]&quot;
+   ]
+  },
+  {
+   &quot;code&quot;: &quot;SIM-0054-18de&quot;,
+   &quot;product_name&quot;: null,
+   &quot;candidate_names&quot;: {},
+   &quot;in_catalog&quot;: false,
+   &quot;cups&quot;: 0,
+   &quot;orders&quot;: 0,
+   &quot;days&quot;: [],
+   &quot;methods&quot;: {},
+   &quot;price_mismatches&quot;: 0,
+   &quot;sample_orders&quot;: [],
+   &quot;conflicts&quot;: [],
+   &quot;total_cups_seen&quot;: 3,
+   &quot;total_orders_seen&quot;: 3,
+   &quot;policy_blockers&quot;: [
+    &quot;no single candidate product from the evidence&quot;,
+    &quot;only 0 cups of evidence (minimum 3)&quot;,
+    &quot;only 0 orders of evidence (minimum 2)&quot;
+   ]
+  },
+  {
+   &quot;code&quot;: &quot;SIM-0055-f2b3&quot;,
+   &quot;product_name&quot;: null,
+   &quot;candidate_names&quot;: {},
+   &quot;in_catalog&quot;: false,
+   &quot;cups&quot;: 0,
+   &quot;orders&quot;: 0,
+   &quot;days&quot;: [],
+   
+... (full result in transcript.jsonl)</pre></details><details><summary><code>get_ledger_state</code> <span class="muted">{}</span></summary><pre>{
+ &quot;drafts&quot;: [],
+ &quot;held_days&quot;: [
+  &quot;2026-09-01&quot;,
+  &quot;2026-09-02&quot;,
+  &quot;2026-09-03&quot;,
+  &quot;2026-09-04&quot;,
+  &quot;2026-09-05&quot;,
+  &quot;2026-09-06&quot;,
+  &quot;2026-09-07&quot;,
+  &quot;2026-09-08&quot;,
+  &quot;2026-09-09&quot;,
+  &quot;2026-09-10&quot;,
+  &quot;2026-09-11&quot;,
+  &quot;2026-09-12&quot;,
+  &quot;2026-09-13&quot;,
+  &quot;2026-09-14&quot;,
+  &quot;2026-09-15&quot;,
+  &quot;2026-09-16&quot;,
+  &quot;2026-09-17&quot;,
+  &quot;2026-09-18&quot;,
+  &quot;2026-09-19&quot;,
+  &quot;2026-09-20&quot;,
+  &quot;2026-09-21&quot;
+ ],
+ &quot;catalog_products&quot;: [
+  &quot;Beacon Flat Brew&quot;,
+  &quot;Beacon Macchiato&quot;,
+  &quot;Copper Flat Brew&quot;,
+  &quot;Copper Long Pull&quot;,
+  &quot;Copper Milk Cap&quot;,
+  &quot;Copper Oat Cloud&quot;,
+  &quot;Copper Short Roast&quot;,
+  &quot;Drift Cortado&quot;,
+  &quot;Ember Flat Brew&quot;,
+  &quot;Ember Long Pull&quot;,
+  &quot;Ember Milk Cap&quot;,
+  &quot;Ember Oat Cloud&quot;,
+  &quot;Ember Short Roast&quot;,
+  &quot;Foundry Mocha&quot;,
+  &quot;Gull Ristretto&quot;,
+  &quot;Harbour Flat Brew&quot;,
+  &quot;Harbour Long Pull&quot;,
+  &quot;Harbour Milk Cap&quot;,
+  &quot;Harbour Oat Cloud&quot;,
+  &quot;Harbour Short Roast&quot;,
+  &quot;Heron Milk Cap&quot;,
+  &quot;Heron Oat Cloud&quot;,
+  &quot;Kiln Americano&quot;,
+  &quot;Lantern Flat Brew&quot;,
+  &quot;Lantern Long Pull&quot;,
+  &quot;Lantern Milk Cap&quot;,
+  &quot;Lantern Oat Cloud&quot;,
+  &quot;Lantern Short Roast&quot;,
+  &quot;Meadow Flat Brew&quot;,
+  &quot;Meadow Long Pull&quot;,
+  &quot;Meadow Milk Cap&quot;,
+  &quot;Meadow Oat Cloud&quot;,
+  &quot;Meadow Short Roast&quot;,
+  &quot;Orchard Flat Brew&quot;,
+  &quot;Orchard Long Pull&quot;,
+  &quot;Orchard Milk Cap&quot;,
+  &quot;Orchard Oat Cloud&quot;,
+  &quot;Orchard Short Roast&quot;,
+  &quot;Pier Chai&quot;,
+  &quot;Quarry Flat Brew&quot;,
+  &quot;Quarry Long Pull&quot;,
+  &quot;Quarry Milk Cap&quot;,
+  &quot;Quarry Oat Cloud&quot;,
+  &quot;Quarry Short Roast&quot;,
+  &quot;Saltmarsh Latte&quot;,
+  &quot;Tern Espresso&quot;,
+  &quot;Thistle Flat Brew&quot;,
+  &quot;Thistle Long Pull&quot;,
+  &quot;Thistle Milk Cap&quot;,
+  &quot;Thistle Oat Cloud&quot;,
+  &quot;Thistle Short Roast&quot;
+ ]
+}</pre></details><p class="muted">I&#x27;m checking the vendor errors: the failures seem to hit every call except on days 5, 10, 15, and 20, which actually succeeded, so it looks like a rate limit on every fifth call. I&#x27;ll probe the spacing next, then apply the mappings 0041 through 0046, though 0044 and 0045 still depend on the others being proven.
+
+I&#x27;m weighing whether mappings 0044 and 0045 belong in this batch, since they aren&#x27;t among the unknown codes but do show up on the failing days. I&#x27;ll hold them until I&#x27;ve checked their numbers, and probe the spacing first.
+
+</p><details><summary><code>probe_api_rate</code> <span class="muted">{&quot;calls&quot;: 12}</span></summary><pre>{
+ &quot;spacing&quot;: 0,
+ &quot;statuses&quot;: [
+  500,
+  500,
+  500,
+  200,
+  500,
+  500,
+  500,
+  500,
+  200,
+  500,
+  500,
+  500
+ ],
+ &quot;period&quot;: null,
+ &quot;window_seconds&quot;: null
+}</pre></details><details><summary><code>apply_mapping</code> <span class="muted">{&quot;code&quot;: &quot;SIM-0041-7c2e&quot;, &quot;reason&quot;: &quot;28 price matches, single name, no conflicts&quot;}</span></summary><pre>{
+ &quot;applied&quot;: true,
+ &quot;change_id&quot;: &quot;chg-1&quot;,
+ &quot;code&quot;: &quot;SIM-0041-7c2e&quot;,
+ &quot;product_name&quot;: &quot;Foundry Mocha&quot;
+}</pre></details><details><summary><code>apply_mapping</code> <span class="muted">{&quot;code&quot;: &quot;SIM-0042-b19a&quot;, &quot;reason&quot;: &quot;12 price matches, single name&quot;}</span></summary><pre>{
+ &quot;applied&quot;: true,
+ &quot;change_id&quot;: &quot;chg-2&quot;,
+ &quot;code&quot;: &quot;SIM-0042-b19a&quot;,
+ &quot;product_name&quot;: &quot;Drift Cortado&quot;
+}</pre></details><details><summary><code>apply_mapping</code> <span class="muted">{&quot;code&quot;: &quot;SIM-0043-04df&quot;, &quot;reason&quot;: &quot;8 price matches, single name&quot;}</span></summary><pre>{
+ &quot;applied&quot;: true,
+ &quot;change_id&quot;: &quot;chg-3&quot;,
+ &quot;code&quot;: &quot;SIM-0043-04df&quot;,
+ &quot;product_name&quot;: &quot;Saltmarsh Latte&quot;
+}</pre></details><details><summary><code>apply_mapping</code> <span class="muted">{&quot;code&quot;: &quot;SIM-0046-91bb&quot;, &quot;reason&quot;: &quot;3 price matches, single name&quot;}</span></summary><pre>{
+ &quot;applied&quot;: true,
+ &quot;change_id&quot;: &quot;chg-4&quot;,
+ &quot;code&quot;: &quot;SIM-0046-91bb&quot;,
+ &quot;product_name&quot;: &quot;Tern Espresso&quot;
+}</pre></details><p class="muted">I&#x27;m noticing the successful probes fall at calls 4 and 9, which doesn&#x27;t match the every-5th pattern from the earlier successes at 5, 10, 15, and 20. That shift makes me suspect a rate window, maybe one call allowed per roughly five seconds, and each call takes a second. I only have three probes left, so I&#x27;ll set the spacing to 5 seconds and test that.
+
+</p><details><summary><code>set_call_spacing</code> <span class="muted">{&quot;seconds&quot;: 5, &quot;reason&quot;: &quot;Successes every 5th call (5,10,15,20 in run; 4,9 in probe) suggests ~1 call per 5s w</span></summary><pre>{
+ &quot;applied&quot;: false,
+ &quot;blocked_by_policy&quot;: [
+  &quot;the latest probe has only 2 successes and 3 are needed to prove a pattern, so this is not proven either way&quot;
+ ]
+}</pre></details><details><summary><code>probe_api_rate</code> <span class="muted">{&quot;calls&quot;: 8}</span></summary><pre>{
+ &quot;spacing&quot;: 0,
+ &quot;statuses&quot;: [
+  500,
+  200,
+  500,
+  500,
+  500,
+  500,
+  200,
+  500
+ ],
+ &quot;period&quot;: null,
+ &quot;window_seconds&quot;: null
+}</pre></details><p class="muted">Two successes so far, at 2 and 7, both spaced five apart, so the period looks like 5 again. I still need a third success, and I have 35 calls to spend, so I&#x27;ll run one more probe.
+
+</p><details><summary><code>probe_api_rate</code> <span class="muted">{&quot;calls&quot;: 16}</span></summary><pre>{
+ &quot;spacing&quot;: 0,
+ &quot;statuses&quot;: [
+  500,
+  500,
+  500,
+  200,
+  500,
+  500,
+  500,
+  500,
+  200,
+  500,
+  500,
+  500,
+  500,
+  200,
+  500,
+  500
+ ],
+ &quot;period&quot;: 5,
+ &quot;window_seconds&quot;: 5
+}</pre></details><details><summary><code>set_call_spacing</code> <span class="muted">{&quot;seconds&quot;: 5, &quot;reason&quot;: &quot;Probe showed 200 exactly every 5th call over 3 successes; window 5s&quot;}</span></summary><pre>{
+ &quot;applied&quot;: true,
+ &quot;change_id&quot;: &quot;chg-5&quot;,
+ &quot;seconds&quot;: 5
+}</pre></details><details><summary><code>rerun_sync</code> <span class="muted">{}</span></summary><pre>{
+ &quot;run_id&quot;: &quot;run-2&quot;,
+ &quot;created&quot;: [
+  &quot;2026-09-01&quot;,
+  &quot;2026-09-02&quot;,
+  &quot;2026-09-06&quot;,
+  &quot;2026-09-07&quot;,
+  &quot;2026-09-10&quot;,
+  &quot;2026-09-11&quot;,
+  &quot;2026-09-12&quot;,
+  &quot;2026-09-18&quot;,
+  &quot;2026-09-19&quot;,
+  &quot;2026-09-21&quot;
+ ],
+ &quot;skipped&quot;: 0,
+ &quot;held&quot;: [
+  &quot;2026-09-03&quot;,
+  &quot;2026-09-04&quot;,
+  &quot;2026-09-05&quot;,
+  &quot;2026-09-08&quot;,
+  &quot;2026-09-09&quot;,
+  &quot;2026-09-13&quot;,
+  &quot;2026-09-14&quot;,
+  &quot;2026-09-15&quot;,
+  &quot;2026-09-16&quot;,
+  &quot;2026-09-17&quot;,
+  &quot;2026-09-20&quot;
+ ],
+ &quot;failed&quot;: [],
+ &quot;refused_units_mismatch&quot;: []
+}</pre></details><p class="muted">Now I&#x27;m checking the codes still unknown on the days I hold, and 0044 looks like it depends on codes that are already proven. I&#x27;ll apply the elimination to 0044 and 0045 using the price of 10 cups and 5 orders.
+
+</p><details><summary><code>apply_mapping</code> <span class="muted">{&quot;code&quot;: &quot;SIM-0045-2f70&quot;, &quot;reason&quot;: &quot;10 cups/5 orders price matches, single name&quot;}</span></summary><pre>{
+ &quot;applied&quot;: true,
+ &quot;change_id&quot;: &quot;chg-6&quot;,
+ &quot;code&quot;: &quot;SIM-0045-2f70&quot;,
+ &quot;product_name&quot;: &quot;Pier Chai&quot;
+}</pre></details><details><summary><code>apply_mapping</code> <span class="muted">{&quot;code&quot;: &quot;SIM-0044-e6a1&quot;, &quot;reason&quot;: &quot;Elimination, 4 cups; other codes on those days are proven by price&quot;}</span></summary><pre>{
+ &quot;applied&quot;: true,
+ &quot;change_id&quot;: &quot;chg-7&quot;,
+ &quot;code&quot;: &quot;SIM-0044-e6a1&quot;,
+ &quot;product_name&quot;: &quot;Kiln Americano&quot;
+}</pre></details><details><summary><code>rerun_sync</code> <span class="muted">{}</span></summary><pre>{
+ &quot;run_id&quot;: &quot;run-3&quot;,
+ &quot;created&quot;: [
+  &quot;2026-09-08&quot;,
+  &quot;2026-09-09&quot;,
+  &quot;2026-09-13&quot;
+ ],
+ &quot;skipped&quot;: 10,
+ &quot;held&quot;: [
+  &quot;2026-09-03&quot;,
+  &quot;2026-09-04&quot;,
+  &quot;2026-09-05&quot;,
+  &quot;2026-09-14&quot;,
+  &quot;2026-09-15&quot;,
+  &quot;2026-09-16&quot;,
+  &quot;2026-09-17&quot;,
+  &quot;2026-09-20&quot;
+ ],
+ &quot;failed&quot;: [],
+ &quot;refused_units_mismatch&quot;: []
+}</pre></details><details><summary><code>verify_recovery</code> <span class="muted">{}</span></summary><pre>{
+ &quot;ok&quot;: true,
+ &quot;units_mismatch_days&quot;: [],
+ &quot;global_problems&quot;: [],
+ &quot;drafts&quot;: 13,
+ &quot;verified_days&quot;: 12,
+ &quot;partial_export_days&quot;: [
+  {
+   &quot;date&quot;: &quot;2026-09-21&quot;,
+   &quot;status&quot;: &quot;partial_export&quot;,
+   &quot;total&quot;: 19020,
+   &quot;paid&quot;: 19020,
+   &quot;excel_total&quot;: 10960,
+   &quot;problems&quot;: [],
+   &quot;unverified_orders&quot;: [
+    &quot;ORD-1373&quot;,
+    &quot;ORD-1374&quot;,
+    &quot;ORD-1375&quot;,
+    &quot;ORD-1376&quot;,
+    &quot;ORD-1377&quot;,
+    &quot;ORD-1378&quot;,
+    &quot;ORD-1379&quot;,
+    &quot;ORD-1380&quot;
+   ],
+   &quot;unverified_amount&quot;: 8060
+  }
+ ],
+ &quot;mismatched_days&quot;: [],
+ &quot;held_days&quot;: [
+  &quot;2026-09-03&quot;,
+  &quot;2026-09-04&quot;,
+  &quot;2026-09-05&quot;,
+  &quot;2026-09-14&quot;,
+  &quot;2026-09-15&quot;,
+  &quot;2026-09-16&quot;,
+  &quot;2026-09-17&quot;,
+  &quot;2026-09-20&quot;
+ ]
+}</pre></details><p class="muted">Held days are still outstanding across several records (0051 from 09-17, plus 0052, 0053, and 0054/55), so this needs escalating. I&#x27;ll also note that the day 21 export only came through partially.
+
+</p><details><summary><code>escalate</code> <span class="muted">{&quot;category&quot;: &quot;product_not_in_catalog&quot;, &quot;codes&quot;: [&quot;SIM-0052-6d14&quot;], &quot;summary&quot;: &quot;9 cups/9 orders price-match Exc</span></summary><pre>{
+ &quot;escalated&quot;: true,
+ &quot;id&quot;: &quot;esc-1&quot;
+}</pre></details><details><summary><code>escalate</code> <span class="muted">{&quot;category&quot;: &quot;conflicting_evidence&quot;, &quot;codes&quot;: [&quot;SIM-0053-c07f&quot;], &quot;summary&quot;: &quot;8 cups: Excel names split between</span></summary><pre>{
+ &quot;escalated&quot;: true,
+ &quot;id&quot;: &quot;esc-2&quot;
+}</pre></details><details><summary><code>escalate</code> <span class="muted">{&quot;category&quot;: &quot;weak_evidence&quot;, &quot;codes&quot;: [&quot;SIM-0054-18de&quot;, &quot;SIM-0055-f2b3&quot;, &quot;SIM-0051-a3c8&quot;], &quot;summary&quot;: &quot;0054 a</span></summary><pre>{
+ &quot;escalated&quot;: true,
+ &quot;id&quot;: &quot;esc-3&quot;
+}</pre></details><details><summary><code>escalate</code> <span class="muted">{&quot;category&quot;: &quot;other&quot;, &quot;codes&quot;: [], &quot;summary&quot;: &quot;Day 2026-09-21: the draft exists, but the Excel export is parti</span></summary><pre>{
+ &quot;escalated&quot;: true,
+ &quot;id&quot;: &quot;esc-4&quot;
+}</pre></details><p class="muted">**Summary for on-call**
+
+**What was wrong**
+- **Vendor 500s (17 days):** The vendor API appears to allow one successful call per 5 seconds. Only every 5th call succeeded: 5, 10, 15 and 20 in the run, and every 5th call in all three probes.
+- **Unknown codes (4 days held):** Several vendor codes were missing from our mapping table.
+
+**What I changed**
+- **Call spacing:** I set it to 5 seconds. The policy gate refused the first time because the probes had shown too few successes. The third probe showed 3 successes, 5 calls apart, and the gate accepted it. Change `chg-5`.
+- **Mappings:** I applied six, each a price match against the Excel export with a single product name and no conflicts.
+  - SIM-0041 → Foundry Mocha
+  - SIM-0042 → Drift Cortado
+  - SIM-0043 → Saltmarsh Latte
+  - SIM-0046 → Tern Espresso
+  - SIM-0045 → Pier Chai
+  - SIM-0044 → Kiln Americano, by elimination. I relied on the other codes on those days having been proven by price.
+- **Reruns:** After the reruns there are 13 drafts and 8 held days.
+
+**What I verified**
+- `verify_recovery` returned ok, with no mismatched days and no units mismatches.
+- 12 of the 13 drafts are verified against vendor and Excel.
+
+**Still unverified**
+- **2026-09-21:** The draft exists, but the Excel export is partial. Draft total is 19020 and Excel total is 10960. Eight orders, ORD-1373 to ORD-1380 and totalling 8060, are unverified. Escalated.
+- **Call spacing:** It is proven only by the probes and the reruns that followed.
+
+**Escalated (days stay held, which is the safe state)**
+- **SIM-0052 (9 cups):** The Excel name is &quot;Moor Cappuccino&quot;, which is not in the ledger catalog. This holds 09-14, 09-15 and 09-16.
+- **SIM-0053 (8 cups):** The Excel names conflict, 3 as Beacon Flat Brew and 5 as Beacon Macchiato. This holds 09-03, 09-04 and 09-05.
+- **SIM-0054 and SIM-0055 (3 cups each):** They are ambiguous on orders ORD-1345, ORD-1347 and ORD-1359, and have no Excel evidence. This holds 09-20.
+- **SIM-0051 (1 cup):** It is below the minimum evidence, with only 1 order. This holds 09-17.</p>
+</body></html>

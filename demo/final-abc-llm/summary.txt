@@ -1,0 +1,30 @@
+**Summary for on-call**
+
+**What was wrong**
+- **Vendor 500s (17 days):** The vendor API appears to allow one successful call per 5 seconds. Only every 5th call succeeded: 5, 10, 15 and 20 in the run, and every 5th call in all three probes.
+- **Unknown codes (4 days held):** Several vendor codes were missing from our mapping table.
+
+**What I changed**
+- **Call spacing:** I set it to 5 seconds. The policy gate refused the first time because the probes had shown too few successes. The third probe showed 3 successes, 5 calls apart, and the gate accepted it. Change `chg-5`.
+- **Mappings:** I applied six, each a price match against the Excel export with a single product name and no conflicts.
+  - SIM-0041 → Foundry Mocha
+  - SIM-0042 → Drift Cortado
+  - SIM-0043 → Saltmarsh Latte
+  - SIM-0046 → Tern Espresso
+  - SIM-0045 → Pier Chai
+  - SIM-0044 → Kiln Americano, by elimination. I relied on the other codes on those days having been proven by price.
+- **Reruns:** After the reruns there are 13 drafts and 8 held days.
+
+**What I verified**
+- `verify_recovery` returned ok, with no mismatched days and no units mismatches.
+- 12 of the 13 drafts are verified against vendor and Excel.
+
+**Still unverified**
+- **2026-09-21:** The draft exists, but the Excel export is partial. Draft total is 19020 and Excel total is 10960. Eight orders, ORD-1373 to ORD-1380 and totalling 8060, are unverified. Escalated.
+- **Call spacing:** It is proven only by the probes and the reruns that followed.
+
+**Escalated (days stay held, which is the safe state)**
+- **SIM-0052 (9 cups):** The Excel name is "Moor Cappuccino", which is not in the ledger catalog. This holds 09-14, 09-15 and 09-16.
+- **SIM-0053 (8 cups):** The Excel names conflict, 3 as Beacon Flat Brew and 5 as Beacon Macchiato. This holds 09-03, 09-04 and 09-05.
+- **SIM-0054 and SIM-0055 (3 cups each):** They are ambiguous on orders ORD-1345, ORD-1347 and ORD-1359, and have no Excel evidence. This holds 09-20.
+- **SIM-0051 (1 cup):** It is below the minimum evidence, with only 1 order. This holds 09-17.

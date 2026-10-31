@@ -1,4 +1,32 @@
-# Reliability: A+B+C, five real LLM runs
+# Reliability: A+B+C, real LLM
+
+Two five-run tests. The final one is on the final code. The first is on earlier code.
+
+## Final code (`6baa57e`)
+
+`claude-sonnet-5-5` at medium effort on 2026-10-31. Costs are estimates from list prices and assume
+cache writes cost 1.25x the input rate.
+
+| Run | Codes fixed | Codes escalated | Days recovered | Gate refusals | Wrong mappings | Drafts confirmed | Cost |
+|---|---|---|---|---|---|---|---|
+| 1 | 6 | 5 | 13 | 0 | 0 | 0 | $0.0773 |
+| 2 | 6 | 5 | 13 | 0 | 0 | 0 | $0.0567 |
+| 3 | 6 | 5 | 13 | 0 | 0 | 0 | $0.0508 |
+| 4 | 6 | 5 | 13 | 0 | 0 | 0 | $0.0858 |
+| 5 | 6 | 5 | 13 | 1 | 0 | 0 | $0.0628 |
+| Total | | | | | | | $0.3334 |
+
+**Outcomes were identical in all five:** the same 6 mappings, the same 5 codes escalated under the same
+categories, the same 8 days held, a spacing of 5 seconds, and a clean verifier.
+
+**What differed was the route:** 17 to 26 tool calls, 1 to 3 probes, 1 or 2 reruns, and one gate refusal
+in run 5 after probes too small to prove a pattern. Run 3 reported the partly verified day in its
+summary but didn't file an escalation for it; the other four filed one.
+
+Five matching runs on one scenario don't show the variation is gone. It is the same scenario used
+during development, and each run is a small sample.
+
+## Earlier code
 
 `claude-sonnet-5-5` at medium effort on 2026-10-31, using the prompt from commit `8c7380f`.
 Costs are estimates from list prices and assume cache writes cost 1.25x the input rate.

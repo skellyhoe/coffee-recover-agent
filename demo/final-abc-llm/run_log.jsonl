@@ -1,0 +1,69 @@
+{"event": "run_start", "run_id": "run-1"}
+{"event": "day_failed", "run_id": "run-1", "date": "2026-09-01", "reason": "vendor_http_500", "vendor_call": 1}
+{"event": "day_failed", "run_id": "run-1", "date": "2026-09-02", "reason": "vendor_http_500", "vendor_call": 2}
+{"event": "day_failed", "run_id": "run-1", "date": "2026-09-03", "reason": "vendor_http_500", "vendor_call": 3}
+{"event": "day_failed", "run_id": "run-1", "date": "2026-09-04", "reason": "vendor_http_500", "vendor_call": 4}
+{"event": "day_held", "run_id": "run-1", "date": "2026-09-05", "reason": "unknown_code", "codes": {"SIM-0053-c07f": 4}, "vendor_call": 5}
+{"event": "day_failed", "run_id": "run-1", "date": "2026-09-06", "reason": "vendor_http_500", "vendor_call": 6}
+{"event": "day_failed", "run_id": "run-1", "date": "2026-09-07", "reason": "vendor_http_500", "vendor_call": 7}
+{"event": "day_failed", "run_id": "run-1", "date": "2026-09-08", "reason": "vendor_http_500", "vendor_call": 8}
+{"event": "day_failed", "run_id": "run-1", "date": "2026-09-09", "reason": "vendor_http_500", "vendor_call": 9}
+{"event": "day_held", "run_id": "run-1", "date": "2026-09-10", "reason": "unknown_code", "codes": {"SIM-0041-7c2e": 5, "SIM-0042-b19a": 1}, "vendor_call": 10}
+{"event": "day_failed", "run_id": "run-1", "date": "2026-09-11", "reason": "vendor_http_500", "vendor_call": 11}
+{"event": "day_failed", "run_id": "run-1", "date": "2026-09-12", "reason": "vendor_http_500", "vendor_call": 12}
+{"event": "day_failed", "run_id": "run-1", "date": "2026-09-13", "reason": "vendor_http_500", "vendor_call": 13}
+{"event": "day_failed", "run_id": "run-1", "date": "2026-09-14", "reason": "vendor_http_500", "vendor_call": 14}
+{"event": "day_held", "run_id": "run-1", "date": "2026-09-15", "reason": "unknown_code", "codes": {"SIM-0052-6d14": 5, "SIM-0043-04df": 2, "SIM-0041-7c2e": 1, "SIM-0042-b19a": 3}, "vendor_call": 15}
+{"event": "day_failed", "run_id": "run-1", "date": "2026-09-16", "reason": "vendor_http_500", "vendor_call": 16}
+{"event": "day_failed", "run_id": "run-1", "date": "2026-09-17", "reason": "vendor_http_500", "vendor_call": 17}
+{"event": "day_failed", "run_id": "run-1", "date": "2026-09-18", "reason": "vendor_http_500", "vendor_call": 18}
+{"event": "day_failed", "run_id": "run-1", "date": "2026-09-19", "reason": "vendor_http_500", "vendor_call": 19}
+{"event": "day_held", "run_id": "run-1", "date": "2026-09-20", "reason": "unknown_code", "codes": {"SIM-0041-7c2e": 1, "SIM-0054-18de": 3, "SIM-0055-f2b3": 3, "SIM-0042-b19a": 1, "SIM-0046-91bb": 2}, "vendor_call": 20}
+{"event": "day_failed", "run_id": "run-1", "date": "2026-09-21", "reason": "vendor_http_500", "vendor_call": 21}
+{"event": "run_end", "run_id": "run-1", "created": 0, "skipped": 0, "held": 4, "failed": 17, "refused": 0}
+{"event": "run_start", "run_id": "run-2"}
+{"event": "day_created", "run_id": "run-2", "date": "2026-09-01", "total": 14060, "vendor_call": 58}
+{"event": "day_created", "run_id": "run-2", "date": "2026-09-02", "total": 10460, "vendor_call": 59}
+{"event": "day_held", "run_id": "run-2", "date": "2026-09-03", "reason": "unknown_code", "codes": {"SIM-0053-c07f": 3}, "vendor_call": 60}
+{"event": "day_held", "run_id": "run-2", "date": "2026-09-04", "reason": "unknown_code", "codes": {"SIM-0053-c07f": 1}, "vendor_call": 61}
+{"event": "day_held", "run_id": "run-2", "date": "2026-09-05", "reason": "unknown_code", "codes": {"SIM-0053-c07f": 4}, "vendor_call": 62}
+{"event": "day_created", "run_id": "run-2", "date": "2026-09-06", "total": 14700, "vendor_call": 63}
+{"event": "day_created", "run_id": "run-2", "date": "2026-09-07", "total": 10480, "vendor_call": 64}
+{"event": "day_held", "run_id": "run-2", "date": "2026-09-08", "reason": "unknown_code", "codes": {"SIM-0044-e6a1": 1}, "vendor_call": 65}
+{"event": "day_held", "run_id": "run-2", "date": "2026-09-09", "reason": "unknown_code", "codes": {"SIM-0044-e6a1": 1}, "vendor_call": 66}
+{"event": "day_created", "run_id": "run-2", "date": "2026-09-10", "total": 16880, "vendor_call": 67}
+{"event": "day_created", "run_id": "run-2", "date": "2026-09-11", "total": 10360, "vendor_call": 68}
+{"event": "day_created", "run_id": "run-2", "date": "2026-09-12", "total": 16230, "vendor_call": 69}
+{"event": "day_held", "run_id": "run-2", "date": "2026-09-13", "reason": "unknown_code", "codes": {"SIM-0044-e6a1": 1, "SIM-0045-2f70": 2}, "vendor_call": 70}
+{"event": "day_held", "run_id": "run-2", "date": "2026-09-14", "reason": "unknown_code", "codes": {"SIM-0045-2f70": 4, "SIM-0052-6d14": 2}, "vendor_call": 71}
+{"event": "day_held", "run_id": "run-2", "date": "2026-09-15", "reason": "unknown_code", "codes": {"SIM-0052-6d14": 5}, "vendor_call": 72}
+{"event": "day_held", "run_id": "run-2", "date": "2026-09-16", "reason": "unknown_code", "codes": {"SIM-0052-6d14": 2}, "vendor_call": 73}
+{"event": "day_held", "run_id": "run-2", "date": "2026-09-17", "reason": "unknown_code", "codes": {"SIM-0045-2f70": 4, "SIM-0044-e6a1": 1, "SIM-0051-a3c8": 1}, "vendor_call": 74}
+{"event": "day_created", "run_id": "run-2", "date": "2026-09-18", "total": 14380, "vendor_call": 75}
+{"event": "day_created", "run_id": "run-2", "date": "2026-09-19", "total": 9010, "vendor_call": 76}
+{"event": "day_held", "run_id": "run-2", "date": "2026-09-20", "reason": "unknown_code", "codes": {"SIM-0054-18de": 3, "SIM-0055-f2b3": 3}, "vendor_call": 77}
+{"event": "day_created", "run_id": "run-2", "date": "2026-09-21", "total": 19020, "vendor_call": 78}
+{"event": "run_end", "run_id": "run-2", "created": 10, "skipped": 0, "held": 11, "failed": 0, "refused": 0}
+{"event": "run_start", "run_id": "run-3"}
+{"event": "day_skipped", "run_id": "run-3", "date": "2026-09-01"}
+{"event": "day_skipped", "run_id": "run-3", "date": "2026-09-02"}
+{"event": "day_held", "run_id": "run-3", "date": "2026-09-03", "reason": "unknown_code", "codes": {"SIM-0053-c07f": 3}, "vendor_call": 79}
+{"event": "day_held", "run_id": "run-3", "date": "2026-09-04", "reason": "unknown_code", "codes": {"SIM-0053-c07f": 1}, "vendor_call": 80}
+{"event": "day_held", "run_id": "run-3", "date": "2026-09-05", "reason": "unknown_code", "codes": {"SIM-0053-c07f": 4}, "vendor_call": 81}
+{"event": "day_skipped", "run_id": "run-3", "date": "2026-09-06"}
+{"event": "day_skipped", "run_id": "run-3", "date": "2026-09-07"}
+{"event": "day_created", "run_id": "run-3", "date": "2026-09-08", "total": 11370, "vendor_call": 82}
+{"event": "day_created", "run_id": "run-3", "date": "2026-09-09", "total": 11610, "vendor_call": 83}
+{"event": "day_skipped", "run_id": "run-3", "date": "2026-09-10"}
+{"event": "day_skipped", "run_id": "run-3", "date": "2026-09-11"}
+{"event": "day_skipped", "run_id": "run-3", "date": "2026-09-12"}
+{"event": "day_created", "run_id": "run-3", "date": "2026-09-13", "total": 11480, "vendor_call": 84}
+{"event": "day_held", "run_id": "run-3", "date": "2026-09-14", "reason": "unknown_code", "codes": {"SIM-0052-6d14": 2}, "vendor_call": 85}
+{"event": "day_held", "run_id": "run-3", "date": "2026-09-15", "reason": "unknown_code", "codes": {"SIM-0052-6d14": 5}, "vendor_call": 86}
+{"event": "day_held", "run_id": "run-3", "date": "2026-09-16", "reason": "unknown_code", "codes": {"SIM-0052-6d14": 2}, "vendor_call": 87}
+{"event": "day_held", "run_id": "run-3", "date": "2026-09-17", "reason": "unknown_code", "codes": {"SIM-0051-a3c8": 1}, "vendor_call": 88}
+{"event": "day_skipped", "run_id": "run-3", "date": "2026-09-18"}
+{"event": "day_skipped", "run_id": "run-3", "date": "2026-09-19"}
+{"event": "day_held", "run_id": "run-3", "date": "2026-09-20", "reason": "unknown_code", "codes": {"SIM-0054-18de": 3, "SIM-0055-f2b3": 3}, "vendor_call": 89}
+{"event": "day_skipped", "run_id": "run-3", "date": "2026-09-21"}
+{"event": "run_end", "run_id": "run-3", "created": 3, "skipped": 10, "held": 8, "failed": 0, "refused": 0}

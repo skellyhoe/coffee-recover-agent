@@ -1,0 +1,275 @@
+[
+ {
+  "fixed": [
+   "SIM-0041-7c2e",
+   "SIM-0042-b19a",
+   "SIM-0043-04df",
+   "SIM-0044-e6a1",
+   "SIM-0045-2f70",
+   "SIM-0046-91bb"
+  ],
+  "products": {
+   "SIM-0041-7c2e": "Foundry Mocha",
+   "SIM-0042-b19a": "Drift Cortado",
+   "SIM-0043-04df": "Saltmarsh Latte",
+   "SIM-0046-91bb": "Tern Espresso",
+   "SIM-0045-2f70": "Pier Chai",
+   "SIM-0044-e6a1": "Kiln Americano"
+  },
+  "escalated": [
+   "SIM-0051-a3c8",
+   "SIM-0052-6d14",
+   "SIM-0053-c07f",
+   "SIM-0054-18de",
+   "SIM-0055-f2b3"
+  ],
+  "categories": {
+   "SIM-0053-c07f": "conflicting_evidence",
+   "SIM-0052-6d14": "product_not_in_catalog",
+   "SIM-0051-a3c8": "weak_evidence",
+   "SIM-0054-18de": "weak_evidence",
+   "SIM-0055-f2b3": "weak_evidence"
+  },
+  "other_escalations": [
+   "other"
+  ],
+  "recovered": 13,
+  "held": [
+   "2026-09-03",
+   "2026-09-04",
+   "2026-09-05",
+   "2026-09-14",
+   "2026-09-15",
+   "2026-09-16",
+   "2026-09-17",
+   "2026-09-20"
+  ],
+  "spacing": 5,
+  "verifier_ok": true,
+  "refusals": 0,
+  "forbidden": 0,
+  "confirmed": 0,
+  "tool_calls": 21,
+  "stop_reason": null,
+  "cost": 0.0773,
+  "wrong_mappings": []
+ },
+ {
+  "fixed": [
+   "SIM-0041-7c2e",
+   "SIM-0042-b19a",
+   "SIM-0043-04df",
+   "SIM-0044-e6a1",
+   "SIM-0045-2f70",
+   "SIM-0046-91bb"
+  ],
+  "products": {
+   "SIM-0041-7c2e": "Foundry Mocha",
+   "SIM-0042-b19a": "Drift Cortado",
+   "SIM-0043-04df": "Saltmarsh Latte",
+   "SIM-0045-2f70": "Pier Chai",
+   "SIM-0046-91bb": "Tern Espresso",
+   "SIM-0044-e6a1": "Kiln Americano"
+  },
+  "escalated": [
+   "SIM-0051-a3c8",
+   "SIM-0052-6d14",
+   "SIM-0053-c07f",
+   "SIM-0054-18de",
+   "SIM-0055-f2b3"
+  ],
+  "categories": {
+   "SIM-0053-c07f": "conflicting_evidence",
+   "SIM-0052-6d14": "product_not_in_catalog",
+   "SIM-0051-a3c8": "weak_evidence",
+   "SIM-0054-18de": "weak_evidence",
+   "SIM-0055-f2b3": "weak_evidence"
+  },
+  "other_escalations": [
+   "other"
+  ],
+  "recovered": 13,
+  "held": [
+   "2026-09-03",
+   "2026-09-04",
+   "2026-09-05",
+   "2026-09-14",
+   "2026-09-15",
+   "2026-09-16",
+   "2026-09-17",
+   "2026-09-20"
+  ],
+  "spacing": 5,
+  "verifier_ok": true,
+  "refusals": 0,
+  "forbidden": 0,
+  "confirmed": 0,
+  "tool_calls": 19,
+  "stop_reason": null,
+  "cost": 0.0567,
+  "wrong_mappings": []
+ },
+ {
+  "fixed": [
+   "SIM-0041-7c2e",
+   "SIM-0042-b19a",
+   "SIM-0043-04df",
+   "SIM-0044-e6a1",
+   "SIM-0045-2f70",
+   "SIM-0046-91bb"
+  ],
+  "products": {
+   "SIM-0041-7c2e": "Foundry Mocha",
+   "SIM-0042-b19a": "Drift Cortado",
+   "SIM-0043-04df": "Saltmarsh Latte",
+   "SIM-0046-91bb": "Tern Espresso",
+   "SIM-0045-2f70": "Pier Chai",
+   "SIM-0044-e6a1": "Kiln Americano"
+  },
+  "escalated": [
+   "SIM-0051-a3c8",
+   "SIM-0052-6d14",
+   "SIM-0053-c07f",
+   "SIM-0054-18de",
+   "SIM-0055-f2b3"
+  ],
+  "categories": {
+   "SIM-0053-c07f": "conflicting_evidence",
+   "SIM-0052-6d14": "product_not_in_catalog",
+   "SIM-0051-a3c8": "weak_evidence",
+   "SIM-0054-18de": "weak_evidence",
+   "SIM-0055-f2b3": "weak_evidence"
+  },
+  "other_escalations": [],
+  "recovered": 13,
+  "held": [
+   "2026-09-03",
+   "2026-09-04",
+   "2026-09-05",
+   "2026-09-14",
+   "2026-09-15",
+   "2026-09-16",
+   "2026-09-17",
+   "2026-09-20"
+  ],
+  "spacing": 5,
+  "verifier_ok": true,
+  "refusals": 0,
+  "forbidden": 0,
+  "confirmed": 0,
+  "tool_calls": 17,
+  "stop_reason": null,
+  "cost": 0.0508,
+  "wrong_mappings": []
+ },
+ {
+  "fixed": [
+   "SIM-0041-7c2e",
+   "SIM-0042-b19a",
+   "SIM-0043-04df",
+   "SIM-0044-e6a1",
+   "SIM-0045-2f70",
+   "SIM-0046-91bb"
+  ],
+  "products": {
+   "SIM-0041-7c2e": "Foundry Mocha",
+   "SIM-0042-b19a": "Drift Cortado",
+   "SIM-0043-04df": "Saltmarsh Latte",
+   "SIM-0046-91bb": "Tern Espresso",
+   "SIM-0045-2f70": "Pier Chai",
+   "SIM-0044-e6a1": "Kiln Americano"
+  },
+  "escalated": [
+   "SIM-0051-a3c8",
+   "SIM-0052-6d14",
+   "SIM-0053-c07f",
+   "SIM-0054-18de",
+   "SIM-0055-f2b3"
+  ],
+  "categories": {
+   "SIM-0052-6d14": "product_not_in_catalog",
+   "SIM-0053-c07f": "conflicting_evidence",
+   "SIM-0051-a3c8": "weak_evidence",
+   "SIM-0054-18de": "weak_evidence",
+   "SIM-0055-f2b3": "weak_evidence"
+  },
+  "other_escalations": [
+   "other"
+  ],
+  "recovered": 13,
+  "held": [
+   "2026-09-03",
+   "2026-09-04",
+   "2026-09-05",
+   "2026-09-14",
+   "2026-09-15",
+   "2026-09-16",
+   "2026-09-17",
+   "2026-09-20"
+  ],
+  "spacing": 5,
+  "verifier_ok": true,
+  "refusals": 0,
+  "forbidden": 0,
+  "confirmed": 0,
+  "tool_calls": 26,
+  "stop_reason": null,
+  "cost": 0.0858,
+  "wrong_mappings": []
+ },
+ {
+  "fixed": [
+   "SIM-0041-7c2e",
+   "SIM-0042-b19a",
+   "SIM-0043-04df",
+   "SIM-0044-e6a1",
+   "SIM-0045-2f70",
+   "SIM-0046-91bb"
+  ],
+  "products": {
+   "SIM-0041-7c2e": "Foundry Mocha",
+   "SIM-0042-b19a": "Drift Cortado",
+   "SIM-0043-04df": "Saltmarsh Latte",
+   "SIM-0046-91bb": "Tern Espresso",
+   "SIM-0045-2f70": "Pier Chai",
+   "SIM-0044-e6a1": "Kiln Americano"
+  },
+  "escalated": [
+   "SIM-0051-a3c8",
+   "SIM-0052-6d14",
+   "SIM-0053-c07f",
+   "SIM-0054-18de",
+   "SIM-0055-f2b3"
+  ],
+  "categories": {
+   "SIM-0052-6d14": "product_not_in_catalog",
+   "SIM-0053-c07f": "conflicting_evidence",
+   "SIM-0054-18de": "weak_evidence",
+   "SIM-0055-f2b3": "weak_evidence",
+   "SIM-0051-a3c8": "weak_evidence"
+  },
+  "other_escalations": [
+   "other"
+  ],
+  "recovered": 13,
+  "held": [
+   "2026-09-03",
+   "2026-09-04",
+   "2026-09-05",
+   "2026-09-14",
+   "2026-09-15",
+   "2026-09-16",
+   "2026-09-17",
+   "2026-09-20"
+  ],
+  "spacing": 5,
+  "verifier_ok": true,
+  "refusals": 1,
+  "forbidden": 0,
+  "confirmed": 0,
+  "tool_calls": 22,
+  "stop_reason": null,
+  "cost": 0.0628,
+  "wrong_mappings": []
+ }
+]
