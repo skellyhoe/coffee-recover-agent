@@ -43,4 +43,4 @@ Every mapping is written to `changes.jsonl` with its evidence. Drafts record the
 ## State
 
 One directory per run (`runs/<name>/`): `world.json`, `ledger.json`, `mapping.json`, `export.xlsx`,
-`run_log.jsonl`, `changes.jsonl`, `escalations.json`, `transcript.jsonl`, `report.html`.
+`run_log.jsonl`, `changes.jsonl`, `escalations.jsonl`, `transcript.jsonl`, `report.html`.
