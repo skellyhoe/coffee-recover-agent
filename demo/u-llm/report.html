@@ -1,0 +1,494 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>Incident Report</title>
+<style>
+:root { --bg:#fbfaf8; --fg:#23201c; --muted:#6d665d; --line:#e2ddd5; --card:#fff;
+  --good:#1d6b45; --warn:#9a5b00; --bad:#a32a2a; }
+@media (prefers-color-scheme: dark) { :root { --bg:#1b1917; --fg:#ece7df; --muted:#a59d92;
+  --line:#37332e; --card:#242120; --good:#6fc79b; --warn:#e0a84e; --bad:#ec8a8a; } }
+* { box-sizing:border-box; }
+body { background:var(--bg); color:var(--fg); margin:0 auto; max-width:1000px; padding:32px 16px;
+  font:15px/1.5 -apple-system, "Segoe UI", Roboto, sans-serif; }
+h1 { font-size:24px; margin:0 0 4px; } h2 { font-size:17px; margin:32px 0 8px; }
+.muted { color:var(--muted); } .banner { border:1px solid var(--line); border-left:4px solid
+  var(--warn); padding:8px 12px; margin:12px 0 20px; background:var(--card); }
+.stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:10px; }
+.stat { background:var(--card); border:1px solid var(--line); padding:10px 12px; }
+.stat b { display:block; font-size:22px; font-variant-numeric:tabular-nums; }
+.wrap { overflow-x:auto; } table { border-collapse:collapse; width:100%; background:var(--card); }
+th,td { text-align:left; padding:7px 10px; border:1px solid var(--line); vertical-align:top; }
+th { font-size:13px; color:var(--muted); font-weight:600; }
+td.n { text-align:right; font-variant-numeric:tabular-nums; }
+code { font:12.5px ui-monospace, Menlo, monospace; }
+.good { color:var(--good); } .warn { color:var(--warn); } .bad { color:var(--bad); }
+details { background:var(--card); border:1px solid var(--line); padding:6px 10px; margin:4px 0; }
+pre { white-space:pre-wrap; overflow-wrap:anywhere; font:12px ui-monospace, Menlo, monospace;
+  max-height:300px; overflow:auto; margin:6px 0; }
+button { font:inherit; padding:3px 12px; cursor:pointer; }
+.summary { background:var(--card); border:1px solid var(--line); padding:10px 14px;
+  white-space:pre-wrap; }
+</style></head><body>
+<h1>Incident report: days held back by unknown codes</h1>
+<p class="muted">Driver: llm:claude-sonnet-5-5</p>
+<div class="banner">Fully simulated, with invented data. This agent is a hackathon build and has
+never run against a real system. No confirm capability exists anywhere in it.</div>
+<div class="stats">
+<div class="stat"><b>0</b><span class="muted">days without a draft at first</span></div><div class="stat"><b>0</b><span class="muted">days held now</span></div>
+<div class="stat"><b>21</b><span class="muted">draft invoices</span></div><div class="stat"><b>0</b><span class="muted">active mappings added</span></div>
+<div class="stat"><b>1</b><span class="muted">escalations</span></div></div>
+<h2>Summary</h2><div class="summary">**What was wrong:** The run didn&#x27;t hold or fail anything. It created all 21 drafts, with 0 held, 0 failed and no unknown codes. Three drafts have a units mismatch. On 2026-09-09, 09-10 and 09-11 the vendor prices are exactly 100 times the Excel prices.
+
+| Day | Draft total | Excel total |
+|---|---|---|
+| 2026-09-09 | 1012000 | 10120 |
+| 2026-09-10 | 1446000 | 14460 |
+| 2026-09-11 | 926000 | 9260 |
+
+**What I changed:** Nothing. I can&#x27;t change prices, and a unit scale error isn&#x27;t something a code mapping can fix.
+
+**What I verified:** `verify_recovery` confirmed 18 of the 21 days match Excel. The other 3 are the days above. The verify output shows the same products on those days, only at prices 100 times higher, so the product mapping looks right there. I didn&#x27;t check that against the raw orders.
+
+**What I escalated:** I escalated the three days as a units mismatch (esc-1), with the totals above. They should be corrected or voided before anyone approves them. A human should also confirm the price scale with the vendor.
+
+**What is still unverified:** Which scale is correct for those three days. I assumed the Excel scale, but I can&#x27;t prove it. I also don&#x27;t know why the vendor&#x27;s scale changed on those days. I didn&#x27;t run `propose_mappings`, because there were no unknown codes to map.</div>
+<h2>Verification</h2><p><span class="bad">Problems found</span>. 18 days match Excel; see below.</p><p class="bad">2026-09-09: units mismatch. Vendor 1012000 against Excel 10120, a ratio of 100.0. Escalated, not fixed.</p><p class="bad">2026-09-10: units mismatch. Vendor 1446000 against Excel 14460, a ratio of 100.0. Escalated, not fixed.</p><p class="bad">2026-09-11: units mismatch. Vendor 926000 against Excel 9260, a ratio of 100.0. Escalated, not fixed.</p><p class="bad">2026-09-09: draft total 1012000 != Excel 10120; product quantities differ from Excel: {&#x27;Copper Oat Cloud @ 36000&#x27;: 1, &#x27;Harbour Flat Brew @ 260&#x27;: -1, &#x27;Ember Flat Brew @ 440&#x27;: -1, &#x27;Thistle Long Pull @ 26000&#x27;: 2, &#x27;Meadow Long Pull @ 400&#x27;: -2, &#x27;Lantern Long Pull @ 420&#x27;: -3, &#x27;Quarry Oat Cloud @ 30000&#x27;: 1, &#x27;Harbour Flat Brew @ 26000&#x27;: 1, &#x27;Ember Flat Brew @ 44000&#x27;: 1, &#x27;Meadow Long Pull @ 40000&#x27;: 2, &#x27;Quarry Oat Cloud @ 300&#x27;: -1, &#x27;Ember Oat Cloud @ 340&#x27;: -1, &#x27;Ember Oat Cloud @ 34000&#x27;: 1, &#x27;Orchard Milk Cap @ 34000&#x27;: 3, &#x27;Orchard Milk Cap @ 340&#x27;: -3, &#x27;Orchard Long Pull @ 28000&#x27;: 1, &#x27;Orchard Long Pull @ 280&#x27;: -1, &#x27;Copper Flat Brew @ 24000&#x27;: 1, &#x27;Copper Short Roast @ 32000&#x27;: 3, &#x27;Copper Short Roast @ 320&#x27;: -3, &#x27;Harbour Short Roast @ 360&#x27;: -2, &#x27;Copper Flat Brew @ 240&#x27;: -1, &#x27;Harbour Short Roast @ 36000&#x27;: 2, &#x27;Lantern Flat Brew @ 460&#x27;: -1, &#x27;Thistle Short Roast @ 22000&#x27;: 3, &#x27;Thistle Short Roast @ 220&#x27;: -3, &#x27;Lantern Milk Cap @ 220&#x27;: -2, &#x27;Orchard Oat Cloud @ 38000&#x27;: 1, &#x27;Lantern Flat Brew @ 46000&#x27;: 1, &#x27;Orchard Oat Cloud @ 380&#x27;: -1, &#x27;Harbour Long Pull @ 340&#x27;: -2, &#x27;Lantern Long Pull @ 42000&#x27;: 3, &#x27;Lantern Milk Cap @ 22000&#x27;: 2, &#x27;Copper Oat Cloud @ 360&#x27;: -1, &#x27;Thistle Long Pull @ 260&#x27;: -2, &#x27;Harbour Long Pull @ 34000&#x27;: 2}</p><p class="bad">2026-09-10: draft total 1446000 != Excel 14460; product quantities differ from Excel: {&#x27;Lantern Short Roast @ 40000&#x27;: 3, &#x27;Quarry Milk Cap @ 24000&#x27;: 4, &#x27;Quarry Milk Cap @ 240&#x27;: -4, &#x27;Meadow Flat Brew @ 320&#x27;: -1, &#x27;Ember Flat Brew @ 440&#x27;: -1, &#x27;Meadow Flat Brew @ 32000&#x27;: 1, &#x27;Ember Flat Brew @ 44000&#x27;: 1, &#x27;Quarry Short Roast @ 360&#x27;: -1, &#x27;Lantern Oat Cloud @ 360&#x27;: -4, &#x27;Quarry Short Roast @ 36000&#x27;: 1, &#x27;Orchard Short Roast @ 320&#x27;: -1, &#x27;Lantern Oat Cloud @ 36000&#x27;: 4, &#x27;Orchard Short Roast @ 32000&#x27;: 1, &#x27;Ember Milk Cap @ 26000&#x27;: 1, &#x27;Ember Milk Cap @ 260&#x27;: -1, &#x27;Orchard Long Pull @ 28000&#x27;: 2, &#x27;Orchard Long Pull @ 280&#x27;: -2, &#x27;Copper Flat Brew @ 24000&#x27;: 1, &#x27;Copper Flat Brew @ 240&#x27;: -1, &#x27;Harbour Short Roast @ 360&#x27;: -1, &#x27;Harbour Short Roast @ 36000&#x27;: 1, &#x27;Harbour Long Pull @ 340&#x27;: -3, &#x27;Copper Oat Cloud @ 360&#x27;: -2, &#x27;Thistle Long Pull @ 260&#x27;: -1, &#x27;Harbour Long Pull @ 34000&#x27;: 3, &#x27;Copper Oat Cloud @ 36000&#x27;: 2, &#x27;Harbour Flat Brew @ 260&#x27;: -2, &#x27;Lantern Long Pull @ 420&#x27;: -1, &#x27;Thistle Long Pull @ 26000&#x27;: 1, &#x27;Meadow Long Pull @ 400&#x27;: -4, &#x27;Ember Short Roast @ 44000&#x27;: 1, &#x27;Harbour Flat Brew @ 26000&#x27;: 2, &#x27;Ember Short Roast @ 440&#x27;: -1, &#x27;Ember Long Pull @ 44000&#x27;: 1, &#x27;Meadow Long Pull @ 40000&#x27;: 4, &#x27;Ember Long Pull @ 440&#x27;: -1, &#x27;Orchard Milk Cap @ 34000&#x27;: 2, &#x27;Orchard Milk Cap @ 340&#x27;: -2, &#x27;Copper Short Roast @ 32000&#x27;: 1, &#x27;Copper Short Roast @ 320&#x27;: -1, &#x27;Lantern Flat Brew @ 460&#x27;: -2, &#x27;Thistle Short Roast @ 22000&#x27;: 2, &#x27;Thistle Short Roast @ 220&#x27;: -2, &#x27;Lantern Milk Cap @ 220&#x27;: -1, &#x27;Lantern Flat Brew @ 46000&#x27;: 2, &#x27;Lantern Long Pull @ 42000&#x27;: 1, &#x27;Lantern Milk Cap @ 22000&#x27;: 1, &#x27;Lantern Short Roast @ 400&#x27;: -3}</p><p class="bad">2026-09-11: draft total 926000 != Excel 9260; product quantities differ from Excel: {&#x27;Lantern Short Roast @ 40000&#x27;: 1, &#x27;Quarry Milk Cap @ 24000&#x27;: 1, &#x27;Thistle Milk Cap @ 44000&#x27;: 2, &#x27;Quarry Milk Cap @ 240&#x27;: -1, &#x27;Ember Flat Brew @ 440&#x27;: -1, &#x27;Lantern Short Roast @ 400&#x27;: -1, &#x27;Ember Flat Brew @ 44000&#x27;: 1, &#x27;Quarry Short Roast @ 360&#x27;: -1, &#x27;Ember Oat Cloud @ 340&#x27;: -1, &#x27;Lantern Oat Cloud @ 360&#x27;: -1, &#x27;Quarry Short Roast @ 36000&#x27;: 1, &#x27;Ember Oat Cloud @ 34000&#x27;: 1, &#x27;Orchard Short Roast @ 320&#x27;: -1, &#x27;Lantern Oat Cloud @ 36000&#x27;: 1, &#x27;Orchard Short Roast @ 32000&#x27;: 1, &#x27;Orchard Long Pull @ 28000&#x27;: 1, &#x27;Orchard Long Pull @ 280&#x27;: -1, &#x27;Copper Flat Brew @ 24000&#x27;: 1, &#x27;Copper Flat Brew @ 240&#x27;: -1, &#x27;Harbour Short Roast @ 360&#x27;: -2, &#x27;Harbour Short Roast @ 36000&#x27;: 2, &#x27;Harbour Oat Cloud @ 260&#x27;: -1, &#x27;Harbour Long Pull @ 340&#x27;: -1, &#x27;Harbour Oat Cloud @ 26000&#x27;: 1, &#x27;Copper Oat Cloud @ 360&#x27;: -1, &#x27;Thistle Long Pull @ 260&#x27;: -1, &#x27;Harbour Long Pull @ 34000&#x27;: 1, &#x27;Copper Oat Cloud @ 36000&#x27;: 1, &#x27;Harbour Flat Brew @ 260&#x27;: -1, &#x27;Lantern Long Pull @ 420&#x27;: -2, &#x27;Thistle Long Pull @ 26000&#x27;: 1, &#x27;Meadow Long Pull @ 400&#x27;: -1, &#x27;Harbour Flat Brew @ 26000&#x27;: 1, &#x27;Ember Long Pull @ 44000&#x27;: 1, &#x27;Meadow Long Pull @ 40000&#x27;: 1, &#x27;Ember Long Pull @ 440&#x27;: -1, &#x27;Meadow Oat Cloud @ 460&#x27;: -1, &#x27;Meadow Oat Cloud @ 46000&#x27;: 1, &#x27;Meadow Short Roast @ 24000&#x27;: 1, &#x27;Thistle Short Roast @ 22000&#x27;: 1, &#x27;Thistle Short Roast @ 220&#x27;: -1, &#x27;Meadow Short Roast @ 240&#x27;: -1, &#x27;Orchard Oat Cloud @ 38000&#x27;: 1, &#x27;Lantern Milk Cap @ 220&#x27;: -1, &#x27;Orchard Oat Cloud @ 380&#x27;: -1, &#x27;Lantern Long Pull @ 42000&#x27;: 2, &#x27;Lantern Milk Cap @ 22000&#x27;: 1, &#x27;Thistle Milk Cap @ 440&#x27;: -2}</p>
+<h2>Mappings applied, with evidence</h2><p class="muted">Undo buttons work in the live view: <code>python -m report.serve runs/u-llm</code></p><p class="muted">No mappings were applied.</p>
+
+<h2>Escalated to a human</h2><div class="wrap"><table><tr><th>Category</th><th>Codes</th><th>What the human needs to know</th><th>Raised by</th></tr><tr><td>units_mismatch</td><td><code>-</code></td><td>Drafts for 2026-09-09, 09-10 and 09-11 have vendor prices exactly 100x the Excel prices. Draft totals, then Excel totals: 09-09 1012000 vs 10120. 09-10 1446000 vs 14460. 09-11 926000 vs 9260. Product mapping matches Excel on these days. Only the unit prices differ, so the vendor likely sent major units or a different scale on those days. I can&#x27;t change prices, so I changed nothing. A human should correct or void these three drafts and confirm the correct scale with the vendor. Do not approve them as they are.</td><td>agent</td></tr></table></div>
+<h2>Every agent action</h2><details><summary><code>read_run_log</code> <span class="muted">{}</span></summary><pre>{
+ &quot;classification&quot;: {
+  &quot;units_mismatch&quot;: 3
+ },
+ &quot;units_mismatch_days&quot;: [
+  {
+   &quot;date&quot;: &quot;2026-09-09&quot;,
+   &quot;vendor_total&quot;: 1012000,
+   &quot;excel_total&quot;: 10120,
+   &quot;ratio&quot;: 100.0
+  },
+  {
+   &quot;date&quot;: &quot;2026-09-10&quot;,
+   &quot;vendor_total&quot;: 1446000,
+   &quot;excel_total&quot;: 14460,
+   &quot;ratio&quot;: 100.0
+  },
+  {
+   &quot;date&quot;: &quot;2026-09-11&quot;,
+   &quot;vendor_total&quot;: 926000,
+   &quot;excel_total&quot;: 9260,
+   &quot;ratio&quot;: 100.0
+  }
+ ],
+ &quot;events&quot;: [
+  {
+   &quot;event&quot;: &quot;run_start&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;
+  },
+  {
+   &quot;event&quot;: &quot;day_created&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-01&quot;,
+   &quot;total&quot;: 14060,
+   &quot;vendor_call&quot;: 1
+  },
+  {
+   &quot;event&quot;: &quot;day_created&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-02&quot;,
+   &quot;total&quot;: 10460,
+   &quot;vendor_call&quot;: 2
+  },
+  {
+   &quot;event&quot;: &quot;day_created&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-03&quot;,
+   &quot;total&quot;: 15200,
+   &quot;vendor_call&quot;: 3
+  },
+  {
+   &quot;event&quot;: &quot;day_created&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-04&quot;,
+   &quot;total&quot;: 11260,
+   &quot;vendor_call&quot;: 4
+  },
+  {
+   &quot;event&quot;: &quot;day_created&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;total&quot;: 10460,
+   &quot;vendor_call&quot;: 5
+  },
+  {
+   &quot;event&quot;: &quot;day_created&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-06&quot;,
+   &quot;total&quot;: 14700,
+   &quot;vendor_call&quot;: 6
+  },
+  {
+   &quot;event&quot;: &quot;day_created&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-07&quot;,
+   &quot;total&quot;: 9660,
+   &quot;vendor_call&quot;: 7
+  },
+  {
+   &quot;event&quot;: &quot;day_created&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-08&quot;,
+   &quot;total&quot;: 10240,
+   &quot;vendor_call&quot;: 8
+  },
+  {
+   &quot;event&quot;: &quot;day_created&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-09&quot;,
+   &quot;total&quot;: 1012000,
+   &quot;vendor_call&quot;: 9
+  },
+  {
+   &quot;event&quot;: &quot;day_created&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-10&quot;,
+   &quot;total&quot;: 1446000,
+   &quot;vendor_call&quot;: 10
+  },
+  {
+   &quot;event&quot;: &quot;day_created&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-11&quot;,
+   &quot;total&quot;: 926000,
+   &quot;vendor_call&quot;: 11
+  },
+  {
+   &quot;event&quot;: &quot;day_created&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-12&quot;,
+   &quot;total&quot;: 13820,
+   &quot;vendor_call&quot;: 12
+  },
+  {
+   &quot;event&quot;: &quot;day_created&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-13&quot;,
+   &quot;total&quot;: 8300,
+   &quot;vendor_call&quot;: 13
+  },
+  {
+   &quot;event&quot;: &quot;day_created&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-14&quot;,
+   &quot;total&quot;: 11700,
+   &quot;vendor_call&quot;: 14
+  },
+  {
+   &quot;event&quot;: &quot;day_created&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-15&quot;,
+   &quot;total&quot;: 13440,
+   &quot;vendor_call&quot;: 15
+  },
+  {
+   &quot;event&quot;: &quot;day_created&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-16&quot;,
+   &quot;total&quot;: 10140,
+   &quot;vendor_call&quot;: 16
+  },
+  {
+   &quot;event&quot;: &quot;day_created&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-17&quot;,
+   &quot;total&quot;: 9820,
+   &quot;vendor_call&quot;: 17
+  },
+  {
+   &quot;event&quot;: &quot;day_created&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-18&quot;,
+   &quot;total&quot;: 12420,
+   &quot;vendor_call&quot;: 18
+  },
+  {
+   &quot;event&quot;: &quot;day_created&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-19&quot;,
+   &quot;total&quot;: 7980,
+   &quot;vendor_call&quot;: 19
+  },
+  {
+   &quot;event&quot;: &quot;day_created&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-20&quot;,
+   &quot;total&quot;: 15700,
+   &quot;vendor_call&quot;: 20
+  },
+  {
+   &quot;event&quot;: &quot;day_created&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-21&quot;,
+   &quot;total&quot;: 16280,
+   &quot;vendor_call&quot;: 21
+  },
+  {
+   &quot;event&quot;: &quot;run_end&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;created&quot;: 21,
+   &quot;skipped&quot;: 0,
+   &quot;held&quot;: 0,
+   &quot;failed&quot;: 0
+  }
+ ]
+}</pre></details><details><summary><code>get_ledger_state</code> <span class="muted">{}</span></summary><pre>{
+ &quot;drafts&quot;: [
+  {
+   &quot;date&quot;: &quot;2026-09-01&quot;,
+   &quot;status&quot;: &quot;draft&quot;,
+   &quot;total&quot;: 14060,
+   &quot;run_id&quot;: &quot;run-1&quot;
+  },
+  {
+   &quot;date&quot;: &quot;2026-09-02&quot;,
+   &quot;status&quot;: &quot;draft&quot;,
+   &quot;total&quot;: 10460,
+   &quot;run_id&quot;: &quot;run-1&quot;
+  },
+  {
+   &quot;date&quot;: &quot;2026-09-03&quot;,
+   &quot;status&quot;: &quot;draft&quot;,
+   &quot;total&quot;: 15200,
+   &quot;run_id&quot;: &quot;run-1&quot;
+  },
+  {
+   &quot;date&quot;: &quot;2026-09-04&quot;,
+   &quot;status&quot;: &quot;draft&quot;,
+   &quot;total&quot;: 11260,
+   &quot;run_id&quot;: &quot;run-1&quot;
+  },
+  {
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;status&quot;: &quot;draft&quot;,
+   &quot;total&quot;: 10460,
+   &quot;run_id&quot;: &quot;run-1&quot;
+  },
+  {
+   &quot;date&quot;: &quot;2026-09-06&quot;,
+   &quot;status&quot;: &quot;draft&quot;,
+   &quot;total&quot;: 14700,
+   &quot;run_id&quot;: &quot;run-1&quot;
+  },
+  {
+   &quot;date&quot;: &quot;2026-09-07&quot;,
+   &quot;status&quot;: &quot;draft&quot;,
+   &quot;total&quot;: 9660,
+   &quot;run_id&quot;: &quot;run-1&quot;
+  },
+  {
+   &quot;date&quot;: &quot;2026-09-08&quot;,
+   &quot;status&quot;: &quot;draft&quot;,
+   &quot;total&quot;: 10240,
+   &quot;run_id&quot;: &quot;run-1&quot;
+  },
+  {
+   &quot;date&quot;: &quot;2026-09-09&quot;,
+   &quot;status&quot;: &quot;draft&quot;,
+   &quot;total&quot;: 1012000,
+   &quot;run_id&quot;: &quot;run-1&quot;
+  },
+  {
+   &quot;date&quot;: &quot;2026-09-10&quot;,
+   &quot;status&quot;: &quot;draft&quot;,
+   &quot;total&quot;: 1446000,
+   &quot;run_id&quot;: &quot;run-1&quot;
+  },
+  {
+   &quot;date&quot;: &quot;2026-09-11&quot;,
+   &quot;status&quot;: &quot;draft&quot;,
+   &quot;total&quot;: 926000,
+   &quot;run_id&quot;: &quot;run-1&quot;
+  },
+  {
+   &quot;date&quot;: &quot;2026-09-12&quot;,
+   &quot;status&quot;: &quot;draft&quot;,
+   &quot;total&quot;: 13820,
+   &quot;run_id&quot;: &quot;run-1&quot;
+  },
+  {
+   &quot;date&quot;: &quot;2026-09-13&quot;,
+   &quot;status&quot;: &quot;draft&quot;,
+   &quot;total&quot;: 8300,
+   &quot;run_id&quot;: &quot;run-1&quot;
+  },
+  {
+   &quot;date&quot;: &quot;2026-09-14&quot;,
+   &quot;status&quot;: &quot;draft&quot;,
+   &quot;total&quot;: 11700,
+   &quot;run_id&quot;: &quot;run-1&quot;
+  },
+  {
+   &quot;date&quot;: &quot;2026-09-15&quot;,
+   &quot;status&quot;: &quot;draft&quot;,
+   &quot;total&quot;: 13440,
+   &quot;run_id&quot;: &quot;run-1&quot;
+  },
+  {
+   &quot;date&quot;: &quot;2026-09-16&quot;,
+   &quot;status&quot;: &quot;draft&quot;,
+   &quot;total&quot;: 10140,
+   &quot;run_id&quot;: &quot;run-1&quot;
+  },
+  {
+   &quot;date&quot;: &quot;2026-09-17&quot;,
+   &quot;status&quot;: &quot;draft&quot;,
+   &quot;total&quot;: 9820,
+   &quot;run_id&quot;: &quot;run-1&quot;
+  },
+  {
+   &quot;date&quot;: &quot;2026-09-18&quot;,
+   &quot;status&quot;: &quot;draft&quot;,
+   &quot;total&quot;: 12420,
+   &quot;run_id&quot;: &quot;run-1&quot;
+  },
+  {
+   &quot;date&quot;: &quot;2026-09-19&quot;,
+   &quot;status&quot;: &quot;draft&quot;,
+   &quot;total&quot;: 7980,
+   &quot;run_id&quot;: &quot;run-1&quot;
+  },
+  {
+   &quot;date&quot;: &quot;2026-09-20&quot;,
+   &quot;status&quot;: &quot;draft&quot;,
+   &quot;total&quot;: 15700,
+   &quot;run_id&quot;: &quot;run-1&quot;
+  },
+  {
+   &quot;date&quot;: &quot;2026-09-21&quot;,
+   &quot;status&quot;: &quot;draft&quot;,
+   &quot;total&quot;: 16280,
+   &quot;run_id&quot;: &quot;run-1&quot;
+  }
+ ],
+ &quot;held_days&quot;: [],
+ &quot;catalog_products&quot;: [
+  &quot;Copper Flat Brew&quot;,
+  &quot;Copper Long Pull&quot;,
+  &quot;Copper Milk Cap&quot;,
+  &quot;Copper Oat Cloud&quot;,
+  &quot;Copper Short Roast&quot;,
+  &quot;Ember Flat Brew&quot;,
+  &quot;Ember Long Pull&quot;,
+  &quot;Ember Milk Cap&quot;,
+  &quot;Ember Oat Cloud&quot;,
+  &quot;Ember Short Roast&quot;,
+  &quot;Harbour Flat Brew&quot;,
+  &quot;Harbour Long Pull&quot;,
+  &quot;Harbour Milk Cap&quot;,
+  &quot;Harbour Oat Cloud&quot;,
+  &quot;Harbour Short Roast&quot;,
+  &quot;Lantern Flat Brew&quot;,
+  &quot;Lantern Long Pull&quot;,
+  &quot;Lantern Milk Cap&quot;,
+  &quot;Lantern Oat Cloud&quot;,
+  &quot;Lantern Short Roast&quot;,
+  &quot;Meadow Flat Brew&quot;,
+  &quot;Meadow Long Pull&quot;,
+  &quot;Meadow Milk Cap&quot;,
+  &quot;Meadow Oat Cloud&quot;,
+  &quot;Meadow Short Roast&quot;,
+  &quot;Orchard Flat Brew&quot;,
+  &quot;Orchard Long Pull&quot;,
+  &quot;Orchard Milk Cap&quot;,
+  &quot;Orchard Oat Cloud&quot;,
+  &quot;Orchard Short Roast&quot;,
+  &quot;Quarry Flat Brew&quot;,
+  &quot;Quarry Long Pull&quot;,
+  &quot;Quarry Milk Cap&quot;,
+  &quot;Quarry Oat Cloud&quot;,
+  &quot;Quarry Short Roast&quot;,
+  &quot;Thistle Flat Brew&quot;,
+  &quot;Thistle Long Pull&quot;,
+  &quot;Thistle Milk Cap&quot;,
+  &quot;Thistle Oat Cloud&quot;,
+  &quot;Thistle Short Roast&quot;
+ ]
+}</pre></details><details><summary><code>list_unknown_codes</code> <span class="muted">{}</span></summary><pre>[]</pre></details><p class="muted">Units mismatch only. Run verify to confirm totals.</p><details><summary><code>verify_recovery</code> <span class="muted">{}</span></summary><pre>{
+ &quot;ok&quot;: false,
+ &quot;units_mismatch_days&quot;: [
+  {
+   &quot;date&quot;: &quot;2026-09-09&quot;,
+   &quot;vendor_total&quot;: 1012000,
+   &quot;excel_total&quot;: 10120,
+   &quot;ratio&quot;: 100.0
+  },
+  {
+   &quot;date&quot;: &quot;2026-09-10&quot;,
+   &quot;vendor_total&quot;: 1446000,
+   &quot;excel_total&quot;: 14460,
+   &quot;ratio&quot;: 100.0
+  },
+  {
+   &quot;date&quot;: &quot;2026-09-11&quot;,
+   &quot;vendor_total&quot;: 926000,
+   &quot;excel_total&quot;: 9260,
+   &quot;ratio&quot;: 100.0
+  }
+ ],
+ &quot;global_problems&quot;: [],
+ &quot;drafts&quot;: 21,
+ &quot;verified_days&quot;: 18,
+ &quot;partial_export_days&quot;: [],
+ &quot;mismatched_days&quot;: [
+  {
+   &quot;date&quot;: &quot;2026-09-09&quot;,
+   &quot;status&quot;: &quot;mismatch&quot;,
+   &quot;total&quot;: 1012000,
+   &quot;paid&quot;: 1012000,
+   &quot;excel_total&quot;: 10120,
+   &quot;problems&quot;: [
+    &quot;draft total 1012000 != Excel 10120&quot;,
+    &quot;product quantities differ from Excel: {&#x27;Copper Oat Cloud @ 36000&#x27;: 1, &#x27;Harbour Flat Brew @ 260&#x27;: -1, &#x27;Ember Flat Brew @ 440&#x27;: -1, &#x27;Thistle Long Pull @ 26000&#x27;: 2, &#x27;Meadow Long Pull @ 400&#x27;: -2, &#x27;Lantern Long Pull @ 420&#x27;: -3, &#x27;Quarry Oat Cloud @ 30000&#x27;: 1, &#x27;Harbour Flat Brew @ 26000&#x27;: 1, &#x27;Ember Flat Brew @ 44000&#x27;: 1, &#x27;Meadow Long Pull @ 40000&#x27;: 2, &#x27;Quarry Oat Cloud @ 300&#x27;: -1, &#x27;Ember Oat Cloud @ 340&#x27;: -1, &#x27;Ember Oat Cloud @ 34000&#x27;: 1, &#x27;Orchard Milk Cap @ 34000&#x27;: 3, &#x27;Orchard Milk Cap @ 340&#x27;: -3, &#x27;Orchard Long Pull @ 28000&#x27;: 1, &#x27;Orchard Long Pull @ 280&#x27;: -1, &#x27;Copper Flat Brew @ 24000&#x27;: 1, &#x27;Copper Short Roast @ 32000&#x27;: 3, &#x27;Copper Short Roast @ 320&#x27;: -3, &#x27;Harbour Short Roast @ 360&#x27;: -2, &#x27;Copper Flat Brew @ 240&#x27;: -1, &#x27;Harbour Short Roast @ 36000&#x27;: 2, &#x27;Lantern Flat Brew @ 460&#x27;: -1, &#x27;Thistle Short Roast @ 22000&#x27;: 3, &#x27;Thistle Short Roast @ 220&#x27;: -3, &#x27;Lantern Milk Cap @ 220&#x27;: -2, &#x27;Orchard Oat Cloud @ 38000&#x27;: 1, &#x27;Lantern Flat Brew @ 46000&#x27;: 1, &#x27;Orchard Oat Cloud @ 380&#x27;: -1, &#x27;Harbour Long Pull @ 340&#x27;: -2, &#x27;Lantern Long Pull @ 42000&#x27;: 3, &#x27;Lantern Milk Cap @ 22000&#x27;: 2, &#x27;Copper Oat Cloud @ 360&#x27;: -1, &#x27;Thistle Long Pull @ 260&#x27;: -2, &#x27;Harbour Long Pull @ 34000&#x27;: 2}&quot;
+   ]
+  },
+  {
+   &quot;date&quot;: &quot;2026-09-10&quot;,
+   &quot;status&quot;: &quot;mismatch&quot;,
+   &quot;total&quot;: 1446000,
+   &quot;paid&quot;: 1446000,
+   &quot;excel_total&quot;: 14460,
+   &quot;problems&quot;: [
+    &quot;draft total 1446000 != Excel 14460&quot;,
+    &quot;product quantities differ from Excel: {&#x27;Lantern Short Roast @ 40000&#x27;: 3, &#x27;Quarry Milk Cap @ 24000&#x27;: 4, &#x27;Quarry Milk Cap @ 240&#x27;: -4, &#x27;Meadow Flat Brew @ 320&#x27;: -1, &#x27;Ember Flat Brew @ 440&#x27;: -1, &#x27;Meadow Flat Brew @ 32000&#x27;: 1, &#x27;Ember Flat Brew @ 44000&#x27;: 1, &#x27;Quarry Short Roast @ 360&#x27;: -1, &#x27;Lantern Oat Cloud @ 360&#x27;: -4, &#x27;Quarry Short Roast @ 36000&#x27;: 1, &#x27;Orchard Short Roast @ 320&#x27;: -1, &#x27;Lantern Oat Cloud @ 36000&#x27;: 4, &#x27;Orchard Short Roast @ 32000&#x27;: 1, &#x27;Ember Milk Cap @ 26000&#x27;: 1, &#x27;Ember Milk Cap @ 260&#x27;: -1, &#x27;Orchard Long Pull @ 28000&#x27;: 2, &#x27;Orchard Long Pull @ 280&#x27;: -2, &#x27;Copper Flat Brew @ 24000&#x27;: 1, &#x27;Copper Flat Brew @ 240&#x27;: -1, &#x27;Harbour Short Roast @ 360&#x27;: -1, &#x27;Harbour Short Roast @ 36000&#x27;: 1, &#x27;Harbour Long Pull @ 340&#x27;: -3, &#x27;Copper Oat Cloud @ 360&#x27;: -2, &#x27;Thistle Long Pull @ 260&#x27;: -1, &#x27;Harbour Long Pull @ 34000&#x27;: 3, &#x27;Copper Oat Cloud @ 36000&#x27;: 2, &#x27;Harbour Flat Brew @ 260&#x27;: -2, &#x27;Lantern Long Pull @ 420&#x27;: -1, &#x27;Thistle Long Pull @ 26000&#x27;: 1, &#x27;Meadow Long Pull @ 400&#x27;: -4, &#x27;Ember Short Roast @ 44000&#x27;: 1, &#x27;Harbour Flat Brew @ 26000&#x27;: 2, &#x27;Ember Short Roast @ 440&#x27;: -1, &#x27;Ember Long Pull @ 44000&#x27;: 1, &#x27;Meadow Long Pull @ 40000&#x27;: 4, &#x27;Ember Long Pull @ 440&#x27;: -1, &#x27;Orchard Milk Cap @ 34000&#x27;: 2, &#x27;Orchard Milk Cap @ 340&#x27;: -2, &#x27;Copper Short Roast @ 32000&#x27;: 1, &#x27;Copper Short Roast @ 320&#x27;: -1, &#x27;Lantern Flat Brew @ 460&#x27;: -2, &#x27;Thistle Short Roast @ 22000&#x27;: 2, &#x27;Thistle Short Roast @ 220&#x27;: -2, &#x27;Lantern Milk Cap @ 220&#x27;: -1, &#x27;Lantern Flat Brew @ 46000&#x27;: 2, &#x27;Lantern Long Pull @ 42000&#x27;: 1, &#x27;Lantern Milk Cap @ 22000&#x27;: 1, &#x27;Lantern Short Roast @ 400&#x27;: -3}&quot;
+   ]
+  },
+  {
+   &quot;date&quot;: &quot;2026-09-11&quot;,
+   &quot;status&quot;: &quot;mismatch&quot;,
+   &quot;total&quot;: 926000,
+   &quot;paid&quot;: 926000,
+   &quot;excel_total&quot;: 9260,
+   &quot;problems&quot;: [
+    &quot;draft total 926000 != Excel 9260&quot;,
+    &quot;product quantities differ from Excel: {&#x27;Lantern Short Roast @ 40000&#x27;: 1, &#x27;Quarry Milk Cap @ 24000&#x27;: 1, &#x27;Thistle Milk Cap @ 44000&#x27;: 2, &#x27;Quarry Milk Cap @ 240&#x27;: -1, &#x27;Ember Flat Brew @ 440&#x27;: -1, &#x27;Lantern Short Roast @ 400&#x27;: -1, &#x27;Ember Flat Brew @ 44000&#x27;: 1, &#x27;Quarry Short Roast @ 360&#x27;: -1, &#x27;Ember Oat Cloud @ 340&#x27;: -1, &#x27;Lantern Oat Cloud @ 360&#x27;: -1, &#x27;Quarry Short Roast @ 36000&#x27;: 1, &#x27;Ember Oat Cloud @ 34000&#x27;: 1, &#x27;Orchard Short Roast @ 320&#x27;: -1, &#x27;Lantern Oat Cloud @ 36000&#x27;: 1, &#x27;Orchard Short Roast @ 32000&#x27;: 1, &#x27;Orchard Long Pull @ 28000&#x27;: 1, &#x27;Orchard Long Pull @ 280&#x27;: -1, &#x27;Copper Flat Brew @ 24000&#x27;: 1, &#x27;Copper Flat Brew @ 240&#x27;: -1, &#x27;Harbour Short Roast @ 360&#x27;: -2, &#x27;Harbour Short Roast @ 36000&#x27;: 2, &#x27;Harbour Oat Cloud @ 260&#x27;: -1, &#x27;Harbour Long Pull @ 340&#x27;: -1, &#x27;Harbour Oat Cloud @ 26000&#x27;: 1, &#x27;Copper Oat Cloud @ 360&#x27;: -1, &#x27;Thistle Long Pull @ 260&#x27;: -1, &#x27;Harbour Long Pull @ 34000&#x27;: 1, &#x27;Copper Oat Cloud @ 36000&#x27;: 1, &#x27;Harbour Flat Brew @ 260&#x27;: -1, &#x27;Lantern Long Pull @ 420&#x27;: -2, &#x27;Thistle Long Pull @ 26000&#x27;: 1, &#x27;Meadow Long Pull @ 400&#x27;: -1, &#x27;Harbour Flat Brew @ 26000&#x27;: 1, &#x27;Ember Long Pull @ 44000&#x27;: 1, &#x27;Meadow Long Pull @ 40000&#x27;: 1, &#x27;Ember Long Pull @ 440&#x27;: -1, &#x27;Meadow Oat Cloud @ 460&#x27;: -1, &#x27;Meadow Oat Cloud @ 46000&#x27;: 1, &#x27;Meadow Short Roast @ 24000&#x27;: 1, &#x27;Thistle Short Roast @ 22000&#x27;: 1, &#x27;Thistle Short Roast @ 220&#x27;: -1, &#x27;Meadow Short Roast @ 240&#x27;: -1, &#x27;Orchard Oat Cloud @ 38000&#x27;: 1, &#x27;Lantern Milk Cap @ 220&#x27;: -1, &#x27;Orchard Oat Cloud @ 380&#x27;: -1, &#x27;Lantern Long Pull @ 42000&#x27;: 2, &#x27;Lantern Milk Cap @ 22000&#x27;: 1, &#x27;Thistle Milk Cap @ 440&#x27;: -2}&quot;
+   ]
+  }
+ ],
+ &quot;held_days&quot;: []
+}</pre></details><p class="muted">Units mismatch; escalate, no changes.</p><details><summary><code>escalate</code> <span class="muted">{&quot;category&quot;: &quot;units_mismatch&quot;, &quot;codes&quot;: [], &quot;summary&quot;: &quot;Drafts for 2026-09-09, 09-10 and 09-11 have vendor pri</span></summary><pre>{
+ &quot;escalated&quot;: true,
+ &quot;id&quot;: &quot;esc-1&quot;
+}</pre></details><p class="muted">**What was wrong:** The run didn&#x27;t hold or fail anything. It created all 21 drafts, with 0 held, 0 failed and no unknown codes. Three drafts have a units mismatch. On 2026-09-09, 09-10 and 09-11 the vendor prices are exactly 100 times the Excel prices.
+
+| Day | Draft total | Excel total |
+|---|---|---|
+| 2026-09-09 | 1012000 | 10120 |
+| 2026-09-10 | 1446000 | 14460 |
+| 2026-09-11 | 926000 | 9260 |
+
+**What I changed:** Nothing. I can&#x27;t change prices, and a unit scale error isn&#x27;t something a code mapping can fix.
+
+**What I verified:** `verify_recovery` confirmed 18 of the 21 days match Excel. The other 3 are the days above. The verify output shows the same products on those days, only at prices 100 times higher, so the product mapping looks right there. I didn&#x27;t check that against the raw orders.
+
+**What I escalated:** I escalated the three days as a units mismatch (esc-1), with the totals above. They should be corrected or voided before anyone approves them. A human should also confirm the price scale with the vendor.
+
+**What is still unverified:** Which scale is correct for those three days. I assumed the Excel scale, but I can&#x27;t prove it. I also don&#x27;t know why the vendor&#x27;s scale changed on those days. I didn&#x27;t run `propose_mappings`, because there were no unknown codes to map.</p>
+</body></html>

@@ -1,0 +1,15 @@
+**What was wrong:** The run didn't hold or fail anything. It created all 21 drafts, with 0 held, 0 failed and no unknown codes. Three drafts have a units mismatch. On 2026-09-09, 09-10 and 09-11 the vendor prices are exactly 100 times the Excel prices.
+
+| Day | Draft total | Excel total |
+|---|---|---|
+| 2026-09-09 | 1012000 | 10120 |
+| 2026-09-10 | 1446000 | 14460 |
+| 2026-09-11 | 926000 | 9260 |
+
+**What I changed:** Nothing. I can't change prices, and a unit scale error isn't something a code mapping can fix.
+
+**What I verified:** `verify_recovery` confirmed 18 of the 21 days match Excel. The other 3 are the days above. The verify output shows the same products on those days, only at prices 100 times higher, so the product mapping looks right there. I didn't check that against the raw orders.
+
+**What I escalated:** I escalated the three days as a units mismatch (esc-1), with the totals above. They should be corrected or voided before anyone approves them. A human should also confirm the price scale with the vendor.
+
+**What is still unverified:** Which scale is correct for those three days. I assumed the Excel scale, but I can't prove it. I also don't know why the vendor's scale changed on those days. I didn't run `propose_mappings`, because there were no unknown codes to map.

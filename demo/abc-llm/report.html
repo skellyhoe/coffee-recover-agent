@@ -1,0 +1,1562 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>Incident Report</title>
+<style>
+:root { --bg:#fbfaf8; --fg:#23201c; --muted:#6d665d; --line:#e2ddd5; --card:#fff;
+  --good:#1d6b45; --warn:#9a5b00; --bad:#a32a2a; }
+@media (prefers-color-scheme: dark) { :root { --bg:#1b1917; --fg:#ece7df; --muted:#a59d92;
+  --line:#37332e; --card:#242120; --good:#6fc79b; --warn:#e0a84e; --bad:#ec8a8a; } }
+* { box-sizing:border-box; }
+body { background:var(--bg); color:var(--fg); margin:0 auto; max-width:1000px; padding:32px 16px;
+  font:15px/1.5 -apple-system, "Segoe UI", Roboto, sans-serif; }
+h1 { font-size:24px; margin:0 0 4px; } h2 { font-size:17px; margin:32px 0 8px; }
+.muted { color:var(--muted); } .banner { border:1px solid var(--line); border-left:4px solid
+  var(--warn); padding:8px 12px; margin:12px 0 20px; background:var(--card); }
+.stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:10px; }
+.stat { background:var(--card); border:1px solid var(--line); padding:10px 12px; }
+.stat b { display:block; font-size:22px; font-variant-numeric:tabular-nums; }
+.wrap { overflow-x:auto; } table { border-collapse:collapse; width:100%; background:var(--card); }
+th,td { text-align:left; padding:7px 10px; border:1px solid var(--line); vertical-align:top; }
+th { font-size:13px; color:var(--muted); font-weight:600; }
+td.n { text-align:right; font-variant-numeric:tabular-nums; }
+code { font:12.5px ui-monospace, Menlo, monospace; }
+.good { color:var(--good); } .warn { color:var(--warn); } .bad { color:var(--bad); }
+details { background:var(--card); border:1px solid var(--line); padding:6px 10px; margin:4px 0; }
+pre { white-space:pre-wrap; overflow-wrap:anywhere; font:12px ui-monospace, Menlo, monospace;
+  max-height:300px; overflow:auto; margin:6px 0; }
+button { font:inherit; padding:3px 12px; cursor:pointer; }
+.summary { background:var(--card); border:1px solid var(--line); padding:10px 14px;
+  white-space:pre-wrap; }
+</style></head><body>
+<h1>Incident report: days held back by unknown codes</h1>
+<p class="muted">Driver: llm:claude-sonnet-5-5</p>
+<div class="banner">Fully simulated, with invented data. This agent is a hackathon build and has
+never run against a real system. No confirm capability exists anywhere in it.</div>
+<div class="stats">
+<div class="stat"><b>21</b><span class="muted">days without a draft at first</span></div><div class="stat"><b>8</b><span class="muted">days held now</span></div>
+<div class="stat"><b>13</b><span class="muted">draft invoices</span></div><div class="stat"><b>6</b><span class="muted">active mappings added</span></div>
+<div class="stat"><b>4</b><span class="muted">escalations</span></div></div>
+<h2>Summary</h2><div class="summary">Recovery is partial. 13 of 21 days now have drafts, and 8 days are still held on codes I couldn&#x27;t prove.
+
+**What was wrong**
+- **Vendor errors:** 17 days failed with HTTP 500. Only every 5th vendor call succeeded.
+- **Unknown codes:** 4 days were held because their orders contained unmapped codes.
+
+**What I changed**
+- **Call spacing:** I set it to 5 seconds (chg-7). A 15-call probe showed exactly every 5th call returning 200, with a 5-second window. The policy gate refused a spacing change after the first, shorter probe, which showed no pattern. After the change, the rerun had no failures.
+- **Mappings:** I applied six, with change ids chg-1 to chg-6.
+  - SIM-0041-7c2e → Foundry Mocha (28 cups, matched on price)
+  - SIM-0042-b19a → Drift Cortado (12 cups, price)
+  - SIM-0043-04df → Saltmarsh Latte (8 cups, price)
+  - SIM-0046-91bb → Tern Espresso (3 cups, price)
+  - SIM-0045-2f70 → Pier Chai (10 cups, price)
+  - SIM-0044-e6a1 → Kiln Americano (4 cups, by elimination, since the other codes in those orders are proven)
+
+**What I verified**
+- `verify_recovery` returned ok, with 13 drafts, 12 of them verified against the vendor and Excel, and no mismatches or units problems.
+- 2026-09-21 is only partly verified. The Excel export covers 10960 of the 19020 total. Orders ORD-1373 to ORD-1380, worth 8060, have no Excel rows to check against.
+
+**What I escalated**
+- **SIM-0053-c07f:** The evidence splits between Beacon Flat Brew (3) and Beacon Macchiato (5), both priced 350. A human needs to check the vendor catalog.
+- **SIM-0054-18de and SIM-0055-f2b3:** Both cost 330 and always appear together in the same three orders on 09-20, so nothing separates them.
+- **SIM-0052-6d14:** Excel names it Moor Cappuccino (9 cups), which isn&#x27;t in the ledger catalog. I did not map it.
+- **SIM-0051-a3c8:** Only 1 cup of evidence, below the policy minimum of 3.
+
+**Still held:** 09-03, 09-04, 09-05, 09-14, 09-15, 09-16, 09-17 and 09-20. I left them held because that is the safe state until a human settles the codes above. Every draft still needs human review.</div>
+<h2>Verification</h2><p><span class="good">No mismatches</span>: 12 days match Excel product by product. Line items sum to paid, no duplicates, every invoice is still a draft.</p><p class="warn">2026-09-21: not fully verified. The Excel export was taken midway through this day, so 8 orders worth 8060 are not in it. The covered part reconciles; a fresh export is needed to check the rest.</p><p>Still held, safely, with no draft: 2026-09-03, 2026-09-04, 2026-09-05, 2026-09-14, 2026-09-15, 2026-09-16, 2026-09-17, 2026-09-20</p>
+<h2>Mappings applied, with evidence</h2><p class="muted">Undo buttons work in the live view: <code>python -m report.serve runs/abc-llm</code></p><div class="wrap"><table><tr><th>Code</th><th>Product</th><th>Cups</th><th>Orders</th><th>Days</th><th>Method (cups)</th><th>Sample orders</th><th>Agent's reason</th><th>Undo</th></tr><tr><td><code>SIM-0041-7c2e</code></td><td>Foundry Mocha</td><td class="n">28</td><td class="n">28</td><td class="n">14</td><td>price 28</td><td><code>ORD-1121, ORD-1123, ORD-1138</code></td><td>28 cups price match to Foundry Mocha, no conflicts</td><td><code>chg-1</code></td></tr><tr><td><code>SIM-0042-b19a</code></td><td>Drift Cortado</td><td class="n">12</td><td class="n">12</td><td class="n">9</td><td>price 12</td><td><code>ORD-1181, ORD-1189, ORD-1194</code></td><td>12 cups price match Drift Cortado, no conflicts</td><td><code>chg-2</code></td></tr><tr><td><code>SIM-0043-04df</code></td><td>Saltmarsh Latte</td><td class="n">8</td><td class="n">8</td><td class="n">7</td><td>price 8</td><td><code>ORD-1154, ORD-1193, ORD-1219</code></td><td>8 cups price match Saltmarsh Latte</td><td><code>chg-3</code></td></tr><tr><td><code>SIM-0046-91bb</code></td><td>Tern Espresso</td><td class="n">3</td><td class="n">3</td><td class="n">2</td><td>price 3</td><td><code>ORD-1327, ORD-1356, ORD-1359</code></td><td>3 cups/3 orders price match Tern Espresso, meets minimum</td><td><code>chg-4</code></td></tr><tr><td><code>SIM-0045-2f70</code></td><td>Pier Chai</td><td class="n">10</td><td class="n">5</td><td class="n">3</td><td>price 10</td><td><code>ORD-1233, ORD-1243, ORD-1251</code></td><td>10 cups/5 orders price match Pier Chai</td><td><code>chg-5</code></td></tr><tr><td><code>SIM-0044-e6a1</code></td><td>Kiln Americano</td><td class="n">4</td><td class="n">4</td><td class="n">4</td><td>elimination 4</td><td><code>ORD-1145, ORD-1158, ORD-1227</code></td><td>Elimination on Kiln Americano, other codes in those orders well proven</td><td><code>chg-6</code></td></tr></table></div>
+<h2>Call spacing</h2><div class="wrap"><table><tr><th>Set to</th><th>Was</th><th>Probe statuses</th><th>Agent's reason</th><th>Undo</th></tr><tr><td class="n">5s</td><td class="n">0s</td><td><code>500 500 500 200 500 500 500 500 200 500 500 500 500 200 500</code></td><td>Probe of 15 calls: exactly every 5th call returns 200, period 5, window 5s; spacing calls by the window</td><td><code>chg-7</code></td></tr></table></div>
+<h2>Escalated to a human</h2><div class="wrap"><table><tr><th>Category</th><th>Codes</th><th>What the human needs to know</th><th>Raised by</th></tr><tr><td>conflicting_evidence</td><td><code>SIM-0053-c07f</code></td><td>Evidence for this code (price 350, 8 cups) splits between Beacon Flat Brew (3) and Beacon Macchiato (5), both priced 350, so price can&#x27;t tell them apart. It holds 2026-09-05 (and 09-03 and 09-04 in the proposal&#x27;s evidence). Check the vendor catalog for which product this code is.</td><td>agent</td></tr><tr><td>conflicting_evidence</td><td><code>SIM-0054-18de, SIM-0055-f2b3</code></td><td>Both codes cost 330 and always appear together (ORD-1345, 1347, 1359 on 09-20, 3 cups each). Excel can&#x27;t assign one name to either. Elimination isn&#x27;t possible because both are unknown. They hold 2026-09-20. A human needs to confirm which product each code is from the vendor.</td><td>agent</td></tr><tr><td>product_not_in_catalog</td><td><code>SIM-0052-6d14</code></td><td>Excel consistently names this code Moor Cappuccino (9 cups, 9 orders, price matches), but that product isn&#x27;t in the ledger catalog. I did not map it. Add the product to the catalog, then remap. It holds 09-15 and probably 09-14 and 09-16.</td><td>agent</td></tr><tr><td>weak_evidence</td><td><code>SIM-0051-a3c8</code></td><td>Only 1 cup and 1 order (ORD-1302, 09-17) point to Gull Ristretto. This is below the policy minimum of 3 cups and 2 orders, so I didn&#x27;t map it. It holds 09-17. A human should confirm it.</td><td>agent</td></tr></table></div>
+<h2>Every agent action</h2><details><summary><code>read_run_log</code> <span class="muted">{}</span></summary><pre>{
+ &quot;classification&quot;: {
+  &quot;vendor_http_500&quot;: 17,
+  &quot;unknown_code&quot;: 4
+ },
+ &quot;units_mismatch_days&quot;: [],
+ &quot;events&quot;: [
+  {
+   &quot;event&quot;: &quot;run_start&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;
+  },
+  {
+   &quot;event&quot;: &quot;day_failed&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-01&quot;,
+   &quot;reason&quot;: &quot;vendor_http_500&quot;,
+   &quot;vendor_call&quot;: 1
+  },
+  {
+   &quot;event&quot;: &quot;day_failed&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-02&quot;,
+   &quot;reason&quot;: &quot;vendor_http_500&quot;,
+   &quot;vendor_call&quot;: 2
+  },
+  {
+   &quot;event&quot;: &quot;day_failed&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-03&quot;,
+   &quot;reason&quot;: &quot;vendor_http_500&quot;,
+   &quot;vendor_call&quot;: 3
+  },
+  {
+   &quot;event&quot;: &quot;day_failed&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-04&quot;,
+   &quot;reason&quot;: &quot;vendor_http_500&quot;,
+   &quot;vendor_call&quot;: 4
+  },
+  {
+   &quot;event&quot;: &quot;day_held&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;reason&quot;: &quot;unknown_code&quot;,
+   &quot;codes&quot;: {
+    &quot;SIM-0053-c07f&quot;: 4
+   },
+   &quot;vendor_call&quot;: 5
+  },
+  {
+   &quot;event&quot;: &quot;day_failed&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-06&quot;,
+   &quot;reason&quot;: &quot;vendor_http_500&quot;,
+   &quot;vendor_call&quot;: 6
+  },
+  {
+   &quot;event&quot;: &quot;day_failed&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-07&quot;,
+   &quot;reason&quot;: &quot;vendor_http_500&quot;,
+   &quot;vendor_call&quot;: 7
+  },
+  {
+   &quot;event&quot;: &quot;day_failed&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-08&quot;,
+   &quot;reason&quot;: &quot;vendor_http_500&quot;,
+   &quot;vendor_call&quot;: 8
+  },
+  {
+   &quot;event&quot;: &quot;day_failed&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-09&quot;,
+   &quot;reason&quot;: &quot;vendor_http_500&quot;,
+   &quot;vendor_call&quot;: 9
+  },
+  {
+   &quot;event&quot;: &quot;day_held&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-10&quot;,
+   &quot;reason&quot;: &quot;unknown_code&quot;,
+   &quot;codes&quot;: {
+    &quot;SIM-0041-7c2e&quot;: 5,
+    &quot;SIM-0042-b19a&quot;: 1
+   },
+   &quot;vendor_call&quot;: 10
+  },
+  {
+   &quot;event&quot;: &quot;day_failed&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-11&quot;,
+   &quot;reason&quot;: &quot;vendor_http_500&quot;,
+   &quot;vendor_call&quot;: 11
+  },
+  {
+   &quot;event&quot;: &quot;day_failed&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-12&quot;,
+   &quot;reason&quot;: &quot;vendor_http_500&quot;,
+   &quot;vendor_call&quot;: 12
+  },
+  {
+   &quot;event&quot;: &quot;day_failed&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-13&quot;,
+   &quot;reason&quot;: &quot;vendor_http_500&quot;,
+   &quot;vendor_call&quot;: 13
+  },
+  {
+   &quot;event&quot;: &quot;day_failed&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-14&quot;,
+   &quot;reason&quot;: &quot;vendor_http_500&quot;,
+   &quot;vendor_call&quot;: 14
+  },
+  {
+   &quot;event&quot;: &quot;day_held&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-15&quot;,
+   &quot;reason&quot;: &quot;unknown_code&quot;,
+   &quot;codes&quot;: {
+    &quot;SIM-0052-6d14&quot;: 5,
+    &quot;SIM-0043-04df&quot;: 2,
+    &quot;SIM-0041-7c2e&quot;: 1,
+    &quot;SIM-0042-b19a&quot;: 3
+   },
+   &quot;vendor_call&quot;: 15
+  },
+  {
+   &quot;event&quot;: &quot;day_failed&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-16&quot;,
+   &quot;reason&quot;: &quot;vendor_http_500&quot;,
+   &quot;vendor_call&quot;: 16
+  },
+  {
+   &quot;event&quot;: &quot;day_failed&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-17&quot;,
+   &quot;reason&quot;: &quot;vendor_http_500&quot;,
+   &quot;vendor_call&quot;: 17
+  },
+  {
+   &quot;event&quot;: &quot;day_failed&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-18&quot;,
+   &quot;reason&quot;: &quot;vendor_http_500&quot;,
+   &quot;vendor_call&quot;: 18
+  },
+  {
+   &quot;event&quot;: &quot;day_failed&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-19&quot;,
+   &quot;reason&quot;: &quot;vendor_http_500&quot;,
+   &quot;vendor_call&quot;: 19
+  },
+  {
+   &quot;event&quot;: &quot;day_held&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-20&quot;,
+   &quot;reason&quot;: &quot;unknown_code&quot;,
+   &quot;codes&quot;: {
+    &quot;SIM-0041-7c2e&quot;: 1,
+    &quot;SIM-0054-18de&quot;: 3,
+    &quot;SIM-0055-f2b3&quot;: 3,
+    &quot;SIM-0042-b19a&quot;: 1,
+    &quot;SIM-0046-91bb&quot;: 2
+   },
+   &quot;vendor_call&quot;: 20
+  },
+  {
+   &quot;event&quot;: &quot;day_failed&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;date&quot;: &quot;2026-09-21&quot;,
+   &quot;reason&quot;: &quot;vendor_http_500&quot;,
+   &quot;vendor_call&quot;: 21
+  },
+  {
+   &quot;event&quot;: &quot;run_end&quot;,
+   &quot;run_id&quot;: &quot;run-1&quot;,
+   &quot;created&quot;: 0,
+   &quot;skipped&quot;: 0,
+   &quot;held&quot;: 4,
+   &quot;failed&quot;: 17
+  }
+ ]
+}</pre></details><details><summary><code>list_unknown_codes</code> <span class="muted">{}</span></summary><pre>[
+ {
+  &quot;code&quot;: &quot;SIM-0041-7c2e&quot;,
+  &quot;cups&quot;: 7,
+  &quot;days&quot;: [
+   &quot;2026-09-10&quot;,
+   &quot;2026-09-15&quot;,
+   &quot;2026-09-20&quot;
+  ]
+ },
+ {
+  &quot;code&quot;: &quot;SIM-0042-b19a&quot;,
+  &quot;cups&quot;: 5,
+  &quot;days&quot;: [
+   &quot;2026-09-10&quot;,
+   &quot;2026-09-15&quot;,
+   &quot;2026-09-20&quot;
+  ]
+ },
+ {
+  &quot;code&quot;: &quot;SIM-0043-04df&quot;,
+  &quot;cups&quot;: 2,
+  &quot;days&quot;: [
+   &quot;2026-09-15&quot;
+  ]
+ },
+ {
+  &quot;code&quot;: &quot;SIM-0046-91bb&quot;,
+  &quot;cups&quot;: 2,
+  &quot;days&quot;: [
+   &quot;2026-09-20&quot;
+  ]
+ },
+ {
+  &quot;code&quot;: &quot;SIM-0052-6d14&quot;,
+  &quot;cups&quot;: 5,
+  &quot;days&quot;: [
+   &quot;2026-09-15&quot;
+  ]
+ },
+ {
+  &quot;code&quot;: &quot;SIM-0053-c07f&quot;,
+  &quot;cups&quot;: 4,
+  &quot;days&quot;: [
+   &quot;2026-09-05&quot;
+  ]
+ },
+ {
+  &quot;code&quot;: &quot;SIM-0054-18de&quot;,
+  &quot;cups&quot;: 3,
+  &quot;days&quot;: [
+   &quot;2026-09-20&quot;
+  ]
+ },
+ {
+  &quot;code&quot;: &quot;SIM-0055-f2b3&quot;,
+  &quot;cups&quot;: 3,
+  &quot;days&quot;: [
+   &quot;2026-09-20&quot;
+  ]
+ }
+]</pre></details><details><summary><code>get_ledger_state</code> <span class="muted">{}</span></summary><pre>{
+ &quot;drafts&quot;: [],
+ &quot;held_days&quot;: [
+  &quot;2026-09-01&quot;,
+  &quot;2026-09-02&quot;,
+  &quot;2026-09-03&quot;,
+  &quot;2026-09-04&quot;,
+  &quot;2026-09-05&quot;,
+  &quot;2026-09-06&quot;,
+  &quot;2026-09-07&quot;,
+  &quot;2026-09-08&quot;,
+  &quot;2026-09-09&quot;,
+  &quot;2026-09-10&quot;,
+  &quot;2026-09-11&quot;,
+  &quot;2026-09-12&quot;,
+  &quot;2026-09-13&quot;,
+  &quot;2026-09-14&quot;,
+  &quot;2026-09-15&quot;,
+  &quot;2026-09-16&quot;,
+  &quot;2026-09-17&quot;,
+  &quot;2026-09-18&quot;,
+  &quot;2026-09-19&quot;,
+  &quot;2026-09-20&quot;,
+  &quot;2026-09-21&quot;
+ ],
+ &quot;catalog_products&quot;: [
+  &quot;Beacon Flat Brew&quot;,
+  &quot;Beacon Macchiato&quot;,
+  &quot;Copper Flat Brew&quot;,
+  &quot;Copper Long Pull&quot;,
+  &quot;Copper Milk Cap&quot;,
+  &quot;Copper Oat Cloud&quot;,
+  &quot;Copper Short Roast&quot;,
+  &quot;Drift Cortado&quot;,
+  &quot;Ember Flat Brew&quot;,
+  &quot;Ember Long Pull&quot;,
+  &quot;Ember Milk Cap&quot;,
+  &quot;Ember Oat Cloud&quot;,
+  &quot;Ember Short Roast&quot;,
+  &quot;Foundry Mocha&quot;,
+  &quot;Gull Ristretto&quot;,
+  &quot;Harbour Flat Brew&quot;,
+  &quot;Harbour Long Pull&quot;,
+  &quot;Harbour Milk Cap&quot;,
+  &quot;Harbour Oat Cloud&quot;,
+  &quot;Harbour Short Roast&quot;,
+  &quot;Heron Milk Cap&quot;,
+  &quot;Heron Oat Cloud&quot;,
+  &quot;Kiln Americano&quot;,
+  &quot;Lantern Flat Brew&quot;,
+  &quot;Lantern Long Pull&quot;,
+  &quot;Lantern Milk Cap&quot;,
+  &quot;Lantern Oat Cloud&quot;,
+  &quot;Lantern Short Roast&quot;,
+  &quot;Meadow Flat Brew&quot;,
+  &quot;Meadow Long Pull&quot;,
+  &quot;Meadow Milk Cap&quot;,
+  &quot;Meadow Oat Cloud&quot;,
+  &quot;Meadow Short Roast&quot;,
+  &quot;Orchard Flat Brew&quot;,
+  &quot;Orchard Long Pull&quot;,
+  &quot;Orchard Milk Cap&quot;,
+  &quot;Orchard Oat Cloud&quot;,
+  &quot;Orchard Short Roast&quot;,
+  &quot;Pier Chai&quot;,
+  &quot;Quarry Flat Brew&quot;,
+  &quot;Quarry Long Pull&quot;,
+  &quot;Quarry Milk Cap&quot;,
+  &quot;Quarry Oat Cloud&quot;,
+  &quot;Quarry Short Roast&quot;,
+  &quot;Saltmarsh Latte&quot;,
+  &quot;Tern Espresso&quot;,
+  &quot;Thistle Flat Brew&quot;,
+  &quot;Thistle Long Pull&quot;,
+  &quot;Thistle Milk Cap&quot;,
+  &quot;Thistle Oat Cloud&quot;,
+  &quot;Thistle Short Roast&quot;
+ ]
+}</pre></details><p class="muted">The failures hit every call except each fifth one, so calls seem to succeed only when the call number is a multiple of five. That looks like a rate limit, so I&#x27;ll probe with spacing between calls.
+
+</p><details><summary><code>probe_api_rate</code> <span class="muted">{&quot;calls&quot;: 10}</span></summary><pre>{
+ &quot;spacing&quot;: 0,
+ &quot;statuses&quot;: [
+  500,
+  500,
+  500,
+  200,
+  500,
+  500,
+  500,
+  500,
+  200,
+  500
+ ],
+ &quot;period&quot;: null,
+ &quot;window_seconds&quot;: null
+}</pre></details><details><summary><code>propose_mappings</code> <span class="muted">{}</span></summary><pre>{
+ &quot;proposals&quot;: [
+  {
+   &quot;code&quot;: &quot;SIM-0041-7c2e&quot;,
+   &quot;product_name&quot;: &quot;Foundry Mocha&quot;,
+   &quot;candidate_names&quot;: {
+    &quot;Foundry Mocha&quot;: 28
+   },
+   &quot;in_catalog&quot;: true,
+   &quot;cups&quot;: 28,
+   &quot;orders&quot;: 28,
+   &quot;days&quot;: [
+    &quot;2026-09-07&quot;,
+    &quot;2026-09-08&quot;,
+    &quot;2026-09-09&quot;,
+    &quot;2026-09-10&quot;,
+    &quot;2026-09-12&quot;,
+    &quot;2026-09-13&quot;,
+    &quot;2026-09-14&quot;,
+    &quot;2026-09-15&quot;,
+    &quot;2026-09-16&quot;,
+    &quot;2026-09-17&quot;,
+    &quot;2026-09-18&quot;,
+    &quot;2026-09-19&quot;,
+    &quot;2026-09-20&quot;,
+    &quot;2026-09-21&quot;
+   ],
+   &quot;methods&quot;: {
+    &quot;price&quot;: 28
+   },
+   &quot;price_mismatches&quot;: 0,
+   &quot;sample_orders&quot;: [
+    &quot;ORD-1121&quot;,
+    &quot;ORD-1123&quot;,
+    &quot;ORD-1138&quot;,
+    &quot;ORD-1159&quot;,
+    &quot;ORD-1165&quot;
+   ],
+   &quot;conflicts&quot;: [],
+   &quot;total_cups_seen&quot;: 30,
+   &quot;total_orders_seen&quot;: 30,
+   &quot;policy_blockers&quot;: []
+  },
+  {
+   &quot;code&quot;: &quot;SIM-0042-b19a&quot;,
+   &quot;product_name&quot;: &quot;Drift Cortado&quot;,
+   &quot;candidate_names&quot;: {
+    &quot;Drift Cortado&quot;: 12
+   },
+   &quot;in_catalog&quot;: true,
+   &quot;cups&quot;: 12,
+   &quot;orders&quot;: 12,
+   &quot;days&quot;: [
+    &quot;2026-09-10&quot;,
+    &quot;2026-09-11&quot;,
+    &quot;2026-09-13&quot;,
+    &quot;2026-09-15&quot;,
+    &quot;2026-09-16&quot;,
+    &quot;2026-09-17&quot;,
+    &quot;2026-09-18&quot;,
+    &quot;2026-09-19&quot;,
+    &quot;2026-09-20&quot;
+   ],
+   &quot;methods&quot;: {
+    &quot;price&quot;: 12
+   },
+   &quot;price_mismatches&quot;: 0,
+   &quot;sample_orders&quot;: [
+    &quot;ORD-1181&quot;,
+    &quot;ORD-1189&quot;,
+    &quot;ORD-1194&quot;,
+    &quot;ORD-1231&quot;,
+    &quot;ORD-1262&quot;
+   ],
+   &quot;conflicts&quot;: [],
+   &quot;total_cups_seen&quot;: 14,
+   &quot;total_orders_seen&quot;: 14,
+   &quot;policy_blockers&quot;: []
+  },
+  {
+   &quot;code&quot;: &quot;SIM-0043-04df&quot;,
+   &quot;product_name&quot;: &quot;Saltmarsh Latte&quot;,
+   &quot;candidate_names&quot;: {
+    &quot;Saltmarsh Latte&quot;: 8
+   },
+   &quot;in_catalog&quot;: true,
+   &quot;cups&quot;: 8,
+   &quot;orders&quot;: 8,
+   &quot;days&quot;: [
+    &quot;2026-09-09&quot;,
+    &quot;2026-09-11&quot;,
+    &quot;2026-09-12&quot;,
+    &quot;2026-09-15&quot;,
+    &quot;2026-09-17&quot;,
+    &quot;2026-09-18&quot;,
+    &quot;2026-09-21&quot;
+   ],
+   &quot;methods&quot;: {
+    &quot;price&quot;: 8
+   },
+   &quot;price_mismatches&quot;: 0,
+   &quot;sample_orders&quot;: [
+    &quot;ORD-1154&quot;,
+    &quot;ORD-1193&quot;,
+    &quot;ORD-1219&quot;,
+    &quot;ORD-1261&quot;,
+    &quot;ORD-1266&quot;
+   ],
+   &quot;conflicts&quot;: [],
+   &quot;total_cups_seen&quot;: 12,
+   &quot;total_orders_seen&quot;: 12,
+   &quot;policy_blockers&quot;: []
+  },
+  {
+   &quot;code&quot;: &quot;SIM-0044-e6a1&quot;,
+   &quot;product_name&quot;: &quot;Kiln Americano&quot;,
+   &quot;candidate_names&quot;: {
+    &quot;Kiln Americano&quot;: 4
+   },
+   &quot;in_catalog&quot;: true,
+   &quot;cups&quot;: 4,
+   &quot;orders&quot;: 4,
+   &quot;days&quot;: [
+    &quot;2026-09-08&quot;,
+    &quot;2026-09-09&quot;,
+    &quot;2026-09-13&quot;,
+    &quot;2026-09-17&quot;
+   ],
+   &quot;methods&quot;: {
+    &quot;elimination&quot;: 4
+   },
+   &quot;price_mismatches&quot;: 0,
+   &quot;sample_orders&quot;: [
+    &quot;ORD-1145&quot;,
+    &quot;ORD-1158&quot;,
+    &quot;ORD-1227&quot;,
+    &quot;ORD-1300&quot;
+   ],
+   &quot;conflicts&quot;: [],
+   &quot;total_cups_seen&quot;: 4,
+   &quot;total_orders_seen&quot;: 4,
+   &quot;policy_blockers&quot;: []
+  },
+  {
+   &quot;code&quot;: &quot;SIM-0045-2f70&quot;,
+   &quot;product_name&quot;: &quot;Pier Chai&quot;,
+   &quot;candidate_names&quot;: {
+    &quot;Pier Chai&quot;: 10
+   },
+   &quot;in_catalog&quot;: true,
+   &quot;cups&quot;: 10,
+   &quot;orders&quot;: 5,
+   &quot;days&quot;: [
+    &quot;2026-09-13&quot;,
+    &quot;2026-09-14&quot;,
+    &quot;2026-09-17&quot;
+   ],
+   &quot;methods&quot;: {
+    &quot;price&quot;: 10
+   },
+   &quot;price_mismatches&quot;: 0,
+   &quot;sample_orders&quot;: [
+    &quot;ORD-1233&quot;,
+    &quot;ORD-1243&quot;,
+    &quot;ORD-1251&quot;,
+    &quot;ORD-1299&quot;,
+    &quot;ORD-1302&quot;
+   ],
+   &quot;conflicts&quot;: [],
+   &quot;total_cups_seen&quot;: 10,
+   &quot;total_orders_seen&quot;: 5,
+   &quot;policy_blockers&quot;: []
+  },
+  {
+   &quot;code&quot;: &quot;SIM-0046-91bb&quot;,
+   &quot;product_name&quot;: &quot;Tern Espresso&quot;,
+   &quot;candidate_names&quot;: {
+    &quot;Tern Espresso&quot;: 3
+   },
+   &quot;in_catalog&quot;: true,
+   &quot;cups&quot;: 3,
+   &quot;orders&quot;: 3,
+   &quot;days&quot;: [
+    &quot;2026-09-19&quot;,
+    &quot;2026-09-20&quot;
+   ],
+   &quot;methods&quot;: {
+    &quot;price&quot;: 3
+   },
+   &quot;price_mismatches&quot;: 0,
+   &quot;sample_orders&quot;: [
+    &quot;ORD-1327&quot;,
+    &quot;ORD-1356&quot;,
+    &quot;ORD-1359&quot;
+   ],
+   &quot;conflicts&quot;: [],
+   &quot;total_cups_seen&quot;: 3,
+   &quot;total_orders_seen&quot;: 3,
+   &quot;policy_blockers&quot;: []
+  },
+  {
+   &quot;code&quot;: &quot;SIM-0051-a3c8&quot;,
+   &quot;product_name&quot;: &quot;Gull Ristretto&quot;,
+   &quot;candidate_names&quot;: {
+    &quot;Gull Ristretto&quot;: 1
+   },
+   &quot;in_catalog&quot;: true,
+   &quot;cups&quot;: 1,
+   &quot;orders&quot;: 1,
+   &quot;days&quot;: [
+    &quot;2026-09-17&quot;
+   ],
+   &quot;methods&quot;: {
+    &quot;price&quot;: 1
+   },
+   &quot;price_mismatches&quot;: 0,
+   &quot;sample_orders&quot;: [
+    &quot;ORD-1302&quot;
+   ],
+   &quot;conflicts&quot;: [],
+   &quot;total_cups_seen&quot;: 1,
+   &quot;total_orders_seen&quot;: 1,
+   &quot;policy_blockers&quot;: [
+    &quot;only 1 cups of evidence (minimum 3)&quot;,
+    &quot;only 1 orders of evidence (minimum 2)&quot;
+   ]
+  },
+  {
+   &quot;code&quot;: &quot;SIM-0052-6d14&quot;,
+   &quot;product_name&quot;: &quot;Moor Cappuccino&quot;,
+   &quot;candidate_names&quot;: {
+    &quot;Moor Cappuccino&quot;: 9
+   },
+   &quot;in_catalog&quot;: false,
+   &quot;cups&quot;: 9,
+   &quot;orders&quot;: 9,
+   &quot;days&quot;: [
+    &quot;2026-09-14&quot;,
+    &quot;2026-09-15&quot;,
+    &quot;2026-09-16&quot;
+   ],
+   &quot;methods&quot;: {
+    &quot;price&quot;: 9
+   },
+   &quot;price_mismatches&quot;: 0,
+   &quot;sample_orders&quot;: [
+    &quot;ORD-1250&quot;,
+    &quot;ORD-1253&quot;,
+    &quot;ORD-1259&quot;,
+    &quot;ORD-1263&quot;,
+    &quot;ORD-1269&quot;
+   ],
+   &quot;conflicts&quot;: [],
+   &quot;total_cups_seen&quot;: 9,
+   &quot;total_orders_seen&quot;: 9,
+   &quot;policy_blockers&quot;: [
+    &quot;&#x27;Moor Cappuccino&#x27; does not exist in the ledger catalog&quot;
+   ]
+  },
+  {
+   &quot;code&quot;: &quot;SIM-0053-c07f&quot;,
+   &quot;product_name&quot;: null,
+   &quot;candidate_names&quot;: {
+    &quot;Beacon Flat Brew&quot;: 3,
+    &quot;Beacon Macchiato&quot;: 5
+   },
+   &quot;in_catalog&quot;: false,
+   &quot;cups&quot;: 8,
+   &quot;orders&quot;: 8,
+   &quot;days&quot;: [
+    &quot;2026-09-03&quot;,
+    &quot;2026-09-04&quot;,
+    &quot;2026-09-05&quot;
+   ],
+   &quot;methods&quot;: {
+    &quot;price&quot;: 8
+   },
+   &quot;price_mismatches&quot;: 0,
+   &quot;sample_orders&quot;: [
+    &quot;ORD-1041&quot;,
+    &quot;ORD-1043&quot;,
+    &quot;ORD-1045&quot;,
+    &quot;ORD-1062&quot;,
+    &quot;ORD-1076&quot;
+   ],
+   &quot;conflicts&quot;: [
+    &quot;pairs with several names across orders: {&#x27;Beacon Flat Brew&#x27;: 3, &#x27;Beacon Macchiato&#x27;: 5}&quot;
+   ],
+   &quot;total_cups_seen&quot;: 8,
+   &quot;total_orders_seen&quot;: 8,
+   &quot;policy_blockers&quot;: [
+    &quot;no single candidate product from the evidence&quot;,
+    &quot;conflicts: [\&quot;pairs with several names across orders: {&#x27;Beacon Flat Brew&#x27;: 3, &#x27;Beacon Macchiato&#x27;: 5}\&quot;]&quot;
+   ]
+  },
+  {
+   &quot;code&quot;: &quot;SIM-0054-18de&quot;,
+   &quot;product_name&quot;: null,
+   &quot;candidate_names&quot;: {},
+   &quot;in_catalog&quot;: false,
+   &quot;cups&quot;: 0,
+   &quot;orders&quot;: 0,
+   &quot;days&quot;: [],
+   &quot;methods&quot;: {},
+   &quot;price_mismatches&quot;: 0,
+   &quot;sample_orders&quot;: [],
+   &quot;conflicts&quot;: [],
+   &quot;total_cups_seen&quot;: 3,
+   &quot;total_orders_seen&quot;: 3,
+   &quot;policy_blockers&quot;: [
+    &quot;no single candidate product from the evidence&quot;,
+    &quot;only 0 cups of evidence (minimum 3)&quot;,
+    &quot;only 0 orders of evidence (minimum 2)&quot;
+   ]
+  },
+  {
+   &quot;code&quot;: &quot;SIM-0055-f2b3&quot;,
+   &quot;product_name&quot;: null,
+   &quot;candidate_names&quot;: {},
+   &quot;in_catalog&quot;: false,
+   &quot;cups&quot;: 0,
+   &quot;orders&quot;: 0,
+   &quot;days&quot;: [],
+   
+... (full result in transcript.jsonl)</pre></details><p class="muted">I&#x27;m seeing that the vendor succeeds on every fifth call, with probes returning 200 at positions 4 and 9 while the counter keeps running. The period-five pattern suggests a rate limit that might depend on spacing between calls, and since spacing is currently zero, I&#x27;m considering a delay of one to two seconds before probing again. I need the latest probe results to confirm this, and so far just two of ten calls have succeeded.
+
+Next I&#x27;m going to apply the mappings for the well-proven cases: 0041, 0042, 0043, and 0046 by price, then 0045 by its cup and order counts, and 0044 by elimination since the others are established. I&#x27;m leaving 0051 aside because it&#x27;s blocked.
+
+</p><details><summary><code>apply_mapping</code> <span class="muted">{&quot;code&quot;: &quot;SIM-0041-7c2e&quot;, &quot;reason&quot;: &quot;28 cups price match to Foundry Mocha, no conflicts&quot;}</span></summary><pre>{
+ &quot;applied&quot;: true,
+ &quot;change_id&quot;: &quot;chg-1&quot;,
+ &quot;code&quot;: &quot;SIM-0041-7c2e&quot;,
+ &quot;product_name&quot;: &quot;Foundry Mocha&quot;
+}</pre></details><details><summary><code>apply_mapping</code> <span class="muted">{&quot;code&quot;: &quot;SIM-0042-b19a&quot;, &quot;reason&quot;: &quot;12 cups price match Drift Cortado, no conflicts&quot;}</span></summary><pre>{
+ &quot;applied&quot;: true,
+ &quot;change_id&quot;: &quot;chg-2&quot;,
+ &quot;code&quot;: &quot;SIM-0042-b19a&quot;,
+ &quot;product_name&quot;: &quot;Drift Cortado&quot;
+}</pre></details><details><summary><code>apply_mapping</code> <span class="muted">{&quot;code&quot;: &quot;SIM-0043-04df&quot;, &quot;reason&quot;: &quot;8 cups price match Saltmarsh Latte&quot;}</span></summary><pre>{
+ &quot;applied&quot;: true,
+ &quot;change_id&quot;: &quot;chg-3&quot;,
+ &quot;code&quot;: &quot;SIM-0043-04df&quot;,
+ &quot;product_name&quot;: &quot;Saltmarsh Latte&quot;
+}</pre></details><details><summary><code>apply_mapping</code> <span class="muted">{&quot;code&quot;: &quot;SIM-0046-91bb&quot;, &quot;reason&quot;: &quot;3 cups/3 orders price match Tern Espresso, meets minimum&quot;}</span></summary><pre>{
+ &quot;applied&quot;: true,
+ &quot;change_id&quot;: &quot;chg-4&quot;,
+ &quot;code&quot;: &quot;SIM-0046-91bb&quot;,
+ &quot;product_name&quot;: &quot;Tern Espresso&quot;
+}</pre></details><details><summary><code>apply_mapping</code> <span class="muted">{&quot;code&quot;: &quot;SIM-0045-2f70&quot;, &quot;reason&quot;: &quot;10 cups/5 orders price match Pier Chai&quot;}</span></summary><pre>{
+ &quot;applied&quot;: true,
+ &quot;change_id&quot;: &quot;chg-5&quot;,
+ &quot;code&quot;: &quot;SIM-0045-2f70&quot;,
+ &quot;product_name&quot;: &quot;Pier Chai&quot;
+}</pre></details><details><summary><code>apply_mapping</code> <span class="muted">{&quot;code&quot;: &quot;SIM-0044-e6a1&quot;, &quot;reason&quot;: &quot;Elimination on Kiln Americano, other codes in those orders well proven&quot;}</span></summary><pre>{
+ &quot;applied&quot;: true,
+ &quot;change_id&quot;: &quot;chg-6&quot;,
+ &quot;code&quot;: &quot;SIM-0044-e6a1&quot;,
+ &quot;product_name&quot;: &quot;Kiln Americano&quot;
+}</pre></details><details><summary><code>set_call_spacing</code> <span class="muted">{&quot;seconds&quot;: 2, &quot;reason&quot;: &quot;Probe showed only every 5th call succeeds at spacing 0 (calls 5,10,15,20 in run; 4th</span></summary><pre>{
+ &quot;applied&quot;: false,
+ &quot;blocked_by_policy&quot;: [
+  &quot;the latest probe shows no regular pattern, so this is not a simple rate limit&quot;
+ ]
+}</pre></details><p class="muted">I&#x27;m running the probe at spacing 0, which gives a period of null. I&#x27;ll try another probe with about 15 calls to see the pattern, since I have three probes allowed.
+
+</p><details><summary><code>probe_api_rate</code> <span class="muted">{&quot;calls&quot;: 15}</span></summary><pre>{
+ &quot;spacing&quot;: 0,
+ &quot;statuses&quot;: [
+  500,
+  500,
+  500,
+  200,
+  500,
+  500,
+  500,
+  500,
+  200,
+  500,
+  500,
+  500,
+  500,
+  200,
+  500
+ ],
+ &quot;period&quot;: 5,
+ &quot;window_seconds&quot;: 5
+}</pre></details><p class="muted">Period 5 is now proven. Retry spacing.</p><details><summary><code>set_call_spacing</code> <span class="muted">{&quot;seconds&quot;: 5, &quot;reason&quot;: &quot;Probe of 15 calls: exactly every 5th call returns 200, period 5, window 5s; spacing </span></summary><pre>{
+ &quot;applied&quot;: true,
+ &quot;change_id&quot;: &quot;chg-7&quot;,
+ &quot;seconds&quot;: 5
+}</pre></details><details><summary><code>rerun_sync</code> <span class="muted">{}</span></summary><pre>{
+ &quot;run_id&quot;: &quot;run-2&quot;,
+ &quot;created&quot;: [
+  &quot;2026-09-01&quot;,
+  &quot;2026-09-02&quot;,
+  &quot;2026-09-06&quot;,
+  &quot;2026-09-07&quot;,
+  &quot;2026-09-08&quot;,
+  &quot;2026-09-09&quot;,
+  &quot;2026-09-10&quot;,
+  &quot;2026-09-11&quot;,
+  &quot;2026-09-12&quot;,
+  &quot;2026-09-13&quot;,
+  &quot;2026-09-18&quot;,
+  &quot;2026-09-19&quot;,
+  &quot;2026-09-21&quot;
+ ],
+ &quot;skipped&quot;: 0,
+ &quot;held&quot;: [
+  &quot;2026-09-03&quot;,
+  &quot;2026-09-04&quot;,
+  &quot;2026-09-05&quot;,
+  &quot;2026-09-14&quot;,
+  &quot;2026-09-15&quot;,
+  &quot;2026-09-16&quot;,
+  &quot;2026-09-17&quot;,
+  &quot;2026-09-20&quot;
+ ],
+ &quot;failed&quot;: []
+}</pre></details><details><summary><code>verify_recovery</code> <span class="muted">{}</span></summary><pre>{
+ &quot;ok&quot;: true,
+ &quot;units_mismatch_days&quot;: [],
+ &quot;global_problems&quot;: [],
+ &quot;drafts&quot;: 13,
+ &quot;verified_days&quot;: 12,
+ &quot;partial_export_days&quot;: [
+  {
+   &quot;date&quot;: &quot;2026-09-21&quot;,
+   &quot;status&quot;: &quot;partial_export&quot;,
+   &quot;total&quot;: 19020,
+   &quot;paid&quot;: 19020,
+   &quot;excel_total&quot;: 10960,
+   &quot;problems&quot;: [],
+   &quot;unverified_orders&quot;: [
+    &quot;ORD-1373&quot;,
+    &quot;ORD-1374&quot;,
+    &quot;ORD-1375&quot;,
+    &quot;ORD-1376&quot;,
+    &quot;ORD-1377&quot;,
+    &quot;ORD-1378&quot;,
+    &quot;ORD-1379&quot;,
+    &quot;ORD-1380&quot;
+   ],
+   &quot;unverified_amount&quot;: 8060
+  }
+ ],
+ &quot;mismatched_days&quot;: [],
+ &quot;held_days&quot;: [
+  &quot;2026-09-03&quot;,
+  &quot;2026-09-04&quot;,
+  &quot;2026-09-05&quot;,
+  &quot;2026-09-14&quot;,
+  &quot;2026-09-15&quot;,
+  &quot;2026-09-16&quot;,
+  &quot;2026-09-17&quot;,
+  &quot;2026-09-20&quot;
+ ]
+}</pre></details><details><summary><code>get_excel_export</code> <span class="muted">{&quot;date&quot;: &quot;2026-09-05&quot;}</span></summary><pre>{
+ &quot;exported_date&quot;: &quot;2026-09-21&quot;,
+ &quot;exported_time&quot;: &quot;15:00&quot;,
+ &quot;rows&quot;: [
+  {
+   &quot;order_id&quot;: &quot;ORD-1076&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;07:14&quot;,
+   &quot;product_name&quot;: &quot;Quarry Short Roast&quot;,
+   &quot;price&quot;: 360
+  },
+  {
+   &quot;order_id&quot;: &quot;ORD-1076&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;07:14&quot;,
+   &quot;product_name&quot;: &quot;Copper Long Pull&quot;,
+   &quot;price&quot;: 300
+  },
+  {
+   &quot;order_id&quot;: &quot;ORD-1076&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;07:14&quot;,
+   &quot;product_name&quot;: &quot;Orchard Milk Cap&quot;,
+   &quot;price&quot;: 340
+  },
+  {
+   &quot;order_id&quot;: &quot;ORD-1076&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;07:14&quot;,
+   &quot;product_name&quot;: &quot;Beacon Flat Brew&quot;,
+   &quot;price&quot;: 350
+  },
+  {
+   &quot;order_id&quot;: &quot;ORD-1077&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;07:55&quot;,
+   &quot;product_name&quot;: &quot;Ember Milk Cap&quot;,
+   &quot;price&quot;: 260
+  },
+  {
+   &quot;order_id&quot;: &quot;ORD-1077&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;07:55&quot;,
+   &quot;product_name&quot;: &quot;Harbour Milk Cap&quot;,
+   &quot;price&quot;: 380
+  },
+  {
+   &quot;order_id&quot;: &quot;ORD-1078&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;07:56&quot;,
+   &quot;product_name&quot;: &quot;Ember Long Pull&quot;,
+   &quot;price&quot;: 440
+  },
+  {
+   &quot;order_id&quot;: &quot;ORD-1079&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;08:12&quot;,
+   &quot;product_name&quot;: &quot;Thistle Short Roast&quot;,
+   &quot;price&quot;: 220
+  },
+  {
+   &quot;order_id&quot;: &quot;ORD-1080&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;08:26&quot;,
+   &quot;product_name&quot;: &quot;Thistle Short Roast&quot;,
+   &quot;price&quot;: 220
+  },
+  {
+   &quot;order_id&quot;: &quot;ORD-1081&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;09:12&quot;,
+   &quot;product_name&quot;: &quot;Thistle Flat Brew&quot;,
+   &quot;price&quot;: 340
+  },
+  {
+   &quot;order_id&quot;: &quot;ORD-1081&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;09:12&quot;,
+   &quot;product_name&quot;: &quot;Lantern Milk Cap&quot;,
+   &quot;price&quot;: 220
+  },
+  {
+   &quot;order_id&quot;: &quot;ORD-1082&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;09:23&quot;,
+   &quot;product_name&quot;: &quot;Lantern Oat Cloud&quot;,
+   &quot;price&quot;: 360
+  },
+  {
+   &quot;order_id&quot;: &quot;ORD-1083&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;09:47&quot;,
+   &quot;product_name&quot;: &quot;Harbour Flat Brew&quot;,
+   &quot;price&quot;: 260
+  },
+  {
+   &quot;order_id&quot;: &quot;ORD-1083&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;09:47&quot;,
+   &quot;product_name&quot;: &quot;Meadow Long Pull&quot;,
+   &quot;price&quot;: 400
+  },
+  {
+   &quot;order_id&quot;: &quot;ORD-1084&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;10:23&quot;,
+   &quot;product_name&quot;: &quot;Lantern Short Roast&quot;,
+   &quot;price&quot;: 400
+  },
+  {
+   &quot;order_id&quot;: &quot;ORD-1084&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;10:23&quot;,
+   &quot;product_name&quot;: &quot;Thistle Milk Cap&quot;,
+   &quot;price&quot;: 440
+  },
+  {
+   &quot;order_id&quot;: &quot;ORD-1085&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;10:55&quot;,
+   &quot;product_name&quot;: &quot;Orchard Milk Cap&quot;,
+   &quot;price&quot;: 340
+  },
+  {
+   &quot;order_id&quot;: &quot;ORD-1085&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;10:55&quot;,
+   &quot;product_name&quot;: &quot;Harbour Flat Brew&quot;,
+   &quot;price&quot;: 260
+  },
+  {
+   &quot;order_id&quot;: &quot;ORD-1085&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;10:55&quot;,
+   &quot;product_name&quot;: &quot;Lantern Long Pull&quot;,
+   &quot;price&quot;: 420
+  },
+  {
+   &quot;order_id&quot;: &quot;ORD-1086&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;11:21&quot;,
+   &quot;product_name&quot;: &quot;Thistle Short Roast&quot;,
+   &quot;price&quot;: 220
+  },
+  {
+   &quot;order_id&quot;: &quot;ORD-1086&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;11:21&quot;,
+   &quot;product_name&quot;: &quot;Beacon Flat Brew&quot;,
+   &quot;price&quot;: 350
+  },
+  {
+   &quot;order_id&quot;: &quot;ORD-1087&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;12:50&quot;,
+   &quot;product_name&quot;: &quot;Meadow Long Pull&quot;,
+   &quot;price&quot;: 400
+  },
+  {
+   &quot;order_id&quot;: &quot;ORD-1088&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;12:55&quot;,
+   &quot;product_name&quot;: &quot;Lantern Oat Cloud&quot;,
+   &quot;price&quot;: 360
+  },
+  {
+   &quot;order_id&quot;: &quot;ORD-1088&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;12:55&quot;,
+   &quot;product_name&quot;: &quot;Meadow Milk Cap&quot;,
+   &quot;price&quot;: 400
+  },
+  {
+   &quot;order_id&quot;: &quot;ORD-1088&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;12:55&quot;,
+   &quot;product_name&quot;: &quot;Thistle Short Roast&quot;,
+   &quot;price&quot;: 220
+  },
+  {
+   &quot;order_id&quot;: &quot;ORD-1089&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;13:54&quot;,
+   &quot;product_name&quot;: &quot;Ember Flat Brew&quot;,
+   &quot;price&quot;: 440
+  },
+  {
+   &quot;order_id&quot;: &quot;ORD-1089&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;13:54&quot;,
+   &quot;product_name&quot;: &quot;Beacon Macchiato&quot;,
+   &quot;price&quot;: 350
+  },
+  {
+   &quot;order_id&quot;: &quot;ORD-1090&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;14:21&quot;,
+   &quot;product_name&quot;: &quot;Quarry Short Roast&quot;,
+   &quot;price&quot;: 360
+  },
+  {
+   &quot;order_id&quot;: &quot;ORD-1090&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;14:21&quot;,
+   &quot;product_name&quot;: &quot;Meadow Long Pull&quot;,
+   &quot;price&quot;: 400
+  },
+  {
+   &quot;order_id&quot;: &quot;ORD-1090&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;14:21&quot;,
+   &quot;product_name&quot;: &quot;Harbour Oat Cloud&quot;,
+   &quot;price&quot;: 260
+  },
+  {
+   &quot;order_id&quot;: &quot;ORD-1091&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;17:40&quot;,
+   &quot;product_name&quot;: &quot;Lantern Short Roast&quot;,
+   &quot;price&quot;: 400
+  },
+  {
+   &quot;order_id&quot;: &quot;ORD-1091&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;17:40&quot;,
+   &quot;product_name&quot;: &quot;Meadow Oat Cloud&quot;,
+   &quot;price&quot;: 460
+  },
+  {
+   &quot;order_id&quot;: &quot;ORD-1091&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;17:40&quot;,
+   &quot;product_name&quot;: &quot;Copper Oat Cloud&quot;,
+   &quot;price&quot;: 360
+  },
+  {
+   &quot;order_id&quot;: &quot;ORD-1091&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;17:40&quot;,
+   &quot;product_name&quot;: &quot;Beacon Macchiato&quot;,
+   &quot;price&quot;: 350
+  },
+  {
+   &quot;order_id&quot;: &quot;ORD-1092&quot;,
+   &quot;date&quot;: &quot;2026-09-05&quot;,
+   &quot;time&quot;: &quot;17:51&quot;,
+   &quot;product_name&quot;: &quot;Thistle Short Roast&quot;,
+   &quot;price&quot;: 220
+  }
+ ]
+}</pre></details><details><summary><code>get_held_day_orders</code> <span class="muted">{&quot;date&quot;: &quot;2026-09-20&quot;}</span></summary><pre>[
+ {
+  &quot;id&quot;: &quot;ORD-1339&quot;,
+  &quot;date&quot;: &quot;2026-09-20&quot;,
+  &quot;time&quot;: &quot;09:09&quot;,
+  &quot;paid&quot;: 1160,
+  &quot;cups&quot;: [
+   {
+    &quot;code&quot;: &quot;SIM-0014-27bd&quot;,
+    &quot;price&quot;: 460
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0020-e42b&quot;,
+    &quot;price&quot;: 300
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0010-936c&quot;,
+    &quot;price&quot;: 400
+   }
+  ]
+ },
+ {
+  &quot;id&quot;: &quot;ORD-1340&quot;,
+  &quot;date&quot;: &quot;2026-09-20&quot;,
+  &quot;time&quot;: &quot;09:38&quot;,
+  &quot;paid&quot;: 580,
+  &quot;cups&quot;: [
+   {
+    &quot;code&quot;: &quot;SIM-0037-1ba4&quot;,
+    &quot;price&quot;: 360
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0013-d7e8&quot;,
+    &quot;price&quot;: 220
+   }
+  ]
+ },
+ {
+  &quot;id&quot;: &quot;ORD-1341&quot;,
+  &quot;date&quot;: &quot;2026-09-20&quot;,
+  &quot;time&quot;: &quot;09:39&quot;,
+  &quot;paid&quot;: 1100,
+  &quot;cups&quot;: [
+   {
+    &quot;code&quot;: &quot;SIM-0039-3502&quot;,
+    &quot;price&quot;: 360
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0010-936c&quot;,
+    &quot;price&quot;: 400
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0025-cbb9&quot;,
+    &quot;price&quot;: 340
+   }
+  ]
+ },
+ {
+  &quot;id&quot;: &quot;ORD-1342&quot;,
+  &quot;date&quot;: &quot;2026-09-20&quot;,
+  &quot;time&quot;: &quot;09:53&quot;,
+  &quot;paid&quot;: 400,
+  &quot;cups&quot;: [
+   {
+    &quot;code&quot;: &quot;SIM-0016-fe4c&quot;,
+    &quot;price&quot;: 400
+   }
+  ]
+ },
+ {
+  &quot;id&quot;: &quot;ORD-1343&quot;,
+  &quot;date&quot;: &quot;2026-09-20&quot;,
+  &quot;time&quot;: &quot;10:16&quot;,
+  &quot;paid&quot;: 420,
+  &quot;cups&quot;: [
+   {
+    &quot;code&quot;: &quot;SIM-0030-b7b0&quot;,
+    &quot;price&quot;: 420
+   }
+  ]
+ },
+ {
+  &quot;id&quot;: &quot;ORD-1344&quot;,
+  &quot;date&quot;: &quot;2026-09-20&quot;,
+  &quot;time&quot;: &quot;10:56&quot;,
+  &quot;paid&quot;: 760,
+  &quot;cups&quot;: [
+   {
+    &quot;code&quot;: &quot;SIM-0013-d7e8&quot;,
+    &quot;price&quot;: 220
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0013-d7e8&quot;,
+    &quot;price&quot;: 220
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0009-fd7f&quot;,
+    &quot;price&quot;: 320
+   }
+  ]
+ },
+ {
+  &quot;id&quot;: &quot;ORD-1345&quot;,
+  &quot;date&quot;: &quot;2026-09-20&quot;,
+  &quot;time&quot;: &quot;11:03&quot;,
+  &quot;paid&quot;: 1290,
+  &quot;cups&quot;: [
+   {
+    &quot;code&quot;: &quot;SIM-0013-d7e8&quot;,
+    &quot;price&quot;: 220
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0041-7c2e&quot;,
+    &quot;price&quot;: 410
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0054-18de&quot;,
+    &quot;price&quot;: 330
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0055-f2b3&quot;,
+    &quot;price&quot;: 330
+   }
+  ]
+ },
+ {
+  &quot;id&quot;: &quot;ORD-1346&quot;,
+  &quot;date&quot;: &quot;2026-09-20&quot;,
+  &quot;time&quot;: &quot;11:13&quot;,
+  &quot;paid&quot;: 680,
+  &quot;cups&quot;: [
+   {
+    &quot;code&quot;: &quot;SIM-0018-f2bd&quot;,
+    &quot;price&quot;: 440
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0001-5c88&quot;,
+    &quot;price&quot;: 240
+   }
+  ]
+ },
+ {
+  &quot;id&quot;: &quot;ORD-1347&quot;,
+  &quot;date&quot;: &quot;2026-09-20&quot;,
+  &quot;time&quot;: &quot;11:23&quot;,
+  &quot;paid&quot;: 1480,
+  &quot;cups&quot;: [
+   {
+    &quot;code&quot;: &quot;SIM-0027-cda4&quot;,
+    &quot;price&quot;: 380
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0019-1f10&quot;,
+    &quot;price&quot;: 440
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0054-18de&quot;,
+    &quot;price&quot;: 330
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0055-f2b3&quot;,
+    &quot;price&quot;: 330
+   }
+  ]
+ },
+ {
+  &quot;id&quot;: &quot;ORD-1348&quot;,
+  &quot;date&quot;: &quot;2026-09-20&quot;,
+  &quot;time&quot;: &quot;11:33&quot;,
+  &quot;paid&quot;: 840,
+  &quot;cups&quot;: [
+   {
+    &quot;code&quot;: &quot;SIM-0013-d7e8&quot;,
+    &quot;price&quot;: 220
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0003-2025&quot;,
+    &quot;price&quot;: 400
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0013-d7e8&quot;,
+    &quot;price&quot;: 220
+   }
+  ]
+ },
+ {
+  &quot;id&quot;: &quot;ORD-1349&quot;,
+  &quot;date&quot;: &quot;2026-09-20&quot;,
+  &quot;time&quot;: &quot;12:08&quot;,
+  &quot;paid&quot;: 840,
+  &quot;cups&quot;: [
+   {
+    &quot;code&quot;: &quot;SIM-0017-2334&quot;,
+    &quot;price&quot;: 240
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0028-461b&quot;,
+    &quot;price&quot;: 340
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0036-a321&quot;,
+    &quot;price&quot;: 260
+   }
+  ]
+ },
+ {
+  &quot;id&quot;: &quot;ORD-1350&quot;,
+  &quot;date&quot;: &quot;2026-09-20&quot;,
+  &quot;time&quot;: &quot;12:31&quot;,
+  &quot;paid&quot;: 970,
+  &quot;cups&quot;: [
+   {
+    &quot;code&quot;: &quot;SIM-0028-461b&quot;,
+    &quot;price&quot;: 340
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0022-b5ff&quot;,
+    &quot;price&quot;: 260
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0042-b19a&quot;,
+    &quot;price&quot;: 370
+   }
+  ]
+ },
+ {
+  &quot;id&quot;: &quot;ORD-1351&quot;,
+  &quot;date&quot;: &quot;2026-09-20&quot;,
+  &quot;time&quot;: &quot;12:42&quot;,
+  &quot;paid&quot;: 840,
+  &quot;cups&quot;: [
+   {
+    &quot;code&quot;: &quot;SIM-0017-2334&quot;,
+    &quot;price&quot;: 240
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0012-af21&quot;,
+    &quot;price&quot;: 260
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0028-461b&quot;,
+    &quot;price&quot;: 340
+   }
+  ]
+ },
+ {
+  &quot;id&quot;: &quot;ORD-1352&quot;,
+  &quot;date&quot;: &quot;2026-09-20&quot;,
+  &quot;time&quot;: &quot;14:29&quot;,
+  &quot;paid&quot;: 1040,
+  &quot;cups&quot;: [
+   {
+    &quot;code&quot;: &quot;SIM-0028-461b&quot;,
+    &quot;price&quot;: 340
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0033-062d&quot;,
+    &quot;price&quot;: 360
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0025-cbb9&quot;,
+    &quot;price&quot;: 340
+   }
+  ]
+ },
+ {
+  &quot;id&quot;: &quot;ORD-1353&quot;,
+  &quot;date&quot;: &quot;2026-09-20&quot;,
+  &quot;time&quot;: &quot;14:53&quot;,
+  &quot;paid&quot;: 780,
+  &quot;cups&quot;: [
+   {
+    &quot;code&quot;: &quot;SIM-0009-fd7f&quot;,
+    &quot;price&quot;: 320
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0017-2334&quot;,
+    &quot;price&quot;: 240
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0013-d7e8&quot;,
+    &quot;price&quot;: 220
+   }
+  ]
+ },
+ {
+  &quot;id&quot;: &quot;ORD-1354&quot;,
+  &quot;date&quot;: &quot;2026-09-20&quot;,
+  &quot;time&quot;: &quot;14:54&quot;,
+  &quot;paid&quot;: 1100,
+  &quot;cups&quot;: [
+   {
+    &quot;code&quot;: &quot;SIM-0007-5c0a&quot;,
+    &quot;price&quot;: 440
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0017-2334&quot;,
+    &quot;price&quot;: 240
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0030-b7b0&quot;,
+    &quot;price&quot;: 420
+   }
+  ]
+ },
+ {
+  &quot;id&quot;: &quot;ORD-1355&quot;,
+  &quot;date&quot;: &quot;2026-09-20&quot;,
+  &quot;time&quot;: &quot;15:39&quot;,
+  &quot;paid&quot;: 1100,
+  &quot;cups&quot;: [
+   {
+    &quot;code&quot;: &quot;SIM-0028-461b&quot;,
+    &quot;price&quot;: 340
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0010-936c&quot;,
+    &quot;price&quot;: 400
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0033-062d&quot;,
+    &quot;price&quot;: 360
+   }
+  ]
+ },
+ {
+  &quot;id&quot;: &quot;ORD-1356&quot;,
+  &quot;date&quot;: &quot;2026-09-20&quot;,
+  &quot;time&quot;: &quot;16:27&quot;,
+  &quot;paid&quot;: 950,
+  &quot;cups&quot;: [
+   {
+    &quot;code&quot;: &quot;SIM-0018-f2bd&quot;,
+    &quot;price&quot;: 440
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0024-932a&quot;,
+    &quot;price&quot;: 260
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0046-91bb&quot;,
+    &quot;price&quot;: 250
+   }
+  ]
+ },
+ {
+  &quot;id&quot;: &quot;ORD-1357&quot;,
+  &quot;date&quot;: &quot;2026-09-20&quot;,
+  &quot;time&quot;: &quot;16:53&quot;,
+  &quot;paid&quot;: 640,
+  &quot;cups&quot;: [
+   {
+    &quot;code&quot;: &quot;SIM-0020-e42b&quot;,
+    &quot;price&quot;: 300
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0025-cbb9&quot;,
+    &quot;price&quot;: 340
+   }
+  ]
+ },
+ {
+  &quot;id&quot;: &quot;ORD-1358&quot;,
+  &quot;date&quot;: &quot;2026-09-20&quot;,
+  &quot;time&quot;: &quot;17:32&quot;,
+  &quot;paid&quot;: 260,
+  &quot;cups&quot;: [
+   {
+    &quot;code&quot;: &quot;SIM-0036-a321&quot;,
+    &quot;price&quot;: 260
+   }
+  ]
+ },
+ {
+  &quot;id&quot;: &quot;ORD-1359&quot;,
+  &quot;date&quot;: &quot;2026-09-20&quot;,
+  &quot;time&quot;: &quot;17:58&quot;,
+  &quot;paid&quot;: 1730,
+  &quot;cups&quot;: [
+   {
+    &quot;code&quot;: &quot;SIM-0030-b7b0&quot;,
+    &quot;price&quot;: 420
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0016-fe4c&quot;,
+    &quot;price&quot;: 400
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0046-91bb&quot;,
+    &quot;price&quot;: 250
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0054-18de&quot;,
+    &quot;price&quot;: 330
+   },
+   {
+    &quot;code&quot;: &quot;SIM-0055-f2b3&quot;,
+    &quot;price&quot;: 330
+   }
+  ]
+ }
+]</pre></details><p class="muted">Items 0054 and 0055 both come to 330 and always appear together in the same orders, so I can&#x27;t tell them apart and will escalate. Item 0053 is ambiguous, since Beacon Flat Brew and Macchiato both price at 350. Item 0052&#x27;s Moor Cappuccino isn&#x27;t in the catalog, and 0051 is weak evidence, so that one goes up as well. The Day 21 partial export also can&#x27;t be verified yet.
+
+</p><details><summary><code>escalate</code> <span class="muted">{&quot;category&quot;: &quot;conflicting_evidence&quot;, &quot;codes&quot;: [&quot;SIM-0053-c07f&quot;], &quot;summary&quot;: &quot;Evidence for this code (price 350</span></summary><pre>{
+ &quot;escalated&quot;: true,
+ &quot;id&quot;: &quot;esc-1&quot;
+}</pre></details><details><summary><code>escalate</code> <span class="muted">{&quot;category&quot;: &quot;conflicting_evidence&quot;, &quot;codes&quot;: [&quot;SIM-0054-18de&quot;, &quot;SIM-0055-f2b3&quot;], &quot;summary&quot;: &quot;Both codes cost </span></summary><pre>{
+ &quot;escalated&quot;: true,
+ &quot;id&quot;: &quot;esc-2&quot;
+}</pre></details><details><summary><code>escalate</code> <span class="muted">{&quot;category&quot;: &quot;product_not_in_catalog&quot;, &quot;codes&quot;: [&quot;SIM-0052-6d14&quot;], &quot;summary&quot;: &quot;Excel consistently names this c</span></summary><pre>{
+ &quot;escalated&quot;: true,
+ &quot;id&quot;: &quot;esc-3&quot;
+}</pre></details><details><summary><code>escalate</code> <span class="muted">{&quot;category&quot;: &quot;weak_evidence&quot;, &quot;codes&quot;: [&quot;SIM-0051-a3c8&quot;], &quot;summary&quot;: &quot;Only 1 cup and 1 order (ORD-1302, 09-17)</span></summary><pre>{
+ &quot;escalated&quot;: true,
+ &quot;id&quot;: &quot;esc-4&quot;
+}</pre></details><p class="muted">Recovery is partial. 13 of 21 days now have drafts, and 8 days are still held on codes I couldn&#x27;t prove.
+
+**What was wrong**
+- **Vendor errors:** 17 days failed with HTTP 500. Only every 5th vendor call succeeded.
+- **Unknown codes:** 4 days were held because their orders contained unmapped codes.
+
+**What I changed**
+- **Call spacing:** I set it to 5 seconds (chg-7). A 15-call probe showed exactly every 5th call returning 200, with a 5-second window. The policy gate refused a spacing change after the first, shorter probe, which showed no pattern. After the change, the rerun had no failures.
+- **Mappings:** I applied six, with change ids chg-1 to chg-6.
+  - SIM-0041-7c2e → Foundry Mocha (28 cups, matched on price)
+  - SIM-0042-b19a → Drift Cortado (12 cups, price)
+  - SIM-0043-04df → Saltmarsh Latte (8 cups, price)
+  - SIM-0046-91bb → Tern Espresso (3 cups, price)
+  - SIM-0045-2f70 → Pier Chai (10 cups, price)
+  - SIM-0044-e6a1 → Kiln Americano (4 cups, by elimination, since the other codes in those orders are proven)
+
+**What I verified**
+- `verify_recovery` returned ok, with 13 drafts, 12 of them verified against the vendor and Excel, and no mismatches or units problems.
+- 2026-09-21 is only partly verified. The Excel export covers 10960 of the 19020 total. Orders ORD-1373 to ORD-1380, worth 8060, have no Excel rows to check against.
+
+**What I escalated**
+- **SIM-0053-c07f:** The evidence splits between Beacon Flat Brew (3) and Beacon Macchiato (5), both priced 350. A human needs to check the vendor catalog.
+- **SIM-0054-18de and SIM-0055-f2b3:** Both cost 330 and always appear together in the same three orders on 09-20, so nothing separates them.
+- **SIM-0052-6d14:** Excel names it Moor Cappuccino (9 cups), which isn&#x27;t in the ledger catalog. I did not map it.
+- **SIM-0051-a3c8:** Only 1 cup of evidence, below the policy minimum of 3.
+
+**Still held:** 09-03, 09-04, 09-05, 09-14, 09-15, 09-16, 09-17 and 09-20. I left them held because that is the safe state until a human settles the codes above. Every draft still needs human review.</p>
+</body></html>

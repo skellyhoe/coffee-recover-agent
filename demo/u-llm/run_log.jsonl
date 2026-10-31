@@ -1,0 +1,23 @@
+{"event": "run_start", "run_id": "run-1"}
+{"event": "day_created", "run_id": "run-1", "date": "2026-09-01", "total": 14060, "vendor_call": 1}
+{"event": "day_created", "run_id": "run-1", "date": "2026-09-02", "total": 10460, "vendor_call": 2}
+{"event": "day_created", "run_id": "run-1", "date": "2026-09-03", "total": 15200, "vendor_call": 3}
+{"event": "day_created", "run_id": "run-1", "date": "2026-09-04", "total": 11260, "vendor_call": 4}
+{"event": "day_created", "run_id": "run-1", "date": "2026-09-05", "total": 10460, "vendor_call": 5}
+{"event": "day_created", "run_id": "run-1", "date": "2026-09-06", "total": 14700, "vendor_call": 6}
+{"event": "day_created", "run_id": "run-1", "date": "2026-09-07", "total": 9660, "vendor_call": 7}
+{"event": "day_created", "run_id": "run-1", "date": "2026-09-08", "total": 10240, "vendor_call": 8}
+{"event": "day_created", "run_id": "run-1", "date": "2026-09-09", "total": 1012000, "vendor_call": 9}
+{"event": "day_created", "run_id": "run-1", "date": "2026-09-10", "total": 1446000, "vendor_call": 10}
+{"event": "day_created", "run_id": "run-1", "date": "2026-09-11", "total": 926000, "vendor_call": 11}
+{"event": "day_created", "run_id": "run-1", "date": "2026-09-12", "total": 13820, "vendor_call": 12}
+{"event": "day_created", "run_id": "run-1", "date": "2026-09-13", "total": 8300, "vendor_call": 13}
+{"event": "day_created", "run_id": "run-1", "date": "2026-09-14", "total": 11700, "vendor_call": 14}
+{"event": "day_created", "run_id": "run-1", "date": "2026-09-15", "total": 13440, "vendor_call": 15}
+{"event": "day_created", "run_id": "run-1", "date": "2026-09-16", "total": 10140, "vendor_call": 16}
+{"event": "day_created", "run_id": "run-1", "date": "2026-09-17", "total": 9820, "vendor_call": 17}
+{"event": "day_created", "run_id": "run-1", "date": "2026-09-18", "total": 12420, "vendor_call": 18}
+{"event": "day_created", "run_id": "run-1", "date": "2026-09-19", "total": 7980, "vendor_call": 19}
+{"event": "day_created", "run_id": "run-1", "date": "2026-09-20", "total": 15700, "vendor_call": 20}
+{"event": "day_created", "run_id": "run-1", "date": "2026-09-21", "total": 16280, "vendor_call": 21}
+{"event": "run_end", "run_id": "run-1", "created": 21, "skipped": 0, "held": 0, "failed": 0}

@@ -1,0 +1,27 @@
+Recovery is partial. 13 of 21 days now have drafts, and 8 days are still held on codes I couldn't prove.
+
+**What was wrong**
+- **Vendor errors:** 17 days failed with HTTP 500. Only every 5th vendor call succeeded.
+- **Unknown codes:** 4 days were held because their orders contained unmapped codes.
+
+**What I changed**
+- **Call spacing:** I set it to 5 seconds (chg-7). A 15-call probe showed exactly every 5th call returning 200, with a 5-second window. The policy gate refused a spacing change after the first, shorter probe, which showed no pattern. After the change, the rerun had no failures.
+- **Mappings:** I applied six, with change ids chg-1 to chg-6.
+  - SIM-0041-7c2e → Foundry Mocha (28 cups, matched on price)
+  - SIM-0042-b19a → Drift Cortado (12 cups, price)
+  - SIM-0043-04df → Saltmarsh Latte (8 cups, price)
+  - SIM-0046-91bb → Tern Espresso (3 cups, price)
+  - SIM-0045-2f70 → Pier Chai (10 cups, price)
+  - SIM-0044-e6a1 → Kiln Americano (4 cups, by elimination, since the other codes in those orders are proven)
+
+**What I verified**
+- `verify_recovery` returned ok, with 13 drafts, 12 of them verified against the vendor and Excel, and no mismatches or units problems.
+- 2026-09-21 is only partly verified. The Excel export covers 10960 of the 19020 total. Orders ORD-1373 to ORD-1380, worth 8060, have no Excel rows to check against.
+
+**What I escalated**
+- **SIM-0053-c07f:** The evidence splits between Beacon Flat Brew (3) and Beacon Macchiato (5), both priced 350. A human needs to check the vendor catalog.
+- **SIM-0054-18de and SIM-0055-f2b3:** Both cost 330 and always appear together in the same three orders on 09-20, so nothing separates them.
+- **SIM-0052-6d14:** Excel names it Moor Cappuccino (9 cups), which isn't in the ledger catalog. I did not map it.
+- **SIM-0051-a3c8:** Only 1 cup of evidence, below the policy minimum of 3.
+
+**Still held:** 09-03, 09-04, 09-05, 09-14, 09-15, 09-16, 09-17 and 09-20. I left them held because that is the safe state until a human settles the codes above. Every draft still needs human review.
