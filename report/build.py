@@ -2,7 +2,7 @@
 import html
 import json
 
-from agent.tools import active_changes, active_spacing_changes
+from agent.tools import active_changes, active_spacing_changes, current_proposals
 from recovery.verify import verify_recovery
 
 CSS = """
@@ -110,8 +110,17 @@ def _spacing_section(ws, live):
             + "".join(rows) + "</table></div>")
 
 
+def _display_category(escalation, proposals):
+    """Codes that only ever appear in orders nothing can separate are not merely weak evidence."""
+    ambiguous = {c for codes in proposals["ambiguous_orders"].values() for c in codes}
+    empty = {p["code"] for p in proposals["proposals"] if not p["candidate_names"]}
+    codes = set(escalation["codes"])
+    return "indistinguishable" if codes and codes <= ambiguous & empty else escalation["category"]
+
+
 def _escalations_table(ws):
-    rows = [f'<tr><td>{e(x["category"])}</td><td><code>{e(", ".join(x["codes"]) or "-")}</code></td>'
+    proposals = current_proposals(ws)
+    rows = [f'<tr><td>{e(_display_category(x, proposals))}</td><td><code>{e(", ".join(x["codes"]) or "-")}</code></td>'
             f'<td>{e(x["summary"])}</td><td>{e(x["by"])}</td></tr>' for x in ws.escalations()]
     if not rows:
         return '<p class="muted">Nothing escalated.</p>'

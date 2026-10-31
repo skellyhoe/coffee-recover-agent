@@ -3,6 +3,8 @@
 Real LLM runs on simulated data. Every product, code and order is invented, and the agent has never
 run against a real system. **`abc-llm/` is the main demo run.**
 
+For how much outcomes vary between runs, see [reliability.md](reliability.md).
+
 All four used `claude-sonnet-5-5` at medium effort on 2026-10-31.
 
 | Run | Scenario | Result | Prompt version |
@@ -20,9 +22,13 @@ How the prompts differ:
   refused Kiln Americano even though the gate allowed it, and held more days. Decisions can vary
   between runs.
 
-Each folder has `report.html`, `transcript.jsonl`, `summary.txt`, `changes.jsonl`,
-`escalations.jsonl` and `run_log.jsonl`, and `abc-llm/` also has `probes.jsonl`. The static reports
-have no undo buttons, and the Excel export is left out because `.xlsx` files are gitignored. The
-only edit since the runs: the local path in each `report.html` was made relative.
+Each folder has `report.html`, `transcript.jsonl`, `summary.txt`, `escalations.jsonl` and
+`run_log.jsonl`. `u-llm/` has no `changes.jsonl` because nothing changed, and `abc-llm/` also has
+`probes.jsonl`. The static reports have no undo buttons, and the Excel export is left out because
+`.xlsx` files are gitignored.
+
+The transcripts and results are as they ran. Each `report.html` was re-rendered afterwards from that
+run's saved data, which added the "28 of 30" evidence counts and the "indistinguishable" label and
+made the local path relative.
 
 Checked before committing: no API key, key-like string, email address, home path or banned term.

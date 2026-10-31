@@ -83,3 +83,13 @@ def test_every_cup_gap_is_explained_by_the_export_or_a_shared_price(tmp_path):
         assert after_cut == evidence[code]["total_cups_seen"] - name == 2
     report = (ws.path / "report.html").read_text()
     assert "28 of 30" in report and "after the export was cut" in report
+
+
+def test_report_labels_the_inseparable_pair_indistinguishable(tmp_path):
+    ws, _, _ = run_scenario("b", ScriptedModel(), tmp_path / "b")
+    pair = [e for e in ws.escalations() if e["codes"][0] in ("SIM-0054-18de", "SIM-0055-f2b3")]
+    assert all(e["category"] == "weak_evidence" for e in pair)  # what was recorded stays as it was
+    report = render(ws)
+    table = report[report.index("Escalated to a human"):report.index("Every agent action")]
+    assert table.count("indistinguishable") == 2
+    assert table.count("weak_evidence") == 1  # the one-order code is still weak
