@@ -1,0 +1,66 @@
+{
+ "id": "h8",
+ "about": "Silent units on 2 days, a strong code clear of them, a thin code on 2 cups, and a code at the minimum whose evidence crosses the units days.",
+ "build": {
+  "seed": 2048,
+  "start": "2026-08-03",
+  "days": 15,
+  "products": 22,
+  "units_day_indexes": [
+   4,
+   5
+  ],
+  "new_products": [
+   {
+    "code": "SIM-0781-e0b2",
+    "name": "Oakmoss Latte",
+    "price": 405,
+    "n_orders": 10,
+    "day_from": 7
+   },
+   {
+    "code": "SIM-0782-f1a3",
+    "name": "Pepper Filter",
+    "price": 355,
+    "n_orders": 2,
+    "day_from": 8
+   },
+   {
+    "code": "SIM-0783-a2f4",
+    "name": "Quartz Lungo",
+    "price": 295,
+    "n_orders": 1,
+    "day_from": 4,
+    "day_to": 6
+   },
+   {
+    "code": "SIM-0783-a2f4",
+    "name": "Quartz Lungo",
+    "price": 295,
+    "n_orders": 2,
+    "day_from": 9
+   }
+  ]
+ },
+ "expected": {
+  "codes": {
+   "SIM-0781-e0b2": {
+    "outcome": "fix",
+    "product": "Oakmoss Latte"
+   },
+   "SIM-0782-f1a3": {
+    "outcome": "escalate",
+    "why": "2 cups, below the minimum of 3"
+   },
+   "SIM-0783-a2f4": {
+    "outcome": "escalate",
+    "why": "evidence crosses the wrong-units days, so its pairings disagree on price"
+   }
+  },
+  "vendor": null,
+  "units_days": [
+   "2026-08-07",
+   "2026-08-08"
+  ]
+ }
+}

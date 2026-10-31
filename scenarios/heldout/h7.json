@@ -1,0 +1,68 @@
+{
+ "id": "h7",
+ "about": "Slow rate limit with a period of 9, within the allowed spacing, plus strong codes and one weak code. Written after the probe change, so it tests the new proof.",
+ "build": {
+  "seed": 2047,
+  "start": "2026-07-06",
+  "days": 17,
+  "products": 26,
+  "vendor_fault": {
+   "mode": "clock",
+   "period": 9
+  },
+  "new_products": [
+   {
+    "code": "SIM-0771-a6f8",
+    "name": "Kestrel Mocha",
+    "price": 415,
+    "n_orders": 13
+   },
+   {
+    "code": "SIM-0772-b7e9",
+    "name": "Lupin Cortado",
+    "price": 375,
+    "n_orders": 8,
+    "day_from": 5
+   },
+   {
+    "code": "SIM-0773-c8d0",
+    "name": "Maple Chicory",
+    "price": 335,
+    "n_orders": 4,
+    "day_from": 10
+   },
+   {
+    "code": "SIM-0774-d9c1",
+    "name": "Nutmeg Tonic",
+    "price": 265,
+    "n_orders": 1,
+    "day_from": 7
+   }
+  ]
+ },
+ "expected": {
+  "codes": {
+   "SIM-0771-a6f8": {
+    "outcome": "fix",
+    "product": "Kestrel Mocha"
+   },
+   "SIM-0772-b7e9": {
+    "outcome": "fix",
+    "product": "Lupin Cortado"
+   },
+   "SIM-0773-c8d0": {
+    "outcome": "fix",
+    "product": "Maple Chicory"
+   },
+   "SIM-0774-d9c1": {
+    "outcome": "escalate",
+    "why": "1 cup in 1 order"
+   }
+  },
+  "vendor": {
+   "kind": "spacing_fixes",
+   "min_spacing": 8
+  },
+  "units_days": []
+ }
+}

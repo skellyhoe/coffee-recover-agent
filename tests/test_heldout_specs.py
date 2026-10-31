@@ -7,9 +7,9 @@ from scenarios.heldout import build_world, load_specs
 ROOT = Path(__file__).resolve().parent.parent
 
 
-def test_six_scenarios_with_unused_seeds():
+def test_eight_scenarios_with_unused_seeds():
     specs = load_specs()
-    assert len(specs) == 6
+    assert len(specs) == 8
     assert not {s["build"]["seed"] for s in specs} & {3, 7}
 
 
