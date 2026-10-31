@@ -1,0 +1,8 @@
+.env
+runs/
+__pycache__/
+.venv/
+*.xlsx
+!sim/fixtures/*.xlsx
+!sim/fixtures/**/*.xlsx
+.pytest_cache/
