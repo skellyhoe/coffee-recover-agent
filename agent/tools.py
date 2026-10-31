@@ -192,9 +192,11 @@ class Toolbox:
                 "product_name": proposal["product_name"]}
 
     def _rerun_sync(self):
-        s = run_sync(self.ws)
+        units = units_mismatches(self.ws.vendor, self.ws.export(), self.ws.days)
+        s = run_sync(self.ws, refuse_days={d["date"] for d in units})
         return {"run_id": s["run_id"], "created": s["created"], "skipped": len(s["skipped"]),
-                "held": s["held"], "failed": s["failed"]}
+                "held": s["held"], "failed": s["failed"],
+                "refused_units_mismatch": s["refused"]}
 
     def _verify_recovery(self):
         return verify_recovery(self.ws)

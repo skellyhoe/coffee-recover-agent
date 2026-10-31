@@ -69,3 +69,44 @@ def test_model_that_ignores_it_still_produces_the_escalation(tmp_path):
     run_sync(ws)
     run_agent(ws, SilentModel())
     assert "units_mismatch" in {e["category"] for e in ws.escalations()}
+
+
+def _held_then_mapped(tmp_path):
+    """A units day that only reaches draft creation after a code on it has been mapped."""
+    world = build_world("u")
+    day = world["days"][8]
+    order = next(o for o in world["orders"] if o["date"] == day)
+    order["cups"].append({"code": "SIM-0999-aaaa", "price": 300, "true_name": "Test Brew"})
+    world["catalog"]["Test Brew"] = "PROD-999"
+    ws = Workspace.create(tmp_path / "ws", world)
+    first = run_sync(ws)
+    assert day in first["held"]
+    ws.save_mapping({**ws.mapping(), "SIM-0999-aaaa": "Test Brew"})
+    return ws, day
+
+
+def test_rerun_refuses_a_units_mismatch_day(tmp_path):
+    ws, day = _held_then_mapped(tmp_path)
+    result = Toolbox(ws).run("rerun_sync", {})
+    assert result["refused_units_mismatch"] == [day]
+    assert day not in {d["date"] for d in ws.ledger.list_drafts()}
+    assert any(e["event"] == "day_refused" and e["date"] == day for e in ws.run_log())
+
+
+def test_without_the_refusal_that_day_would_get_a_wrong_draft(tmp_path):
+    ws, day = _held_then_mapped(tmp_path)
+    assert day in run_sync(ws)["created"]
+
+
+def test_rerun_still_creates_the_other_days(tmp_path):
+    ws, day = _held_then_mapped(tmp_path)
+    ws.ledger.delete_draft(ws.days[0])
+    result = Toolbox(ws).run("rerun_sync", {})
+    assert result["created"] == [ws.days[0]]
+
+
+def test_refused_day_is_not_blamed_on_the_vendor(tmp_path):
+    ws, _ = _held_then_mapped(tmp_path)
+    run_agent(ws, ScriptedModel())
+    assert "vendor_failure" not in {e["category"] for e in ws.escalations()}
+    assert "units_mismatch" in {e["category"] for e in ws.escalations()}

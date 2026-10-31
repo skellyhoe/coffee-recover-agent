@@ -109,8 +109,8 @@ def close_incident(ws, transcript, stop_reason=None):
                            f"{verification['global_problems']}")
     covered = {c for e in ws.escalations() for c in e["codes"]}
     mapping = ws.mapping()
-    unexplained = [day for day in verification["held_days"]
-                   if all(c["code"] in mapping for o in ws.vendor.list_orders(day)
+    unexplained = [day for day in verification["held_days"] if day not in units_days
+                   and all(c["code"] in mapping for o in ws.vendor.list_orders(day)
                           for c in o["cups"])]
     if unexplained and not any(e["category"] == "vendor_failure" for e in ws.escalations()):
         _system_escalation(ws, "vendor_failure", [],
