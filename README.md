@@ -94,7 +94,17 @@ Limits are enforced in code, not in the prompt.
 | Verification is independent: a wrong product at the right price is caught | `test_verify_catches_wrong_product_with_same_total` |
 | Prices can't be changed: no tool does it | `test_tool_surface_is_exactly_this`, `test_scenario_escalates_with_evidence_and_changes_no_price` |
 
+## Evaluation
+
+`make eval` runs all tests, the scripted scenarios and rules-only on six held-out scenarios, with no
+key needed, and exits non-zero on any regression. See [eval/RESULTS.md](eval/RESULTS.md), including
+what the LLM does and doesn't add over rules-only, and [docs/ITERATION.md](docs/ITERATION.md).
+
 ## Known limitations
+
+- **Two held-out scenarios fail, on purpose left unfixed.** The gate blocks a correct fix when a rate
+  limit's period is above what a capped probe can prove, and the agent's rerun can create a draft with
+  wrong units. See [eval/RESULTS.md](eval/RESULTS.md).
 
 - **Units drafts already exist when detected.** The sync creates the 100x drafts before the mismatch
   is found. The agent escalates them but can't correct or remove them, so they rely on human review.
