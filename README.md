@@ -33,7 +33,8 @@ The last command opens the report with working undo buttons at http://127.0.0.1:
 `runs/ab-llm/`, including `transcript.jsonl` and a static `report.html`.
 
 Scenarios: `a` is provable, `b` is not, `c` is a rate limit disguised as HTTP 500, and `abc` is all
-three at once. `ab` is the combination behind the saved runs in [demo/](demo/README.md). Add `--scripted` for a fixed stand-in
+three at once. `u` is silent wrong units, about 100x off from Excel, which is escalated and never
+fixed. `ab` is the combination behind the saved runs in [demo/](demo/README.md). Add `--scripted` for a fixed stand-in
 with no API call; its output is labelled as scripted.
 
 ## What the combined scenarios inject

@@ -41,7 +41,12 @@ def inject_c(world, rng):
     world["vendor_fault"] = {"mode": "clock", "period": 5}
 
 
-SCENARIOS = {"a": (inject_a,), "b": (inject_b,), "ab": (inject_a, inject_b), "c": (inject_c,),
+def inject_u(world, rng):
+    """Silent wrong units on three days: no error anywhere, totals about 100x off from Excel."""
+    world["units_fault"] = {"days": world["days"][8:11], "factor": 100}
+
+
+SCENARIOS = {"u": (inject_u,), "a": (inject_a,), "b": (inject_b,), "ab": (inject_a, inject_b), "c": (inject_c,),
              "abc": (inject_a, inject_b, inject_c)}
 
 

@@ -1,6 +1,8 @@
 """Independent check of the ledger against the vendor and the Excel export."""
 from collections import Counter
 
+from recovery.detect import units_mismatches
+
 
 def _verify_day(day, draft, orders, export):
     rows = [r for r in export["rows"] if r["date"] == day]
@@ -69,8 +71,10 @@ def verify_recovery(ws):
             held.append(day)
 
     mismatched = [d["date"] for d in days if d["status"] == "mismatch"]
+    units = units_mismatches(ws.vendor, export, ws.days)
     return {
-        "ok": not global_problems and not mismatched,
+        "ok": not global_problems and not mismatched and not units,
+        "units_mismatch_days": units,
         "global_problems": global_problems,
         "drafts": len(drafts),
         "verified_days": sum(1 for d in days if d["status"] == "ok"),

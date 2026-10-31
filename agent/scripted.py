@@ -47,6 +47,10 @@ class ScriptedModel:
 
     def _plan(self):
         log = yield self._call("read_run_log")
+        if log["units_mismatch_days"]:
+            yield self._call("escalate", {
+                "category": "units_mismatch", "codes": [],
+                "summary": f"Vendor totals about 100x off from Excel: {log['units_mismatch_days']}"})
         if "vendor_http_500" in log["classification"]:
             probe = yield self._call("probe_api_rate", {"calls": 15})
             if probe["period"]:

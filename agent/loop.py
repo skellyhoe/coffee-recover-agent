@@ -25,7 +25,8 @@ and being allowed by the gate does not oblige you to apply. Elimination is a sou
 code it depends on is itself well proven: it is part of the manual procedure this replaces.
 If the log shows vendor errors, look for a pattern in the vendor_call numbers and test it with \
 probe_api_rate before set_call_spacing. A pattern you cannot prove, or spacing that does not help, \
-goes to a human.
+goes to a human. A units mismatch is never yours to fix, because you cannot change prices: escalate \
+it with the day totals.
 4. Rerun the sync, then run verify_recovery.
 5. Investigate any leftover mismatch. If a change turns out wrong, undo it.
 6. Escalate each code you could not prove, with the evidence and what a human should check. Say \
@@ -96,9 +97,15 @@ def close_incident(ws, transcript, stop_reason=None):
     if stop_reason:
         _system_escalation(ws, "budget_exhausted", [], f"Agent run stopped: {stop_reason}")
     verification = verify_recovery(ws)
-    if not verification["ok"]:
+    units = verification["units_mismatch_days"]
+    units_days = {d["date"] for d in units}
+    if units and not any(e["category"] == "units_mismatch" for e in ws.escalations()):
+        _system_escalation(ws, "units_mismatch", [],
+                           f"Vendor totals are about 100x off from Excel: {units}")
+    other_days = [d for d in verification["mismatched_days"] if d["date"] not in units_days]
+    if other_days or verification["global_problems"]:
         _system_escalation(ws, "verification_failed", [],
-                           f"Verifier reports problems: {verification['mismatched_days']} "
+                           f"Verifier reports problems: {other_days} "
                            f"{verification['global_problems']}")
     covered = {c for e in ws.escalations() for c in e["codes"]}
     mapping = ws.mapping()

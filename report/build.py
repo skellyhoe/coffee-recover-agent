@@ -129,6 +129,10 @@ def _verification(v):
             f'through this day, so {len(d["unverified_orders"])} orders worth '
             f'{d["unverified_amount"]} are not in it. The covered part reconciles; a fresh export '
             'is needed to check the rest.</p>')
+    for d in v["units_mismatch_days"]:
+        parts.append(f'<p class="bad">{e(d["date"])}: units mismatch. Vendor {d["vendor_total"]} '
+                     f'against Excel {d["excel_total"]}, a ratio of {d["ratio"]}. Escalated, not '
+                     'fixed.</p>')
     for d in v["mismatched_days"]:
         parts.append(f'<p class="bad">{e(d["date"])}: {e("; ".join(d["problems"]))}</p>')
     for p in v["global_problems"]:

@@ -6,14 +6,15 @@ deterministic proposal, and the policy gate decides whether it may be applied.
 from collections import Counter
 
 from job.sync import run_sync
-from recovery.detect import classify, last_run_events
+from recovery.detect import classify, last_run_events, units_mismatches
 from recovery.policy import check_mapping, check_spacing, detect_period
 from recovery.propose import propose_mappings
 from recovery.verify import verify_recovery
 from sim.vendor import VendorError
 
 ESCALATION_CATEGORIES = ["weak_evidence", "conflicting_evidence", "product_not_in_catalog",
-                         "verification_failed", "budget_exhausted", "vendor_failure", "other"]
+                         "verification_failed", "budget_exhausted", "vendor_failure",
+                         "units_mismatch", "other"]
 MAX_PROBE_CALLS = 15
 
 
@@ -130,7 +131,12 @@ class Toolbox:
 
     def _read_run_log(self):
         events = self.ws.run_log()
-        return {"classification": classify(events), "events": last_run_events(events)}
+        classification = classify(events)
+        units = units_mismatches(self.ws.vendor, self.ws.export(), self.ws.days)
+        if units:
+            classification["units_mismatch"] = len(units)
+        return {"classification": classification, "units_mismatch_days": units,
+                "events": last_run_events(events)}
 
     def _list_unknown_codes(self):
         cups, days = Counter(), {}
