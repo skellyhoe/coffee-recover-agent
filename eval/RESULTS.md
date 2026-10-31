@@ -1,8 +1,59 @@
 # Evaluation results
 
-Six held-out scenarios, on simulated data only. Specs and expected outcomes were committed in
-`bfaef7f` before any system ran on them, and nothing was changed after seeing results. Regenerate the
-free results with `make eval`. Saved numbers are in `eval/results/`.
+**h1 to h6 are no longer clean held-out data.** They found two real problems and I then changed the
+code to fix them, so passing them now proves those fixes work, not that the system handles unseen
+cases. h7 and h8 were new for one run each, and I wrote them knowing the fixes, so they aren't hard
+tests of those fixes either. Now that they've been seen, they aren't clean held-out data any more.
+
+All data is simulated. Regenerate the rules-only results with `make eval`. Saved numbers are in
+`eval/results/`: `fix_*.json` is after the fixes, and the other files are the original round.
+
+## After the fixes
+
+| Problem | How it was found | Before | After | Commit |
+|---|---|---|---|---|
+| **h4:** the gate blocked a correct fix for a slow rate limit | Found by held-out set, then fixed | Rules and LLM: 2 of 16 days, fail | Rules: 16 of 16. LLM: 16 of 16. Both pass | `063555d` |
+| **h6:** the agent's rerun created a known-wrong 100x draft | Found by held-out set, then fixed | Rules and LLM: 1 wrong draft created, fail | Rules and LLM: no wrong draft created. Both pass | `3105595` |
+
+| Scenario | Recoverable days | Rules before | Rules after | LLM before | LLM after |
+|---|---|---|---|---|---|
+| h1 | 13 | 13, pass | 13, pass | 13, pass | not rerun |
+| h2 | 15 | 15, pass | 15, pass | 15, pass | not rerun |
+| h3 | 5 | 5, pass | 5, pass | 5, pass | not rerun |
+| h4 | 16 | 2, fail | 16, pass | 2, fail | 16, pass |
+| h5 | 4 | 4, pass | 4, pass | 4, pass | not rerun |
+| h6 | 6 | 2, fail | 0, pass | 0, fail | 0, pass |
+| h7 (new) | 16 | | 16, pass | | 16, pass |
+| h8 (new) | 4 | | 4, pass | | 4, pass |
+
+Across all eight, rules-only recovered 73 of 79 days. Wrong mappings: 0. Missed escalations: 0.
+Invoices confirmed: 0. The LLM runs in this round had the same zeros and cost $0.23 of the $0.80 limit.
+
+What the fixes cost, or left open:
+
+- **h6 recovered fewer days.** Rules went from 2 to 0. h6 still passes because its limit can't be fixed
+  and it expects an escalation, but a refused units day still uses one of the few vendor calls that
+  succeed.
+- **More vendor calls.** The bigger probe took rules on h3 from 40 calls to 60.
+- **Drafts from the first sync are still wrong.** The refusal covers reruns only. h6 and h8 each still
+  have one 100x draft from the first sync, which the agent escalates but can't remove.
+- **A coincidence could still pass the gate.** Three evenly spaced successes by chance from a truly
+  irregular failure would pass. That is unlikely, and the rerun would show failures and escalate, but
+  no code rules it out.
+- **The LLM's h6 run came before the new refusal message.** It still gave up after a 10-call probe, and
+  I did not rerun it. h6 can't be fixed by spacing, so its outcome wouldn't improve.
+- **Other LLM runs are older too.** h1, h2, h3 and h5 weren't rerun with the LLM after the fixes, and
+  neither was the five-run reliability test.
+
+The two fixes also changed some text the LLM reads, though not the prompt: the probe limit in the tool
+description went from 15 to 35 calls, `rerun_sync` results gained a refused list, and the misleading
+gate refusal is now two clear messages. On h4 the LLM got "not proven either way", then probed 35 calls
+and fixed it. That is one run, so it suggests the clearer message helped but doesn't prove it.
+
+## Original round, before the fixes
+
+Six held-out scenarios. Specs and expected outcomes were committed in `bfaef7f` before any system ran
+on them, and nothing was changed during that round.
 
 Real LLM: `claude-sonnet-5-5`, medium effort, one run per scenario, 2026-10-31. Costs are estimates
 from list prices and assume cache writes cost 1.25x the input rate. Total spend: $0.65 of the $1.50 limit.
@@ -43,7 +94,9 @@ have 37 recoverable days and 11 things to escalate:
 | h5 units, code crossing those days | 4 | 4, fail | 4, pass | 4, pass | |
 | h6 unfixable limit, units, boundaries | 6 | 6, fail | 2, **fail** | 0, **fail** | 0, fail |
 
-## The two failures, reported and not fixed
+## The two failures: found by held-out set, then fixed
+
+Both were reported and left alone in the original round, then fixed in the round above.
 
 **h4: the gate blocks a correct fix.** The gate needs 3 successes in one probe, and probes are capped at 15 calls. With a
 period of 7 that happens only if the first call lands exactly on a success, and here it showed 2. So
@@ -57,7 +110,7 @@ a 100x draft for 02-12, after the mismatch was already visible. The sync doesn't
 the agent has no way to stop it. This is worse than the known limitation in the README, which only
 covered drafts that already exist when the problem is detected.
 
-## What the gate actually did
+## What the gate actually did, in the original round
 
 The gate did not prevent a single wrong mapping in these runs. **With gates off, the LLM still made
 zero wrong mappings.** What stops wrong products is the structure: `apply_mapping` takes only a code,
@@ -68,13 +121,13 @@ What the gate did do:
 - Refused the LLM's attempt on h1 to map a code on 1 cup. With gates off, the LLM mapped such codes on
   h4 (1 cup) and h6 (2 cups). Both happened to be correct, but they were unjustified, and a person is
   no longer asked.
-- Blocked the correct fix on h4, costing 14 days. It is stricter than it needs to be there.
+- Blocked the correct fix on h4, costing 14 days. It was stricter than it needed to be, since fixed.
 
 The naive agent recovered more days than rules or LLM (51 against 41 and 39) because it keeps retrying.
 It also made 4 wrong mappings, created 12 wrong drafts and never escalated anything. More days is not
 better when some invoices are wrong and nobody is told.
 
-## Where LLM and rules-only differ
+## Where LLM and rules-only differ, in the original round
 
 | Scenario | Difference | Better | Why |
 |---|---|---|---|
@@ -89,15 +142,18 @@ Outcomes on h2 were the same. Both also filed its indistinguishable pair under "
 
 ## What the LLM adds over rules-only
 
+After the fixes, the rate-limit gap above is gone, and the two still tie on every scenario both ran:
+h4, h6, h7 and h8. The LLM used fewer vendor calls on h7 (54 against 81) but about the same on h4, and
+on h7 it again tried a 1-cup mapping that the gate refused. So the conclusion below still stands.
+
 Stated plainly: **on these six scenarios, no better outcomes, at $0.41 against $0, with slightly fewer
 days recovered.** It adds explanation: its summaries connect causes and tell a person what to check,
 where rules-only leaves terse reasons. It also chooses its own order of work, which didn't change any
 result here. And earlier runs showed its decisions vary, while rules-only gives the same answer every
 time.
 
-The one sign of more is h4 with gates off, where the LLM worked out a period the deterministic check
-couldn't, then fixed it by testing. That capability is currently blocked by the gate, and it came with
-a mapping that shouldn't have been made.
+The one sign of more was h4 with gates off, where the LLM worked out a period the old deterministic
+check couldn't. The new check handles that case, so that advantage no longer shows.
 
 Rules-only isn't a neutral baseline, though. I wrote its fixed plan knowing these failure types exist.
 An LLM might do better on a failure nobody planned for, but this evaluation doesn't test that.
@@ -106,20 +162,20 @@ An LLM might do better on a failure nobody planned for, but this evaluation does
 
 - Unknown codes: strong, at and below the evidence minimum, uncatalogued, indistinguishable pairs,
   elimination chains, one code with two products.
-- Rate limits: fixable with periods 3 and 7, and unfixable.
+- Rate limits: fixable with periods 3, 7 and 9, and unfixable. Non-periodic failures, by unit test.
 - Silent 100x units, including a code whose evidence crosses those days.
 - Against hidden truth: mappings, every draft line, and whether each escalation was raised.
 - `make eval` reruns all tests, the six scripted scenarios and rules-only on the held-out set, with no
   key needed. It fails on any new failure, and on any wrong mapping or confirmed invoice even if listed
-  as known. The two gaps above are in `eval/known_gaps.json` and print on every run.
+  as known. `eval/known_gaps.json` is now empty because both gaps closed.
 
 ## What isn't tested
 
 - **Anything real.** All data is invented, and the vendor API and ledger are simple simulations.
 - **Independence.** I wrote the system, the scenarios and the expected outcomes. The data is new, but
   the failure types are ones the system was built for, so this is easier than a truly unseen failure.
-- **LLM variation on this set.** Each scenario ran once, and the earlier five-run test showed outcomes
-  can differ, so 4 of 6 is one sample. `make eval` doesn't run the LLM at all.
+- **LLM variation on this set.** Each scenario ran once per round, and the earlier five-run test showed
+  outcomes can differ, so these are single samples. `make eval` doesn't run the LLM at all.
 - **Quality of explanations.** The differences above are my own reading of the summaries, not a measure.
 - **The gate-off prompt.** Those runs used the same prompt, which still mentions a gate.
 - **Other failure types in the brief:** stray old orders, a dropped schedule, Excel time zone changes.

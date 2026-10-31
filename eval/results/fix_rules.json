@@ -49,5 +49,147 @@
   "cost": 0.0,
   "failures": [],
   "passed": true
+ },
+ "h1": {
+  "fixed": 3,
+  "fixes_expected": 3,
+  "unfixed": [],
+  "recovered": 13,
+  "recoverable": 13,
+  "wrong_mappings": [],
+  "wrong_drafts_new": [],
+  "wrong_drafts_first_sync": [],
+  "correct_escalations": [
+   "SIM-0704-d4c6"
+  ],
+  "missed_escalations": [],
+  "confirmed": 0,
+  "cap_hit": false,
+  "stop_reason": null,
+  "spacing": 0,
+  "vendor_calls": 28,
+  "cost": 0.0,
+  "failures": [],
+  "passed": true
+ },
+ "h2": {
+  "fixed": 8,
+  "fixes_expected": 8,
+  "unfixed": [],
+  "recovered": 15,
+  "recoverable": 15,
+  "wrong_mappings": [],
+  "wrong_drafts_new": [],
+  "wrong_drafts_first_sync": [],
+  "correct_escalations": [
+   "SIM-0719-a3f5",
+   "SIM-0720-b4e6",
+   "SIM-0721-c5d7",
+   "SIM-0722-d6c8"
+  ],
+  "missed_escalations": [],
+  "confirmed": 0,
+  "cap_hit": false,
+  "stop_reason": null,
+  "spacing": 0,
+  "vendor_calls": 53,
+  "cost": 0.0,
+  "failures": [],
+  "passed": true
+ },
+ "h3": {
+  "fixed": 2,
+  "fixes_expected": 2,
+  "unfixed": [],
+  "recovered": 5,
+  "recoverable": 5,
+  "wrong_mappings": [],
+  "wrong_drafts_new": [],
+  "wrong_drafts_first_sync": [],
+  "correct_escalations": [
+   "SIM-0733-a9f1"
+  ],
+  "missed_escalations": [],
+  "confirmed": 0,
+  "cap_hit": false,
+  "stop_reason": null,
+  "spacing": 2,
+  "vendor_calls": 60,
+  "cost": 0.0,
+  "failures": [],
+  "passed": true
+ },
+ "h5": {
+  "fixed": 2,
+  "fixes_expected": 2,
+  "unfixed": [],
+  "recovered": 4,
+  "recoverable": 4,
+  "wrong_mappings": [],
+  "wrong_drafts_new": [],
+  "wrong_drafts_first_sync": [],
+  "correct_escalations": [
+   "SIM-0753-c7d9",
+   "SIM-0754-d8c0",
+   "SIM-0755-e9b1",
+   "units_mismatch"
+  ],
+  "missed_escalations": [],
+  "confirmed": 0,
+  "cap_hit": false,
+  "stop_reason": null,
+  "spacing": 0,
+  "vendor_calls": 34,
+  "cost": 0.0,
+  "failures": [],
+  "passed": true
+ },
+ "h7": {
+  "fixed": 3,
+  "fixes_expected": 3,
+  "unfixed": [],
+  "recovered": 16,
+  "recoverable": 16,
+  "wrong_mappings": [],
+  "wrong_drafts_new": [],
+  "wrong_drafts_first_sync": [],
+  "correct_escalations": [
+   "SIM-0774-d9c1"
+  ],
+  "missed_escalations": [],
+  "confirmed": 0,
+  "cap_hit": false,
+  "stop_reason": null,
+  "spacing": 8,
+  "vendor_calls": 81,
+  "cost": 0.0,
+  "failures": [],
+  "passed": true
+ },
+ "h8": {
+  "fixed": 1,
+  "fixes_expected": 1,
+  "unfixed": [],
+  "recovered": 4,
+  "recoverable": 4,
+  "wrong_mappings": [],
+  "wrong_drafts_new": [],
+  "wrong_drafts_first_sync": [
+   "2026-08-07"
+  ],
+  "correct_escalations": [
+   "SIM-0782-f1a3",
+   "SIM-0783-a2f4",
+   "units_mismatch"
+  ],
+  "missed_escalations": [],
+  "confirmed": 0,
+  "cap_hit": false,
+  "stop_reason": null,
+  "spacing": 0,
+  "vendor_calls": 22,
+  "cost": 0.0,
+  "failures": [],
+  "passed": true
  }
 }

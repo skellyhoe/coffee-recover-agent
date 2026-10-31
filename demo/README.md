@@ -31,4 +31,7 @@ The transcripts and results are as they ran. Each `report.html` was re-rendered 
 run's saved data, which added the "28 of 30" evidence counts and the "indistinguishable" label and
 made the local path relative.
 
+These saved runs predate the later fixes (`3105595`, `063555d`), so they show the older 15-call probe
+limit and refusal message, and rerun behaviour without the units refusal.
+
 Checked before committing: no API key, key-like string, email address, home path or banned term.

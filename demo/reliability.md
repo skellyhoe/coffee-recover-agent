@@ -32,4 +32,7 @@ mapped.
 **Why run 1 happened:** all five runs started with a 10-call probe, which can't show the 3 successes
 the gate requires. The refusal then says "no regular pattern, so this is not a simple rate limit",
 which is misleading: the true reason is too few successes. Four runs went on to a 15-call probe, and
-run 1 took the message at face value. This wording has not been changed.
+run 1 took the message at face value.
+
+**Since these runs:** the probe cap went from 15 to 35 calls and the refusal message was replaced
+(`063555d`). These five runs were not repeated, so they describe the earlier code.

@@ -49,5 +49,53 @@
   "cost": 0.0707,
   "failures": [],
   "passed": true
+ },
+ "h7": {
+  "fixed": 3,
+  "fixes_expected": 3,
+  "unfixed": [],
+  "recovered": 16,
+  "recoverable": 16,
+  "wrong_mappings": [],
+  "wrong_drafts_new": [],
+  "wrong_drafts_first_sync": [],
+  "correct_escalations": [
+   "SIM-0774-d9c1"
+  ],
+  "missed_escalations": [],
+  "confirmed": 0,
+  "cap_hit": false,
+  "stop_reason": null,
+  "spacing": 9,
+  "vendor_calls": 54,
+  "cost": 0.0616,
+  "failures": [],
+  "passed": true
+ },
+ "h8": {
+  "fixed": 1,
+  "fixes_expected": 1,
+  "unfixed": [],
+  "recovered": 4,
+  "recoverable": 4,
+  "wrong_mappings": [],
+  "wrong_drafts_new": [],
+  "wrong_drafts_first_sync": [
+   "2026-08-07"
+  ],
+  "correct_escalations": [
+   "SIM-0782-f1a3",
+   "SIM-0783-a2f4",
+   "units_mismatch"
+  ],
+  "missed_escalations": [],
+  "confirmed": 0,
+  "cap_hit": false,
+  "stop_reason": null,
+  "spacing": 0,
+  "vendor_calls": 22,
+  "cost": 0.0391,
+  "failures": [],
+  "passed": true
  }
 }
