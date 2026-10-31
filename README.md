@@ -95,6 +95,26 @@ Limits are enforced in code, not in the prompt.
 | Verification is independent: a wrong product at the right price is caught | `test_verify_catches_wrong_product_with_same_total` |
 | Prices can't be changed: no tool does it | `test_tool_surface_is_exactly_this`, `test_scenario_escalates_with_evidence_and_changes_no_price` |
 
+## Reliability on the final code
+
+Five real LLM runs of A+B+C, using `claude-sonnet-5-5` at medium effort. Costs are estimates.
+
+| Run | Codes fixed | Codes escalated | Days recovered | Gate refusals | Wrong mappings | Drafts confirmed | Cost |
+|---|---|---|---|---|---|---|---|
+| 1 | 6 | 5 | 13 | 0 | 0 | 0 | $0.0773 |
+| 2 | 6 | 5 | 13 | 0 | 0 | 0 | $0.0567 |
+| 3 | 6 | 5 | 13 | 0 | 0 | 0 | $0.0508 |
+| 4 | 6 | 5 | 13 | 0 | 0 | 0 | $0.0858 |
+| 5 | 6 | 5 | 13 | 1 | 0 | 0 | $0.0628 |
+| Total | | | | | | | $0.3334 |
+
+Outcomes were identical in all five, and the routes differed: 17 to 26 tool calls and one gate refusal.
+The main demo run is run 5, in [demo/final-abc-llm/](demo/final-abc-llm/).
+
+**From the final code:** this table, the main demo run, `make eval`, and the real LLM on h4, h7 and h8.
+**Older:** the real LLM on h1, h2, h3, h5 and h6, the naive and gates-off comparisons, the first five-run
+test and the other demo runs. [eval/RESULTS.md](eval/RESULTS.md) lists them all.
+
 ## Evaluation
 
 `make eval` runs all tests, the scripted scenarios and rules-only on eight evaluation scenarios, with
@@ -119,7 +139,6 @@ what the LLM does and doesn't add over rules-only, and [docs/ITERATION.md](docs/
   rules-only went from 2 days recovered to 0 after that fix.
 - **Simulated data only.** Products, codes, orders, the vendor API and the ledger are all invented.
   The agent has never run against a real system.
-- **LLM decisions vary between runs.** The gate limits what it may do, not what it chooses within
-  those limits. In five real A+B+C runs, three reached the full 13 days recovered, one reached 10 and
-  one reached 2. None confirmed a draft or mapped an unprovable code. That test predates the latest
-  fixes and was not repeated. See [demo/reliability.md](demo/reliability.md).
+- **LLM routes vary, and outcomes may too.** The gate limits what it may do, not what it chooses
+  within those limits. Five final runs matched, but on earlier code three of five reached the full
+  result, and five runs on one development scenario are a small sample.

@@ -63,4 +63,4 @@ which is misleading: the true reason is too few successes. Four runs went on to 
 run 1 took the message at face value.
 
 **Since these runs:** the probe cap went from 15 to 35 calls and the refusal message was replaced
-(`063555d`). These five runs were not repeated, so they describe the earlier code.
+(`063555d`). These five runs describe the earlier code; the final-code test above replaces them.

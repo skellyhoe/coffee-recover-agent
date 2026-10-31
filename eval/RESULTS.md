@@ -8,6 +8,45 @@ tests of those fixes either. Now that they've been seen, they aren't clean held-
 All data is simulated. Regenerate the rules-only results with `make eval`. Saved numbers are in
 `eval/results/`: `fix_*.json` is after the fixes, and the other files are the original round.
 
+## Which results are from the final code
+
+The final code is `6baa57e`. Agent, gate, sync, sim and report code are unchanged since `063555d`, so
+results from that commit onward count as final. The prompt is unchanged since `8c7380f`.
+
+| Result | Code |
+|---|---|
+| Five real LLM runs of A+B+C, below | **Final** |
+| `make eval`: tests, scripted scenarios, rules-only on h1 to h8 | **Final**, reruns each time |
+| Real LLM on h4, h7, h8 | **Final** |
+| Main demo run, `demo/final-abc-llm/` | **Final** |
+| Real LLM on h6 | Older: has the units refusal, but not the larger probe or new refusal messages |
+| Real LLM on h1, h2, h3, h5 | Older: original round |
+| Naive agent and gates-off runs | Older: original round, before the fixes |
+| First five-run test, `demo/reliability.md` | Older |
+| Other saved demo runs and `u-llm` | Older |
+
+## Five real LLM runs of A+B+C on the final code
+
+`claude-sonnet-5-5` at medium effort, 2026-10-31.
+
+| Run | Codes fixed | Codes escalated | Days recovered | Gate refusals | Wrong mappings | Drafts confirmed | Cost |
+|---|---|---|---|---|---|---|---|
+| 1 | 6 | 5 | 13 | 0 | 0 | 0 | $0.0773 |
+| 2 | 6 | 5 | 13 | 0 | 0 | 0 | $0.0567 |
+| 3 | 6 | 5 | 13 | 0 | 0 | 0 | $0.0508 |
+| 4 | 6 | 5 | 13 | 0 | 0 | 0 | $0.0858 |
+| 5 | 6 | 5 | 13 | 1 | 0 | 0 | $0.0628 |
+| Total | | | | | | | $0.3334 |
+
+**Outcomes were identical in all five:** the same 6 mappings, 5 codes escalated under the same
+categories, 8 days held, 5 seconds of spacing, and a clean verifier. The route differed: 17 to 26 tool
+calls, 1 to 3 probes, 1 or 2 reruns, and one gate refusal. Run 3 mentioned the partly verified day in
+its summary but filed no escalation for it.
+
+On earlier code the same test reached 13 days only 3 times in 5, with lows of 10 and 2. The larger
+probe and clearer refusal message are the likely reason, but this doesn't prove it. A+B+C was used
+during development, so it isn't held-out data, and five runs are a small sample.
+
 ## After the fixes
 
 | Problem | How it was found | Before | After | Commit |
@@ -42,8 +81,7 @@ What the fixes cost, or left open:
   no code rules it out.
 - **The LLM's h6 run came before the new refusal message.** It still gave up after a 10-call probe, and
   I did not rerun it. h6 can't be fixed by spacing, so its outcome wouldn't improve.
-- **Other LLM runs are older too.** h1, h2, h3 and h5 weren't rerun with the LLM after the fixes, and
-  neither was the five-run reliability test.
+- **Other LLM runs are older too.** h1, h2, h3 and h5 weren't rerun with the LLM after the fixes.
 
 The two fixes also changed some text the LLM reads, though not the prompt: the probe limit in the tool
 description went from 15 to 35 calls, `rerun_sync` results gained a refused list, and the misleading
@@ -150,7 +188,7 @@ Stated plainly: **on these six scenarios, no better outcomes, at $0.41 against $
 days recovered.** It adds explanation: its summaries connect causes and tell a person what to check,
 where rules-only leaves terse reasons. It also chooses its own order of work, which didn't change any
 result here. And earlier runs showed its decisions vary, while rules-only gives the same answer every
-time.
+time. The final five-run test had identical outcomes, but on a scenario used during development.
 
 The one sign of more was h4 with gates off, where the LLM worked out a period the old deterministic
 check couldn't. The new check handles that case, so that advantage no longer shows.
@@ -174,8 +212,8 @@ An LLM might do better on a failure nobody planned for, but this evaluation does
 - **Anything real.** All data is invented, and the vendor API and ledger are simple simulations.
 - **Independence.** I wrote the system, the scenarios and the expected outcomes. The data is new, but
   the failure types are ones the system was built for, so this is easier than a truly unseen failure.
-- **LLM variation on this set.** Each scenario ran once per round, and the earlier five-run test showed
-  outcomes can differ, so these are single samples. `make eval` doesn't run the LLM at all.
+- **LLM variation on this set.** Each scenario ran once per round. Only A+B+C has been run repeatedly,
+  so these are single samples. `make eval` doesn't run the LLM at all.
 - **Quality of explanations.** The differences above are my own reading of the summaries, not a measure.
 - **The gate-off prompt.** Those runs used the same prompt, which still mentions a gate.
 - **Other failure types in the brief:** stray old orders, a dropped schedule, Excel time zone changes.
