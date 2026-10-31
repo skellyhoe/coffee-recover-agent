@@ -1,0 +1,87 @@
+{
+ "h2": {
+  "fixed": 8,
+  "fixes_expected": 8,
+  "unfixed": [],
+  "recovered": 15,
+  "recoverable": 15,
+  "wrong_mappings": [],
+  "wrong_drafts_new": [],
+  "wrong_drafts_first_sync": [],
+  "correct_escalations": [
+   "SIM-0719-a3f5",
+   "SIM-0720-b4e6",
+   "SIM-0721-c5d7",
+   "SIM-0722-d6c8"
+  ],
+  "missed_escalations": [],
+  "confirmed": 0,
+  "cap_hit": false,
+  "stop_reason": null,
+  "spacing": 0,
+  "vendor_calls": 53,
+  "cost": 0.113,
+  "failures": [],
+  "passed": true
+ },
+ "h4": {
+  "fixed": 2,
+  "fixes_expected": 2,
+  "unfixed": [],
+  "recovered": 16,
+  "recoverable": 16,
+  "wrong_mappings": [],
+  "wrong_drafts_new": [],
+  "wrong_drafts_first_sync": [],
+  "correct_escalations": [
+   "SIM-0744-e3b5",
+   "SIM-0745-f4a6"
+  ],
+  "missed_escalations": [
+   "SIM-0743-d2c4"
+  ],
+  "confirmed": 0,
+  "cap_hit": false,
+  "stop_reason": null,
+  "spacing": 7,
+  "vendor_calls": 87,
+  "cost": 0.0746,
+  "failures": [
+   "missed escalations ['SIM-0743-d2c4']"
+  ],
+  "passed": false
+ },
+ "h6": {
+  "fixed": 3,
+  "fixes_expected": 3,
+  "unfixed": [],
+  "recovered": 0,
+  "recoverable": 6,
+  "wrong_mappings": [],
+  "wrong_drafts_new": [
+   "2026-02-12"
+  ],
+  "wrong_drafts_first_sync": [
+   "2026-02-13"
+  ],
+  "correct_escalations": [
+   "SIM-0765-d4c6",
+   "units_mismatch",
+   "vendor_failure"
+  ],
+  "missed_escalations": [
+   "SIM-0764-c3d5"
+  ],
+  "confirmed": 0,
+  "cap_hit": false,
+  "stop_reason": null,
+  "spacing": 0,
+  "vendor_calls": 51,
+  "cost": 0.0553,
+  "failures": [
+   "missed escalations ['SIM-0764-c3d5']",
+   "wrong drafts created ['2026-02-12']"
+  ],
+  "passed": false
+ }
+}

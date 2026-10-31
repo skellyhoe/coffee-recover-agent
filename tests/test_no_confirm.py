@@ -9,7 +9,7 @@ from sim.ledger import ROUTES, Ledger
 
 ROOT = Path(__file__).resolve().parent.parent
 BANNED = re.compile(r"confirm|finali[sz]e|approve|submit|credit_?note|tax", re.I)
-SOURCE_DIRS = ["sim", "job", "recovery", "agent", "scenarios", "report"]
+SOURCE_DIRS = ["sim", "job", "recovery", "agent", "scenarios", "report", "eval"]
 
 
 def source_files():

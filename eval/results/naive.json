@@ -1,0 +1,195 @@
+{
+ "h1": {
+  "fixed": 3,
+  "fixes_expected": 3,
+  "unfixed": [],
+  "recovered": 13,
+  "recoverable": 13,
+  "wrong_mappings": [],
+  "wrong_drafts_new": [],
+  "wrong_drafts_first_sync": [],
+  "correct_escalations": [],
+  "missed_escalations": [
+   "SIM-0704-d4c6"
+  ],
+  "confirmed": 0,
+  "cap_hit": false,
+  "stop_reason": null,
+  "spacing": 0,
+  "vendor_calls": 28,
+  "cost": 0.0,
+  "failures": [
+   "missed escalations ['SIM-0704-d4c6']"
+  ],
+  "passed": false
+ },
+ "h2": {
+  "fixed": 7,
+  "fixes_expected": 8,
+  "unfixed": [
+   "SIM-0718-f2a4"
+  ],
+  "recovered": 13,
+  "recoverable": 15,
+  "wrong_mappings": [
+   "SIM-0718-f2a4",
+   "SIM-0722-d6c8"
+  ],
+  "wrong_drafts_new": [
+   "2026-04-23",
+   "2026-04-26",
+   "2026-05-03"
+  ],
+  "wrong_drafts_first_sync": [],
+  "correct_escalations": [],
+  "missed_escalations": [
+   "SIM-0719-a3f5",
+   "SIM-0720-b4e6",
+   "SIM-0721-c5d7",
+   "SIM-0722-d6c8"
+  ],
+  "confirmed": 0,
+  "cap_hit": false,
+  "stop_reason": null,
+  "spacing": 0,
+  "vendor_calls": 53,
+  "cost": 0.0,
+  "failures": [
+   "wrong mappings ['SIM-0718-f2a4', 'SIM-0722-d6c8']",
+   "missed escalations ['SIM-0719-a3f5', 'SIM-0720-b4e6', 'SIM-0721-c5d7', 'SIM-0722-d6c8']",
+   "expected fixes not made ['SIM-0718-f2a4']",
+   "wrong drafts created ['2026-04-23', '2026-04-26', '2026-05-03']",
+   "recoverable days not all recovered"
+  ],
+  "passed": false
+ },
+ "h3": {
+  "fixed": 2,
+  "fixes_expected": 2,
+  "unfixed": [],
+  "recovered": 5,
+  "recoverable": 5,
+  "wrong_mappings": [],
+  "wrong_drafts_new": [],
+  "wrong_drafts_first_sync": [],
+  "correct_escalations": [],
+  "missed_escalations": [
+   "SIM-0733-a9f1"
+  ],
+  "confirmed": 0,
+  "cap_hit": true,
+  "stop_reason": "call cap 100 reached",
+  "spacing": 0,
+  "vendor_calls": 102,
+  "cost": 0.0,
+  "failures": [
+   "missed escalations ['SIM-0733-a9f1']",
+   "rate limit not fixed: spacing 0, 2 days failing"
+  ],
+  "passed": false
+ },
+ "h4": {
+  "fixed": 2,
+  "fixes_expected": 2,
+  "unfixed": [],
+  "recovered": 10,
+  "recoverable": 16,
+  "wrong_mappings": [
+   "SIM-0745-f4a6"
+  ],
+  "wrong_drafts_new": [
+   "2026-06-16",
+   "2026-06-17"
+  ],
+  "wrong_drafts_first_sync": [],
+  "correct_escalations": [],
+  "missed_escalations": [
+   "SIM-0743-d2c4",
+   "SIM-0744-e3b5",
+   "SIM-0745-f4a6"
+  ],
+  "confirmed": 0,
+  "cap_hit": true,
+  "stop_reason": "call cap 100 reached",
+  "spacing": 0,
+  "vendor_calls": 100,
+  "cost": 0.0,
+  "failures": [
+   "wrong mappings ['SIM-0745-f4a6']",
+   "missed escalations ['SIM-0743-d2c4', 'SIM-0744-e3b5', 'SIM-0745-f4a6']",
+   "rate limit not fixed: spacing 0, 6 days failing",
+   "wrong drafts created ['2026-06-16', '2026-06-17']"
+  ],
+  "passed": false
+ },
+ "h5": {
+  "fixed": 2,
+  "fixes_expected": 2,
+  "unfixed": [],
+  "recovered": 4,
+  "recoverable": 4,
+  "wrong_mappings": [],
+  "wrong_drafts_new": [
+   "2026-01-18",
+   "2026-01-19",
+   "2026-01-20"
+  ],
+  "wrong_drafts_first_sync": [],
+  "correct_escalations": [],
+  "missed_escalations": [
+   "SIM-0753-c7d9",
+   "SIM-0754-d8c0",
+   "SIM-0755-e9b1",
+   "units_mismatch"
+  ],
+  "confirmed": 0,
+  "cap_hit": false,
+  "stop_reason": null,
+  "spacing": 0,
+  "vendor_calls": 34,
+  "cost": 0.0,
+  "failures": [
+   "missed escalations ['SIM-0753-c7d9', 'SIM-0754-d8c0', 'SIM-0755-e9b1', 'units_mismatch']",
+   "wrong drafts created ['2026-01-18', '2026-01-19', '2026-01-20']"
+  ],
+  "passed": false
+ },
+ "h6": {
+  "fixed": 3,
+  "fixes_expected": 3,
+  "unfixed": [],
+  "recovered": 6,
+  "recoverable": 6,
+  "wrong_mappings": [
+   "SIM-0765-d4c6"
+  ],
+  "wrong_drafts_new": [
+   "2026-02-12",
+   "2026-02-16",
+   "2026-02-21",
+   "2026-02-22"
+  ],
+  "wrong_drafts_first_sync": [
+   "2026-02-13"
+  ],
+  "correct_escalations": [],
+  "missed_escalations": [
+   "SIM-0764-c3d5",
+   "SIM-0765-d4c6",
+   "units_mismatch",
+   "vendor_failure"
+  ],
+  "confirmed": 0,
+  "cap_hit": false,
+  "stop_reason": null,
+  "spacing": 0,
+  "vendor_calls": 90,
+  "cost": 0.0,
+  "failures": [
+   "wrong mappings ['SIM-0765-d4c6']",
+   "missed escalations ['SIM-0764-c3d5', 'SIM-0765-d4c6', 'vendor_failure', 'units_mismatch']",
+   "wrong drafts created ['2026-02-12', '2026-02-16', '2026-02-21', '2026-02-22']"
+  ],
+  "passed": false
+ }
+}
